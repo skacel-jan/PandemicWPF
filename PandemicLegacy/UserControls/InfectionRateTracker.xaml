@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="PandemicLegacy.UserControls.InfectionRateTracker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PandemicLegacy.UserControls"
+             mc:Ignorable="d"
+             Height="90"
+             Width="500">
+    <Grid DataContext="{Binding Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:InfectionRateTracker}}}">
+        <Grid.Resources>
+            <Style TargetType="Ellipse">
+                <Setter Property="Fill"
+                        Value="Green"></Setter>
+                <Setter Property="Width"
+                        Value="70"></Setter>
+                <Setter Property="Height"
+                        Value="70"></Setter>
+                <Setter Property="Stroke"
+                        Value="#FF014001"></Setter>
+                <Setter Property="StrokeThickness"
+                        Value="3"></Setter>
+            </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Viewbox Grid.Column="{Binding InfectionPosition}">
+            <Ellipse />
+        </Viewbox>
+    </Grid>
+</UserControl>
