@@ -1,4 +1,7 @@
-﻿using PandemicLegacy.Decks;
+﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using PandemicLegacy.Characters;
+using PandemicLegacy.Decks;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +13,7 @@ using System.Windows.Input;
 
 namespace PandemicLegacy.ViewModels
 {
-    public class GameViewModel : BaseViewModel
+    public class GameViewModel : ViewModelBase
     {
         public ICommand CityCommand { get; set; }
 
@@ -25,9 +28,25 @@ namespace PandemicLegacy.ViewModels
             var mapFactory = new WorldMapFactory();
             var cities = mapFactory.GetCities();
 
+
             Board = new Board(mapFactory.BuildMap(), new InfectionDeck(cities), new PlayerDeck(cities));
+            Board.InfectionDeck.Shuffle();
+            Board.PlayerDeck.Shuffle();
 
             CityCommand = new RelayCommand<MapCity>(param => CityButtonClicked(param), param => IsCityEnabled(param));
+
+            CurrentCharacter = new Medic() { Player = new Player() };
+            PlayerCard card = Board.DrawCard();
+            if (card != null)
+            {
+                CurrentCharacter.Player.AddCard(card);
+            }
+
+            card = Board.DrawCard();
+            if (card != null)
+            {
+                CurrentCharacter.Player.AddCard(card);
+            }
         }
 
         private bool IsCityEnabled(MapCity city)
@@ -38,12 +57,12 @@ namespace PandemicLegacy.ViewModels
         private void CityButtonClicked(MapCity city)
         {
             var mapCity = city;
-        }
 
-        private void MainButtonClick()
-        {
-            Board.RaiseInfection();
-            OnPropertyChanged(nameof(BoardInfectionPosition));
+            PlayerCard card = Board.DrawCard();
+            if (card != null)
+            {
+                CurrentCharacter.Player.AddCard(card);
+            }
         }
     }
 }

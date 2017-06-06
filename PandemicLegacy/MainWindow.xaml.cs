@@ -12,14 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace PandemicLegacy.Views
+namespace PandemicLegacy
 {
     /// <summary>
-    /// Interaction logic for BoardView.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class BoardView : UserControl
+    public partial class MainWindow : Window
     {
-        public BoardView()
+        public MainWindow()
         {
             InitializeComponent();
         }

@@ -40,5 +40,23 @@ namespace PandemicLegacy
                 InfectionRate++;
             }
         }
+
+        public PlayerCard DrawCard()
+        {            
+            Card card = PlayerDeck.First();
+            if (card is PlayerCard playerCard)
+            {
+                PlayerDeck.RemoveAt(0);
+                return playerCard;
+            }
+            else if (card is EpidemicCard epidemicCard)
+            {
+                return null;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

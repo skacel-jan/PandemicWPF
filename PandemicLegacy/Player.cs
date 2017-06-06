@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,12 @@ namespace PandemicLegacy
 {
     public class Player
     {
-        public List<PlayerCard> Cards { get; set; }
+        public ObservableCollection<PlayerCard> Cards { get; private set; }
+
+        public Player()
+        {
+            Cards = new ObservableCollection<PlayerCard>();
+        }
 
         public void RemoveCard(PlayerCard card)
         {
