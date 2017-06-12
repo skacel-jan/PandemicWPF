@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -7,9 +8,19 @@ using System.Threading.Tasks;
 
 namespace PandemicLegacy
 {
-    public class Player
+    public class Player : ObservableObject
     {
         public ObservableCollection<PlayerCard> Cards { get; private set; }
+
+        private Pawn _pawn;
+        public Pawn Pawn
+        {
+            get { return _pawn; }
+            set
+            {
+                Set(ref _pawn, value);
+            }
+        }
 
         public Player()
         {

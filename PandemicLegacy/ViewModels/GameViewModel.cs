@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace PandemicLegacy.ViewModels
 {
@@ -21,13 +22,17 @@ namespace PandemicLegacy.ViewModels
 
         public int BoardInfectionPosition => Board.InfectionPosition;
 
-        public Character CurrentCharacter { get; private set; }
+        private Character _currentCharacter;
+        public Character CurrentCharacter
+        {
+            get { return _currentCharacter; }
+            set { Set(ref _currentCharacter, value); }
+        }
 
         public GameViewModel()
         {
             var mapFactory = new WorldMapFactory();
             var cities = mapFactory.GetCities();
-
 
             Board = new Board(mapFactory.BuildMap(), new InfectionDeck(cities), new PlayerDeck(cities));
             Board.InfectionDeck.Shuffle();
@@ -35,7 +40,12 @@ namespace PandemicLegacy.ViewModels
 
             CityCommand = new RelayCommand<MapCity>(param => CityButtonClicked(param), param => IsCityEnabled(param));
 
-            CurrentCharacter = new Medic() { Player = new Player() };
+            CurrentCharacter = new Medic()
+            {
+                Player = new Player() { Pawn = new Pawn(Colors.Brown) },
+                MapCity = Board.WorldMap.Cities[City.Atlanta]
+            };
+
             PlayerCard card = Board.DrawCard();
             if (card != null)
             {
@@ -43,6 +53,17 @@ namespace PandemicLegacy.ViewModels
             }
 
             card = Board.DrawCard();
+            if (card != null)
+            {
+                CurrentCharacter.Player.AddCard(card);
+            }
+
+            MessengerInstance.Register<MapCity>(this, "CityClicked", CityClicked);
+        }
+
+        private void CityClicked(MapCity obj)
+        {
+            PlayerCard card = Board.DrawCard();
             if (card != null)
             {
                 CurrentCharacter.Player.AddCard(card);
@@ -56,7 +77,8 @@ namespace PandemicLegacy.ViewModels
 
         private void CityButtonClicked(MapCity city)
         {
-            var mapCity = city;
+            CurrentCharacter.MapCity = city;
+            city.HasResearchStation = true;
 
             PlayerCard card = Board.DrawCard();
             if (card != null)

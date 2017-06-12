@@ -96,7 +96,11 @@
     <Compile Include="Pawn.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="ThreadSafeRandom.cs" />
-    <Compile Include="Views\DiseaseToColorConverter.cs" />
+    <Compile Include="Converters\DiseaseToColorConverter.cs" />
+    <Compile Include="Converters\HeightToFontSizeConverter.cs" />
+    <Compile Include="Views\MapCityControl.xaml.cs">
+      <DependentUpon>MapCityControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WorldMap.cs" />
     <Compile Include="WorldMapFactory.cs" />
     <Page Include="MainWindow.xaml">
@@ -120,6 +124,10 @@
     <Compile Include="Common.cs" />
     <Compile Include="Decks\Deck.cs" />
     <Compile Include="Cards\InfectionCard.cs" />
+    <Page Include="Views\MapCityControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cards\PlayerCard.cs" />

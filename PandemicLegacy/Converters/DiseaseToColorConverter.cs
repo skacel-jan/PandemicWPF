@@ -9,7 +9,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using static PandemicLegacy.Common;
 
-namespace PandemicLegacy.Views
+namespace PandemicLegacy.Converters
 {
     [ValueConversion(typeof(DiseaseColor), typeof(SolidColorBrush))]
     public class DiseaseToColorConverter : IValueConverter

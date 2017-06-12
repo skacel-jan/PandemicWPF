@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,24 +7,42 @@ using System.Threading.Tasks;
 
 namespace PandemicLegacy
 {
-    public abstract class Character
+    public abstract class Character : ObservableObject
     {
         private const int STANDARD_ACTIONS_COUNT = 4;
         private const int STANDARD_CARDS_FOR_CURE = 5;
 
-        public Player Player { get; set; }
-        public Pawn Pawn { get; set; }
+        private Player _player;
+        public Player Player
+        {
+            get { return _player; }
+            set
+            {
+                Set(ref _player, value);
+            }
+        }
+
+        private MapCity _mapCity;
+        public MapCity MapCity
+        {
+            get { return _mapCity; }
+            set
+            {
+                Set(ref _mapCity, value);
+            }
+        }
+
         public virtual int ActionsCount { get { return STANDARD_ACTIONS_COUNT; } }
 
         public virtual bool CanDriveOrFerry(MapCity toCity)
         {
-            return Pawn.MapCity.IsCityConnected(toCity);
+            return MapCity.IsCityConnected(toCity);
         }
 
         public virtual void DriveOrFerry(MapCity toCity)
         {
             if (CanDriveOrFerry(toCity))
-                this.Pawn.MapCity = toCity;
+                this.MapCity = toCity;
         }
 
         public virtual bool CanDirectFlight(MapCity toCity)
@@ -35,7 +54,7 @@ namespace PandemicLegacy
         {
             if (CanDirectFlight(toCity))
             {
-                this.Pawn.MapCity = toCity;
+                this.MapCity = toCity;
                 this.Player.RemoveCardWithCity(toCity.City);
             }
         }
@@ -49,19 +68,19 @@ namespace PandemicLegacy
         {
             if (CanCharterFlight())
             {
-                this.Pawn.MapCity = toCity;
-                this.Player.RemoveCardWithCity(this.Pawn.MapCity.City);
+                this.MapCity = toCity;
+                this.Player.RemoveCardWithCity(this.MapCity.City);
             }
         }
 
         public virtual bool CanShuttleFlight(MapCity toCity)
         {
-            return this.Pawn.MapCity.HasReaserchStation == toCity.HasReaserchStation;
+            return this.MapCity.HasResearchStation == toCity.HasResearchStation;
         }
 
         public virtual void ShuttleFlight(MapCity toCity)
         {
-            this.Pawn.MapCity = toCity;
+            this.MapCity = toCity;
         }
 
         public virtual bool CanBuildResearchStation()
@@ -73,19 +92,19 @@ namespace PandemicLegacy
         {
             if (CanBuildResearchStation())
             {
-                this.Pawn.MapCity.HasReaserchStation = true;
-                this.Player.RemoveCardWithCity(this.Pawn.MapCity.City);
+                this.MapCity.HasResearchStation = true;
+                this.Player.RemoveCardWithCity(this.MapCity.City);
             }
         }
 
         public virtual void TreatDisease(Disease disease)
         {
-            this.Pawn.MapCity.ChangeInfection(disease.Color, -1);
+            this.MapCity.ChangeInfection(disease.Color, -1);
         }
 
         public virtual bool CanDiscoverCure(Disease disease)
         {
-            return this.Pawn.MapCity.HasReaserchStation && this.Player.SameColorCards(disease) >= STANDARD_CARDS_FOR_CURE;
+            return this.MapCity.HasResearchStation && this.Player.SameColorCards(disease) >= STANDARD_CARDS_FOR_CURE;
         }
 
         public virtual void DiscoverCure(Disease disease)
@@ -93,12 +112,12 @@ namespace PandemicLegacy
             if (CanDiscoverCure(disease))
             {
                 disease.KnownCure = true;
-            }                
+            }
         }
 
         public virtual bool CanShareKnowledge(PlayerCard card, Character character)
         {
-            return this.Pawn.MapCity == character.Pawn.MapCity && this.Pawn.MapCity.City == card.City;
+            return this.MapCity == character.MapCity && this.MapCity.City == card.City;
         }
 
         public virtual void ShareKnowledgeGive(PlayerCard card, Character character)
@@ -121,7 +140,7 @@ namespace PandemicLegacy
 
         protected virtual bool HasCardOfCurrentCity()
         {
-            return this.Player.HasCityCard(this.Pawn.MapCity.City);
+            return this.Player.HasCityCard(this.MapCity.City);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace PandemicLegacy.Characters
 
         public override void TreatDisease(Disease disease)
         {
-            this.Pawn.MapCity.RemoveInfection(disease.Color);
+            this.MapCity.RemoveInfection(disease.Color);
         }
 
         protected virtual void SpecialTreatDisease()
@@ -24,7 +24,7 @@ namespace PandemicLegacy.Characters
             foreach (var disease in Common.Diseases.Values)
             {
                 if (disease.KnownCure)
-                    this.Pawn.MapCity.RemoveInfection(disease.Color);
+                    this.MapCity.RemoveInfection(disease.Color);
             }
         }
     }

@@ -12,7 +12,7 @@ namespace PandemicLegacy.Characters
 
         public override bool CanDiscoverCure(Disease disease)
         {
-            return this.Pawn.MapCity.HasReaserchStation && this.Player.SameColorCards(disease) >= SCIENTIST_CARDS_FOR_CURE;
+            return this.MapCity.HasResearchStation && this.Player.SameColorCards(disease) >= SCIENTIST_CARDS_FOR_CURE;
         }
     }
 }
