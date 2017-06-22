@@ -16,7 +16,7 @@ namespace PandemicLegacy.Converters
             // here you can use the parameter that you can give in here via setting , ConverterParameter='something'} or use any nice login with the VisualTreeHelper to make a better return value, or maybe even just hardcode some max values if you like
             var height = (double)value;
             double coeficient = double.Parse(parameter.ToString(), CultureInfo.InvariantCulture);
-            return coeficient * height;
+            return coeficient * (height == 0 ? 1 : height);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

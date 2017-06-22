@@ -27,9 +27,10 @@ namespace PandemicLegacy
             Cards = new ObservableCollection<PlayerCard>();
         }
 
-        public void RemoveCard(PlayerCard card)
+        public PlayerCard RemoveCard(PlayerCard card)
         {
             this.Cards.Remove(card);
+            return card;
         }
 
         public void AddCard(PlayerCard card)
@@ -47,9 +48,9 @@ namespace PandemicLegacy
             return Cards.Any(card => card.City == city);
         }
 
-        public void RemoveCardWithCity(City city)
+        public PlayerCard RemoveCardWithCity(City city)
         {
-            RemoveCard(Cards.Single(c => c.City == city));
+            return RemoveCard(Cards.Single(c => c.City == city));
         }
     }
 }

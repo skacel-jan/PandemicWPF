@@ -3,11 +3,12 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using static PandemicLegacy.Common;
+using System.Windows.Media;
 
 namespace PandemicLegacy
 {
@@ -20,7 +21,34 @@ namespace PandemicLegacy
         public bool HasResearchStation { get { return _hasResearchStation; } set { Set(ref _hasResearchStation, value); } }
 
         private IEnumerable<MapCity> ConnectedCities { get; set; }
-        private IDictionary<DiseaseColor, int> Infections { get; set; }
+
+        private int _yellowInfection;
+        public int YellowInfection
+        {
+            get => _yellowInfection;
+            set => Set(ref _yellowInfection, value);
+        }
+
+        private int _redInfection;
+        public int RedInfection
+        {
+            get => _redInfection;
+            set => Set(ref _redInfection, value);
+        }
+
+        private int _blueInfection;
+        public int BlueInfection
+        {
+            get => _blueInfection;
+            set => Set(ref _blueInfection, value);
+        }
+
+        private int _blackInfection;
+        public int BlackInfection
+        {
+            get => _blackInfection;
+            set => Set(ref _blackInfection, value);
+        }
 
         private int _population;
         public int Population { get { return _population; } private set { Set(ref _population, value); } }
@@ -28,29 +56,14 @@ namespace PandemicLegacy
 
         public ICommand CityCommand { get; set; }
 
-        private Pawn _pawn;
-        public Pawn Pawn
-        {
-            get { return _pawn; }
-            set
-            {
-                Set(ref _pawn, value);
-            }
-        }
+        public ObservableCollection<Pawn> Pawns { get; }
 
         public MapCity(City city)
         {
             this.City = city;
 
-            this.Infections = new Dictionary<DiseaseColor, int>(4)
-            {
-                {DiseaseColor.Black, 0 },
-                {DiseaseColor.Blue, 0 },
-                {DiseaseColor.Red, 0 },
-                {DiseaseColor.Yellow, 0 }
-            };
-
             CityCommand = new RelayCommand(() => CityButtonClicked(), () => IsCityEnabled());
+            Pawns = new ObservableCollection<Pawn>();
         }
 
         public bool IsCityConnected(MapCity toCity)
@@ -60,17 +73,29 @@ namespace PandemicLegacy
 
         public void ChangeInfection(DiseaseColor color, int value)
         {
-            if (value < 0)
-                this.Infections[color] = 0;
-            else if (value > 3)
-                this.Infections[color] = 3;
-            else
-                this.Infections[color] = value;
+            if (value < 0) value = 0;
+            else if (value > 3) value = 3;
+
+            switch (color)
+            {
+                case DiseaseColor.Yellow:
+                    YellowInfection = value;
+                    break;
+                case DiseaseColor.Red:
+                    RedInfection = value;
+                    break;
+                case DiseaseColor.Blue:
+                    BlueInfection = value;
+                    break;
+                case DiseaseColor.Black:
+                    BlackInfection = value;
+                    break;
+            }
         }
 
         public void RemoveInfection(DiseaseColor color)
         {
-            this.Infections[color] = 0;
+            ChangeInfection(color, 0);
         }
 
         public void AddConnectedCities(params MapCity[] cities)
@@ -92,7 +117,6 @@ namespace PandemicLegacy
 
         private void CityButtonClicked()
         {
-            HasResearchStation = true;
             MessengerInstance.Send(this, "CityClicked");
         }
     }

@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
-using static PandemicLegacy.Common;
 
 namespace PandemicLegacy.Converters
 {

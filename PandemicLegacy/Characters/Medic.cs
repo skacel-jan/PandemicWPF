@@ -21,7 +21,7 @@ namespace PandemicLegacy.Characters
 
         protected virtual void SpecialTreatDisease()
         {
-            foreach (var disease in Common.Diseases.Values)
+            foreach (var disease in Disease.Diseases.Values)
             {
                 if (disease.KnownCure)
                     this.MapCity.RemoveInfection(disease.Color);

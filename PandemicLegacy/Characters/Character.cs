@@ -29,6 +29,7 @@ namespace PandemicLegacy
             set
             {
                 Set(ref _mapCity, value);
+                _mapCity.Pawns.Add(Player.Pawn);
             }
         }
 

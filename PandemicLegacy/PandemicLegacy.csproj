@@ -76,6 +76,7 @@
     </ApplicationDefinition>
     <Compile Include="Board.cs" />
     <Compile Include="Characters\Scientist.cs" />
+    <Compile Include="Converters\InfectionToVisibilityConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -121,7 +122,6 @@
     </Compile>
     <Compile Include="Cards\Card.cs" />
     <Compile Include="City.cs" />
-    <Compile Include="Common.cs" />
     <Compile Include="Decks\Deck.cs" />
     <Compile Include="Cards\InfectionCard.cs" />
     <Page Include="Views\MapCityControl.xaml">

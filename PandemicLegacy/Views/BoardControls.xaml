@@ -9,7 +9,7 @@
     <!--Control colors.-->
     <Color x:Key="DisabledColor">#FFE8EDF9</Color>
     <SolidColorBrush x:Key="DisabledBrush"
-                     Color="{StaticResource DisabledColor}" />
+                     Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}" />
 
     <Color x:Key="MouseOverColor">#AAA739</Color>
     <SolidColorBrush x:Key="MouseOverBrush"
@@ -149,7 +149,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="border"                            
+                    <Border x:Name="border"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
                             Background="{TemplateBinding Background}"
@@ -165,22 +165,16 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver"
                                  Value="True">
-                            <Setter Property="BorderBrush"
-                                    TargetName="border"
-                                    Value="{StaticResource MouseOverBrush}" />
                             <Setter Property="TextElement.Foreground"
                                     TargetName="contentPresenter"
                                     Value="{StaticResource MouseOverBrush}" />
                         </Trigger>
-                        <!--<Trigger Property="IsPressed"
+                        <Trigger Property="IsPressed"
                                  Value="true">
                             <Setter Property="Background"
                                     TargetName="border"
                                     Value="Blue" />
-                            <Setter Property="BorderBrush"
-                                    TargetName="border"
-                                    Value="Blue" />
-                        </Trigger>-->
+                        </Trigger>
                         <Trigger Property="IsEnabled"
                                  Value="False">
                             <Setter Property="BorderBrush"

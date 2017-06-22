@@ -11,6 +11,30 @@
     <UserControl.Resources>
         <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
         <converters:HeightToFontSizeConverter x:Key="heightToFontSize" />
+
+        <Style TargetType="{x:Type local:MapCityControl}">
+            <Setter Property="Height"
+                    Value="50" />
+            <Setter Property="Width"
+                    Value="50" />
+            <Setter Property="Command"
+                    Value="{Binding CityCommand}" />
+            <Setter Property="YellowInfection"
+                    Value="{Binding YellowInfection}" />
+            <Setter Property="RedInfection"
+                    Value="{Binding RedInfection}" />
+            <Setter Property="BlueInfection"
+                    Value="{Binding BlueInfection}" />
+            <Setter Property="BlackInfection"
+                    Value="{Binding BlackInfection}" />
+            <Setter Property="CityName"
+                    Value="{Binding City.Name}" />
+            <Setter Property="HasResearchStation"
+                    Value="{Binding HasResearchStation}" />
+            <Setter Property="Pawns"
+                    Value="{Binding Pawns}" />
+        </Style>
+
     </UserControl.Resources>
     <Grid Background="Black">
         <Grid.RowDefinitions>
@@ -19,13 +43,12 @@
             <RowDefinition Height="33*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Label Content="{Binding CurrentCharacter.Pawn.MapCity}"
+        <Label Content="{Binding CurrentCharacter.MapCity}"
                VerticalAlignment="Bottom"
                HorizontalAlignment="Center"
                FontSize="12"
                Foreground="White"
-               Grid.Row="3"
-               d:IsLocked="True" />
+               Grid.Row="3" />
         <Viewbox Stretch="Uniform"
                  Grid.Row="0">
             <Image Source="/PandemicLegacy;component/Resources/pandemicMap.jpg" />
@@ -35,17 +58,11 @@
             <Canvas Width="1072"
                     Height="768">
                 <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Lagos]}"
-                                      Height="75"
-                                      Width="75"
-                                      Canvas.Left="463"
-                                      Canvas.Top="379"
-                                      Command="{Binding CityCommand}" />
+                                      Canvas.Left="476"
+                                      Canvas.Top="393" />
                 <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Kinshasa]}"
-                                      Height="50"
-                                      Width="50"
-                                      Canvas.Left="523"
-                                      Canvas.Top="446"
-                                      Command="{Binding CityCommand}" />
+                                      Canvas.Left="524"
+                                      Canvas.Top="445" />
             </Canvas>
         </Viewbox>
         <Grid Grid.Row="2"
@@ -68,10 +85,12 @@
                     Style="{StaticResource ActionButtonStyle}" />
             <Button Grid.Column="3"
                     Content="Build"
-                    Style="{StaticResource ActionButtonStyle}" />
+                    Style="{StaticResource ActionButtonStyle}"
+                    Command="{Binding BuildActionCommand}"/>
             <Button Grid.Column="4"
-                    Content="Cure"
-                    Style="{StaticResource ActionButtonStyle}" />
+                    Content="Find"
+                    Style="{StaticResource ActionButtonStyle}"
+                    Command="{Binding DiscoverCureActionCommand}" />
         </Grid>
 
         <ListBox Grid.Row="1"
@@ -96,7 +115,8 @@
             </ListBox.ItemTemplate>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True" />
+                    <VirtualizingStackPanel IsItemsHost="True"
+                                            Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>
