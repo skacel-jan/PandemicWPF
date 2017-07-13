@@ -17,7 +17,7 @@ namespace PandemicLegacy
             mapCities[City.Baghdad].AddConnectedCities(mapCities[City.Cairo], mapCities[City.Istanbul], mapCities[City.Tehran], mapCities[City.Riyadh]);
             mapCities[City.Bangkok].AddConnectedCities(mapCities[City.Jakarta], mapCities[City.HoChiMinhCity], mapCities[City.HongKong], mapCities[City.Kolkata]);
             mapCities[City.Beijing].AddConnectedCities(mapCities[City.Shanghai], mapCities[City.Seoul]);
-            mapCities[City.Bogota].AddConnectedCities(mapCities[City.BuenosAries], mapCities[City.MexicoCity], mapCities[City.Miami], mapCities[City.Lima], mapCities[City.SaoPaulo]);
+            mapCities[City.Bogota].AddConnectedCities(mapCities[City.BuenosAires], mapCities[City.MexicoCity], mapCities[City.Miami], mapCities[City.Lima], mapCities[City.SaoPaulo]);
             mapCities[City.Cairo].AddConnectedCities(mapCities[City.Algiers], mapCities[City.Baghdad], mapCities[City.Istanbul], mapCities[City.Khartoum], mapCities[City.Riyadh]);
             mapCities[City.Chennai].AddConnectedCities(mapCities[City.Delhi], mapCities[City.Jakarta], mapCities[City.Kolkata], mapCities[City.Mumbai]);
             mapCities[City.Chicago].AddConnectedCities(mapCities[City.Atlanta], mapCities[City.LosAngeles], mapCities[City.MexicoCity], mapCities[City.Montreal], mapCities[City.SanFrancisco]);
@@ -28,7 +28,7 @@ namespace PandemicLegacy
             mapCities[City.HoChiMinhCity].AddConnectedCities(mapCities[City.Bangkok], mapCities[City.Jakarta], mapCities[City.HongKong], mapCities[City.Manila]);
             mapCities[City.Istanbul].AddConnectedCities(mapCities[City.Algiers], mapCities[City.Baghdad], mapCities[City.Cairo], mapCities[City.Milan], mapCities[City.Moscow]);
             mapCities[City.Jakarta].AddConnectedCities(mapCities[City.Bangkok], mapCities[City.Chennai], mapCities[City.HoChiMinhCity], mapCities[City.Sydney]);
-            mapCities[City.Johannesburg].AddConnectedCities(mapCities[City.BuenosAries], mapCities[City.Kinshasa], mapCities[City.Khartoum]);
+            mapCities[City.Johannesburg].AddConnectedCities(mapCities[City.BuenosAires], mapCities[City.Kinshasa], mapCities[City.Khartoum]);
             mapCities[City.Karachi].AddConnectedCities(mapCities[City.Delhi], mapCities[City.Mumbai], mapCities[City.Riyadh], mapCities[City.Tehran]);
             mapCities[City.Khartoum].AddConnectedCities(mapCities[City.Bangkok], mapCities[City.Jakarta], mapCities[City.HongKong], mapCities[City.Manila]);
             mapCities[City.Kinshasa].AddConnectedCities(mapCities[City.Johannesburg], mapCities[City.Lagos], mapCities[City.Khartoum]);
@@ -50,8 +50,8 @@ namespace PandemicLegacy
             mapCities[City.Paris].AddConnectedCities(mapCities[City.Algiers], mapCities[City.Essen], mapCities[City.London], mapCities[City.Madrid], mapCities[City.Milan]);
             mapCities[City.Riyadh].AddConnectedCities(mapCities[City.Baghdad], mapCities[City.Cairo], mapCities[City.Karachi]);
             mapCities[City.SanFrancisco].AddConnectedCities(mapCities[City.Chicago], mapCities[City.LosAngeles], mapCities[City.Manila], mapCities[City.Tokyo]);
-            mapCities[City.Santiago].AddConnectedCities(mapCities[City.BuenosAries], mapCities[City.Lima]);
-            mapCities[City.SaoPaulo].AddConnectedCities(mapCities[City.Bogota], mapCities[City.BuenosAries], mapCities[City.Lagos], mapCities[City.Madrid]);
+            mapCities[City.Santiago].AddConnectedCities(mapCities[City.BuenosAires], mapCities[City.Lima]);
+            mapCities[City.SaoPaulo].AddConnectedCities(mapCities[City.Bogota], mapCities[City.BuenosAires], mapCities[City.Lagos], mapCities[City.Madrid]);
             mapCities[City.Seoul].AddConnectedCities(mapCities[City.Beijing], mapCities[City.Shanghai], mapCities[City.Tokyo]);
             mapCities[City.Shanghai].AddConnectedCities(mapCities[City.Beijing], mapCities[City.HongKong], mapCities[City.Seoul], mapCities[City.Taipei], mapCities[City.Tokyo]);
             mapCities[City.StPetersburg].AddConnectedCities(mapCities[City.Essen], mapCities[City.Istanbul], mapCities[City.Moscow]);
@@ -74,7 +74,7 @@ namespace PandemicLegacy
                 new City(City.Bangkok, DiseaseColor.Red),
                 new City(City.Beijing, DiseaseColor.Red),
                 new City(City.Bogota, DiseaseColor.Yellow),
-                new City(City.BuenosAries, DiseaseColor.Yellow),
+                new City(City.BuenosAires, DiseaseColor.Yellow),
                 new City(City.Cairo, DiseaseColor.Black),
                 new City(City.Chennai, DiseaseColor.Black),
                 new City(City.Chicago, DiseaseColor.Blue),

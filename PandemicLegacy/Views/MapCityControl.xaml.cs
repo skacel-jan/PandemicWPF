@@ -40,6 +40,15 @@ namespace PandemicLegacy.Views
         public static readonly DependencyProperty CityNameProperty =
             DependencyProperty.Register(nameof(CityName), typeof(string), typeof(MapCityControl), new PropertyMetadata(string.Empty));
 
+        public DiseaseColor CityColor
+        {
+            get { return (DiseaseColor)GetValue(CityColorProperty); }
+            set { SetValue(CityColorProperty, value); }
+        }
+
+        public static readonly DependencyProperty CityColorProperty =
+            DependencyProperty.Register(nameof(CityColor), typeof(DiseaseColor), typeof(MapCityControl), new PropertyMetadata(DiseaseColor.Yellow));
+
         public bool HasResearchStation
         {
             get { return (bool)GetValue(HasResearchStationProperty); }
@@ -94,6 +103,8 @@ namespace PandemicLegacy.Views
         public static readonly DependencyProperty PawnsProperty =
             DependencyProperty.Register(nameof(Pawns), typeof(ObservableCollection<Pawn>), typeof(MapCityControl), new PropertyMetadata(null, PawnsChanged));
 
+        private List<Ellipse> ellipses;
+
         private static void PawnsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var mapCityControl = d as MapCityControl;
@@ -122,6 +133,7 @@ namespace PandemicLegacy.Views
             {
                 MainGrid.Children.Remove(ellipse);
             }
+            ellipses.Clear();
 
             if (Pawns.Count > 0)
                 LayoutItemsInGrid();
@@ -134,19 +146,19 @@ namespace PandemicLegacy.Views
             {
                 Ellipse ellipse = new Ellipse()
                 {
-                    Fill = new SolidColorBrush() { Color = pawn.Color, Opacity = 0.6 },
+                    Fill = new SolidColorBrush() { Color = pawn.Color, Opacity = 0.8 },
                     IsHitTestVisible = false
                 };
 
                 Grid.SetColumn(ellipse, column++);
                 Grid.SetRow(ellipse, 1);
-                Grid.SetRowSpan(ellipse, 2);
+                Grid.SetRowSpan(ellipse, 3);
+
+                ellipses.Add(ellipse);
 
                 MainGrid.Children.Add(ellipse);
             }
         }
-
-        private List<Ellipse> ellipses;
 
         public MapCityControl()
         {

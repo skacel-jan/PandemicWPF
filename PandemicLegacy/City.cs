@@ -57,7 +57,7 @@ namespace PandemicLegacy
         public const string Bangkok = "Bangkok";
         public const string Beijing = "Beijing";
         public const string Bogota = "Bogota";
-        public const string BuenosAries = "Buenos Aries";
+        public const string BuenosAires = "Buenos Aires";
         public const string Cairo = "Cairo";
         public const string Chennai = "Chennai";
         public const string Chicago = "Chicago";

@@ -62,7 +62,7 @@ namespace PandemicLegacy
         {
             this.City = city;
 
-            CityCommand = new RelayCommand(() => CityButtonClicked(), () => IsCityEnabled());
+            CityCommand = new RelayCommand(() => CityButtonClicked(), () => IsEnabled);
             Pawns = new ObservableCollection<Pawn>();
         }
 
@@ -108,11 +108,18 @@ namespace PandemicLegacy
             return City.ToString();
         }
 
-        public bool IsEnabled => false;
-
-        private bool IsCityEnabled()
+        private bool _isEnabled = true;
+        public bool IsEnabled
         {
-            return true;
+            get => _isEnabled;
+            set => Set(ref _isEnabled, value);
+        }
+
+        private bool _canMove = true;
+        public bool CanMove
+        {
+            get => _canMove;
+            set => Set(ref _canMove, value);
         }
 
         private void CityButtonClicked()

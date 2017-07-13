@@ -7,8 +7,8 @@
         xmlns:views="clr-namespace:PandemicLegacy.Views"
         mc:Ignorable="d"
         Title="Pandemic Legacy"
-        Height="900"
-        Width="1200"
+        Height="934.615"
+        Width="1096.154"
         WindowStartupLocation="CenterScreen">
     <Window.DataContext>
         <viewModels:MainViewModel />
