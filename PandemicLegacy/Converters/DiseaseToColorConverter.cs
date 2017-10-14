@@ -25,7 +25,7 @@ namespace PandemicLegacy.Converters
                 case DiseaseColor.Blue:
                     return new SolidColorBrush(Colors.Blue);
                 case DiseaseColor.Black:
-                    return new SolidColorBrush(Colors.DarkGray);
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(30,30,30));
                 default:
                     return new SolidColorBrush(Colors.Yellow);
             }

@@ -41,12 +41,12 @@ namespace PandemicLegacy
             }
         }
 
-        public PlayerCard DrawCard()
+        public PlayerCard DrawPlayerCard()
         {            
             Card card = PlayerDeck.First();
             if (card is PlayerCard playerCard)
             {
-                PlayerDeck.RemoveAt(0);
+                PlayerDeck.Remove(card);
                 return playerCard;
             }
             else if (card is EpidemicCard epidemicCard)
@@ -57,6 +57,22 @@ namespace PandemicLegacy
             {
                 return null;
             }
+        }
+
+        public InfectionCard DrawInfectionCard()
+        {
+            InfectionCard card = InfectionDeck.First();
+            InfectionDiscardPile.Add(card);
+            InfectionDeck.Remove(card);
+            return card;
+        }
+
+        internal InfectionCard DrawInfectionBottomCard()
+        {
+            InfectionCard card = InfectionDeck.Last();
+            InfectionDiscardPile.Add(card);
+            InfectionDeck.Remove(card);
+            return card;
         }
     }
 }

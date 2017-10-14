@@ -43,7 +43,7 @@ namespace PandemicLegacy
 
         public virtual void DriveOrFerry(MapCity toCity)
         {
-            this.MapCity = toCity;
+            MapCity = toCity;
         }
 
         public virtual bool CanDirectFlight(MapCity toCity)
@@ -53,9 +53,8 @@ namespace PandemicLegacy
 
         public virtual void DirectFlight(MapCity toCity)
         {
-            this.MapCity = toCity;
-            this.Player.RemoveCardWithCity(toCity.City);
-
+            MapCity = toCity;
+            Player.RemoveCardWithCity(toCity.City);
         }
 
         public virtual bool CanCharterFlight()
@@ -65,76 +64,74 @@ namespace PandemicLegacy
 
         public virtual void CharterFlight(MapCity toCity)
         {
-
-            this.MapCity = toCity;
-            this.Player.RemoveCardWithCity(this.MapCity.City);
-
+            Player.RemoveCardWithCity(MapCity.City);
+            MapCity = toCity;
         }
 
         public virtual bool CanShuttleFlight(MapCity toCity)
         {
-            return this.MapCity.HasResearchStation && toCity.HasResearchStation;
+            return MapCity.HasResearchStation && toCity.HasResearchStation;
         }
 
         public virtual void ShuttleFlight(MapCity toCity)
         {
-            this.MapCity = toCity;
+            MapCity = toCity;
         }
 
         public virtual bool CanBuildResearchStation()
         {
-            return HasCardOfCurrentCity();
+            return HasCardOfCurrentCity() && !MapCity.HasResearchStation;
         }
 
         public virtual void BuildResearhStation()
         {
+            MapCity.HasResearchStation = true;
+            Player.RemoveCardWithCity(MapCity.City);
+        }
 
-            this.MapCity.HasResearchStation = true;
-            this.Player.RemoveCardWithCity(this.MapCity.City);
-
+        internal bool CanTreatDisease()
+        {
+            return MapCity.BlackInfection > 0 || MapCity.BlueInfection > 0 || MapCity.RedInfection > 0 || MapCity.YellowInfection > 0;
         }
 
         public virtual void TreatDisease(Disease disease)
         {
-            this.MapCity.ChangeInfection(disease.Color, -1);
+            MapCity.ChangeInfection(disease.Color, -1);
         }
 
         public virtual bool CanDiscoverCure(Disease disease)
         {
-            return this.MapCity.HasResearchStation && this.Player.SameColorCards(disease) >= STANDARD_CARDS_FOR_CURE;
+            return MapCity.HasResearchStation && Player.SameColorCards(disease) >= STANDARD_CARDS_FOR_CURE;
         }
 
         public virtual void DiscoverCure(Disease disease)
         {
 
             disease.KnownCure = true;
-
         }
 
         public virtual bool CanShareKnowledge(PlayerCard card, Character character)
         {
-            return this.MapCity == character.MapCity && this.MapCity.City == card.City;
+            return MapCity == character.MapCity && MapCity.City == card.City;
         }
 
         public virtual void ShareKnowledgeGive(PlayerCard card, Character character)
         {
 
-            this.Player.RemoveCard(card);
+            Player.RemoveCard(card);
             character.Player.AddCard(card);
-
         }
 
         public virtual void ShareKnowledgeTake(PlayerCard card, Character character)
         {
 
             character.Player.RemoveCard(card);
-            this.Player.AddCard(card);
-
+            Player.AddCard(card);
         }
 
         protected virtual bool HasCardOfCurrentCity()
         {
-            return this.Player.HasCityCard(this.MapCity.City);
+            return Player.HasCityCard(MapCity.City);
         }
     }
 }

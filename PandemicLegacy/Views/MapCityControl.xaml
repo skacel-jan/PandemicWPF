@@ -7,8 +7,8 @@
              x:Name="userControl"
              x:Class="PandemicLegacy.Views.MapCityControl"
              mc:Ignorable="d"
-             Height="51.4"
-             Width="50">
+             d:DesignHeight="60"
+             d:DesignWidth="60">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InfectionToVisibilityConverter x:Key="InfectionToVisibilityConverter" />
@@ -23,7 +23,7 @@
             <Setter Property="VerticalContentAlignment"
                     Value="Center" />
             <Setter Property="FontSize"
-                    Value="6" />
+                    Value="7" />
         </Style>
 
         <Style TargetType="{x:Type Button}"
@@ -53,7 +53,7 @@
                             <Control Margin="4"
                                      Width="{TemplateBinding Width}"
                                      Height="{TemplateBinding Height}"
-                                     Template="{DynamicResource YellowVirusShape}" />
+                                     Template="{StaticResource YellowVirusShape}" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -72,7 +72,9 @@
                 <Trigger Property="IsEnabled"
                          Value="False">
                     <Setter Property="Background"
-                            Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                            Value="{StaticResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                    <Setter Property="Opacity"
+                            Value="0.6" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -104,7 +106,7 @@
                             <Control Margin="4"
                                      Width="{TemplateBinding Width}"
                                      Height="{TemplateBinding Height}"
-                                     Template="{DynamicResource YellowVirusShape}" />
+                                     Template="{StaticResource YellowVirusShape}" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -123,7 +125,9 @@
                 <Trigger Property="IsEnabled"
                          Value="False">
                     <Setter Property="Background"
-                            Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                            Value="{StaticResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                    <Setter Property="Opacity"
+                            Value="0.6" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -159,7 +163,7 @@
                             <Control Margin="4"
                                      Width="{TemplateBinding Width}"
                                      Height="{TemplateBinding Height}"
-                                     Template="{DynamicResource YellowVirusShape}" />
+                                     Template="{StaticResource YellowVirusShape}" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -178,7 +182,9 @@
                 <Trigger Property="IsEnabled"
                          Value="False">
                     <Setter Property="Background"
-                            Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                            Value="{StaticResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                    <Setter Property="Opacity"
+                            Value="0.6" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -214,7 +220,7 @@
                             <Control Margin="4"
                                      Width="{TemplateBinding Width}"
                                      Height="{TemplateBinding Height}"
-                                     Template="{DynamicResource YellowVirusShape}" />
+                                     Template="{StaticResource YellowVirusShape}" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -233,7 +239,9 @@
                 <Trigger Property="IsEnabled"
                          Value="False">
                     <Setter Property="Background"
-                            Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                            Value="{StaticResource {x:Static SystemColors.ControlDarkBrushKey}}" />
+                    <Setter Property="Opacity"
+                            Value="0.6" />
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -285,13 +293,11 @@
     <Grid x:Name="MainGrid"
           DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MapCityControl}}}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="12*" />
-            <RowDefinition Height="13*" />
-            <RowDefinition Height="6*" />
-            <RowDefinition Height="7*" />
-            <RowDefinition Height="4*" />
-            <RowDefinition Height="9*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="3*" />
+            <RowDefinition />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="3*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -299,59 +305,66 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <Label Content="{Binding CityName, FallbackValue=No city}"
+               Grid.Row="4"
+               Foreground="White"
+               Padding="0"
+               FontSize="9"
+               FontWeight="DemiBold"
+               HorizontalContentAlignment="Center"
+               Grid.ColumnSpan="4"
+               VerticalContentAlignment="Stretch">
+            <Label.Effect>
+                <DropShadowEffect Opacity="0.9"
+                                  ShadowDepth="2"
+                                  Direction="320"
+                                  BlurRadius="1" />
+            </Label.Effect>
+        </Label>
         <Button x:Name="CityButton"
                 Grid.Column="1"
                 Grid.Row="1"
-                Click="Button_Click"
                 Style="{StaticResource CityStyle}"
                 Grid.RowSpan="3"
-                Grid.ColumnSpan="2" />
-        <Viewbox Grid.Row="5"
-                 Grid.ColumnSpan="4"
-                 VerticalAlignment="Bottom"
-                 Height="9">
-            <Label Content="{Binding CityName, FallbackValue=No city}"
-                   Foreground="White"
-                   Padding="0"
-                   HorizontalContentAlignment="Center">
-                <Label.Effect>
-                    <DropShadowEffect Opacity="0.8"
-                                      ShadowDepth="2.5"
-                                      Direction="320" />
-                </Label.Effect>
-            </Label>
-        </Viewbox>
-
+                Grid.ColumnSpan="2"
+                Click="Button_Click"
+                MouseDoubleClick="CityButton_MouseDoubleClick" />
         <Label Content="{Binding YellowInfection}"
                Visibility="{Binding YellowInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
-               Background="Yellow" />
+               Background="Yellow"
+               FontWeight="Bold" />
         <Label Content="{Binding RedInfection}"
                Background="Red"
                Visibility="{Binding RedInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
-               Grid.Column="1" />
+               Grid.Column="1"
+               FontWeight="DemiBold" />
         <Label Content="{Binding BlueInfection}"
                Visibility="{Binding BlueInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
                Background="Blue"
                Grid.Column="2"
-               Foreground="White" />
+               Foreground="White"
+               FontWeight="DemiBold" />
         <Label Content="{Binding BlackInfection}"
                Visibility="{Binding BlackInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
                Background="Black"
                Grid.Column="3"
-               Foreground="White" />
+               Foreground="White"
+               FontWeight="DemiBold" />
         <Polygon Points="0,5 10,0 20,5 20,10 0,10"
                  Stretch="Uniform"
                  Stroke="#FFBDBD92"
                  StrokeThickness="0.7"
                  Fill="#FFF4F4F5"
                  Grid.Row="3"
-                 Grid.RowSpan="2"
-                 Grid.Column="1"
                  Grid.ColumnSpan="2"
-                 Visibility="{Binding HasResearchStation, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}" />
+                 Visibility="{Binding HasResearchStation, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}"
+                 Grid.Column="1"
+                 HorizontalAlignment="Center"
+                 Margin="5,0"
+                 Width="20" />
     </Grid>
 </UserControl>

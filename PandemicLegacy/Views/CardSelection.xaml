@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="PandemicLegacy.Views.CardSelection"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PandemicLegacy.Views"
+             xmlns:converters="clr-namespace:PandemicLegacy.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="100"
+             d:DesignWidth="300">
+    <UserControl.Resources>
+        <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
+    </UserControl.Resources>
+    <Grid>
+        <ItemsControl ItemsSource="{Binding Cards}"
+                      Background="Black">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button BorderBrush="{Binding City.Color, Converter={StaticResource diseaseToColor}}"
+                            BorderThickness="2"
+                            Content="{Binding City.Name, Mode=OneWay}"
+                            Foreground="White"
+                            FontSize="15"
+                            Command="{Binding DataContext.CardSelectedCommand, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CardSelection}}}"
+                            CommandParameter="{Binding}"
+                            Background="Black"
+                            Padding="7" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>                
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel IsItemsHost="True"
+                                            Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </Grid>
+</UserControl>

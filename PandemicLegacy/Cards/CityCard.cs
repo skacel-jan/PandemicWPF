@@ -13,6 +13,7 @@ namespace PandemicLegacy
         public CityCard(City city)
         {
             this.City = city;
+            Name = city.Name;
         }
 
         public override string ToString()

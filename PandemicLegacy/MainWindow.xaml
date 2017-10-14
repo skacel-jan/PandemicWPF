@@ -7,9 +7,9 @@
         xmlns:views="clr-namespace:PandemicLegacy.Views"
         mc:Ignorable="d"
         Title="Pandemic Legacy"
-        Height="934.615"
-        Width="1096.154"
-        WindowStartupLocation="CenterScreen">
+        Height="1080"
+        Width="1920"
+        WindowState="Maximized">
     <Window.DataContext>
         <viewModels:MainViewModel />
     </Window.DataContext>

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PandemicLegacy
+namespace PandemicLegacy.Cards
 {
-    public class Card
+    public class EventCard : Card
     {
-        public string Name { get; set; }
+        public Action Event { get; set; }
     }
 }

@@ -22,14 +22,23 @@ namespace PandemicLegacy.Views
     /// </summary>
     public partial class MapCityControl : UserControl
     {
-        public ICommand Command
+        public ICommand ClickCommand
         {
-            get { return (ICommand)GetValue(CommandProperty); }
-            set { SetValue(CommandProperty, value); }
+            get { return (ICommand)GetValue(ClickCommandProperty); }
+            set { SetValue(ClickCommandProperty, value); }
         }
 
-        public static readonly DependencyProperty CommandProperty =
-            DependencyProperty.Register(nameof(Command), typeof(ICommand), typeof(MapCityControl), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty ClickCommandProperty =
+    DependencyProperty.Register(nameof(ClickCommand), typeof(ICommand), typeof(MapCityControl), new UIPropertyMetadata(null));
+
+        public ICommand DoubleClickCommand
+        {
+            get { return (ICommand)GetValue(DoubleClickCommandProperty); }
+            set { SetValue(DoubleClickCommandProperty, value); }
+        }
+
+        public static readonly DependencyProperty DoubleClickCommandProperty =
+            DependencyProperty.Register(nameof(DoubleClickCommand), typeof(ICommand), typeof(MapCityControl), new UIPropertyMetadata(null));
 
         public string CityName
         {
@@ -141,22 +150,30 @@ namespace PandemicLegacy.Views
 
         private void LayoutItemsInGrid()
         {
-            int column = 0;
+            int margin = 0;
+            int zindex = Pawns.Count;
             foreach (var pawn in Pawns)
             {
                 Ellipse ellipse = new Ellipse()
                 {
-                    Fill = new SolidColorBrush() { Color = pawn.Color, Opacity = 0.8 },
-                    IsHitTestVisible = false
+                    Fill = new SolidColorBrush() { Color = pawn.Color, Opacity = 0.9 },
+                    IsHitTestVisible = false,
+                    Width = 10,
+                    HorizontalAlignment = HorizontalAlignment.Left
                 };
 
-                Grid.SetColumn(ellipse, column++);
+                Grid.SetColumn(ellipse, 1);
                 Grid.SetRow(ellipse, 1);
                 Grid.SetRowSpan(ellipse, 3);
+                Grid.SetColumnSpan(ellipse, 2);
+                Panel.SetZIndex(ellipse, zindex--);
+                ellipse.Margin = new Thickness(margin, 2, 0, 2);
 
                 ellipses.Add(ellipse);
 
                 MainGrid.Children.Add(ellipse);
+
+                margin += 4;;
             }
         }
 
@@ -168,7 +185,13 @@ namespace PandemicLegacy.Views
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Command?.Execute(null);
+            ClickCommand?.Execute(null);
         }
+
+        private void CityButton_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DoubleClickCommand?.Execute(null);
+            e.Handled = true;
+        }       
     }
 }

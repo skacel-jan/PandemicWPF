@@ -75,13 +75,18 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Board.cs" />
+    <Compile Include="Cards\EventCard.cs" />
     <Compile Include="Characters\Scientist.cs" />
     <Compile Include="Converters\InfectionToVisibilityConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\CardsSelectionViewModel.cs" />
+    <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
+    <Compile Include="ViewModels\DiseaseTemplateSelector.cs" />
     <Compile Include="ViewModels\GameViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
     <Compile Include="Views\BoardView.xaml.cs">
       <DependentUpon>BoardView.xaml</DependentUpon>
     </Compile>
@@ -99,8 +104,21 @@
     <Compile Include="ThreadSafeRandom.cs" />
     <Compile Include="Converters\DiseaseToColorConverter.cs" />
     <Compile Include="Converters\HeightToFontSizeConverter.cs" />
+    <Compile Include="Views\CardSelection.xaml.cs">
+      <DependentUpon>CardSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DiseaseSelection.xaml.cs">
+      <DependentUpon>DiseaseSelection.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MapCityControl.xaml.cs">
       <DependentUpon>MapCityControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\TextViewModel.cs" />
+    <Compile Include="Views\MoveSelection.xaml.cs">
+      <DependentUpon>MoveSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WorldMap.xaml.cs">
+      <DependentUpon>WorldMap.xaml</DependentUpon>
     </Compile>
     <Compile Include="WorldMap.cs" />
     <Compile Include="WorldMapFactory.cs" />
@@ -124,7 +142,23 @@
     <Compile Include="City.cs" />
     <Compile Include="Decks\Deck.cs" />
     <Compile Include="Cards\InfectionCard.cs" />
+    <Page Include="Views\CardSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DiseaseSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MapCityControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MoveSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WorldMap.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -158,7 +192,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\pandemicMap.jpg" />
+    <SplashScreen Include="Resources\pandemicMap.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Virus.png" />

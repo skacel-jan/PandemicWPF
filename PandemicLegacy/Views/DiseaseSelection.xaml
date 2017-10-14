@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="PandemicLegacy.Views.DiseaseSelection"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PandemicLegacy.Views"
+             xmlns:converters="clr-namespace:PandemicLegacy.Converters"
+             xmlns:viewModels="clr-namespace:PandemicLegacy.ViewModels"
+             mc:Ignorable="d"
+             d:DesignWidth="300"
+             d:DesignHeight="100">
+    <UserControl.Resources>
+        <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
+        <viewModels:DiseaseTemplateSelector x:Key="DiseaseDataTemplateSelector" />
+
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="BorderThickness"
+                    Value="2" />
+            <Setter Property="Background"
+                    Value="{Binding Converter={StaticResource diseaseToColor}}" />
+            <Setter Property="Width"
+                    Value="80" />
+            <Setter Property="Height"
+                    Value="80" />
+            <Setter Property="Command"
+                    Value="{Binding DataContext.DiseaseSelectedCommand, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:DiseaseSelection}}}" />
+            <Setter Property="CommandParameter"
+                    Value="{Binding}" />
+        </Style>
+
+        <DataTemplate x:Key="YellowDisease">
+            <Button>
+                <Control Margin="4"
+                         Width="{TemplateBinding Width}"
+                         Height="{TemplateBinding Height}"
+                         Template="{StaticResource YellowVirusShape}" />
+            </Button>
+        </DataTemplate>
+
+        <DataTemplate x:Key="BlackDisease">
+            <Button>
+                <Control Margin="4"
+                         Width="{TemplateBinding Width}"
+                         Height="{TemplateBinding Height}"
+                         Template="{StaticResource YellowVirusShape}" />
+            </Button>
+        </DataTemplate>
+
+        <DataTemplate x:Key="BlueDisease">
+            <Button>
+                <Control Margin="4"
+                         Width="{TemplateBinding Width}"
+                         Height="{TemplateBinding Height}"
+                         Template="{StaticResource YellowVirusShape}" />
+            </Button>
+        </DataTemplate>
+
+        <DataTemplate x:Key="RedDisease">
+            <Button>
+                <Control Margin="4"
+                         Width="{TemplateBinding Width}"
+                         Height="{TemplateBinding Height}"
+                         Template="{StaticResource YellowVirusShape}" />
+            </Button>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <ItemsControl ItemsSource="{Binding Diseases}"
+                      Background="Black"
+                      HorizontalAlignment="Center"
+                      ItemTemplateSelector="{StaticResource DiseaseDataTemplateSelector}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel IsItemsHost="True"
+                                            Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </Grid>
+</UserControl>
