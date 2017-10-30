@@ -35,7 +35,7 @@
         </Viewbox>
     </ControlTemplate>
 
-    <Style x:Key="InfectionMarker"
+    <Style x:Key="InfectionMarkerStyle"
            TargetType="{x:Type Ellipse}">
         <Setter Property="Fill"
                 Value="Green"></Setter>
@@ -45,7 +45,7 @@
                 Value="1"></Setter>
     </Style>
 
-    <Style x:Key="OutbreakTrackerCell"
+    <Style x:Key="OutbreakTrackerCellStyle"
            TargetType="{x:Type ContentControl}">
         <Setter Property="Height"
                 Value="36" />
@@ -88,9 +88,9 @@
         <Setter Property="VerticalContentAlignment"
                 Value="Center" />
         <Setter Property="Padding"
-                Value="5" />
+                Value="0" />
         <Setter Property="FontSize"
-                Value="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}, Converter={StaticResource heightToFontSize}, ConverterParameter=0.4}" />
+                Value="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}, Converter={StaticResource heightToFontSize}, ConverterParameter=0.6}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">

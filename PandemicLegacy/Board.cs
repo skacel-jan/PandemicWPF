@@ -1,4 +1,5 @@
-﻿using PandemicLegacy.Decks;
+﻿using GalaSoft.MvvmLight;
+using PandemicLegacy.Decks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PandemicLegacy
 {
-    public class Board
+    public class Board : ObservableObject
     {
         public int InfectionRate { get; private set; }
         public int InfectionPosition { get; private set; }
@@ -17,6 +18,21 @@ namespace PandemicLegacy
         public PlayerDeck PlayerDeck { get; private set; }
         public PlayerDeck PlayerDiscardPile { get; private set; }
         public WorldMap WorldMap { get; private set; }
+
+        private int _blueCubesPile;
+        public int BlueCubesPile { get => _blueCubesPile; private set { Set(ref _blueCubesPile, value); } }
+
+        private int _blackCubesPile;
+        public int BlackCubesPile { get => _blackCubesPile; private set { Set(ref _blackCubesPile, value); } }
+
+        private int _redCubesPile;
+        public int YellowCubesPile { get => _redCubesPile; private set { Set(ref _redCubesPile, value); } }
+
+        private int _yellowCubesPile;
+        public int RedCubesPile { get => _yellowCubesPile; private set { Set(ref _yellowCubesPile, value); } }
+
+        private int _researchStationPile;
+        public int ResearchStationsPile { get => _researchStationPile; private set { Set(ref _researchStationPile, value); } }
 
         public Board(WorldMap map, InfectionDeck infectionDeck, PlayerDeck playerDeck)
         {
@@ -30,9 +46,16 @@ namespace PandemicLegacy
 
             InfectionDiscardPile = new InfectionDeck(new List<InfectionCard>());
             PlayerDiscardPile = new PlayerDeck(new List<PlayerCard>());
+
+            BlueCubesPile = 24;
+            BlackCubesPile = 24;
+            YellowCubesPile = 24;
+            RedCubesPile = 24;
+
+            ResearchStationsPile = 6;
         }
 
-        public void RaiseInfection()
+        public void RaiseInfectionPosition()
         {
             InfectionPosition++;
             if (InfectionPosition == 3 || InfectionPosition == 5)
@@ -41,22 +64,11 @@ namespace PandemicLegacy
             }
         }
 
-        public PlayerCard DrawPlayerCard()
-        {            
-            Card card = PlayerDeck.First();
-            if (card is PlayerCard playerCard)
-            {
-                PlayerDeck.Remove(card);
-                return playerCard;
-            }
-            else if (card is EpidemicCard epidemicCard)
-            {
-                return null;
-            }
-            else
-            {
-                return null;
-            }
+        public Card DrawPlayerCard()
+        {
+            Card card = PlayerDeck.FirstOrDefault();
+            PlayerDeck.Remove(card);
+            return card;
         }
 
         public InfectionCard DrawInfectionCard()
@@ -67,12 +79,105 @@ namespace PandemicLegacy
             return card;
         }
 
-        internal InfectionCard DrawInfectionBottomCard()
+        public InfectionCard DrawInfectionBottomCard()
         {
             InfectionCard card = InfectionDeck.Last();
             InfectionDiscardPile.Add(card);
             InfectionDeck.Remove(card);
             return card;
+        }
+
+        public bool RaiseInfection(City city)
+        {
+            switch (city.Color)
+            {
+                case DiseaseColor.Black:
+                    BlackCubesPile--;
+                    break;
+                case DiseaseColor.Blue:
+                    BlueCubesPile--;
+                    break;
+                case DiseaseColor.Red:
+                    RedCubesPile--;
+                    break;
+                case DiseaseColor.Yellow:
+                    YellowCubesPile--;
+                    break;
+            }
+            return WorldMap.GetCity(city.Name).RaiseInfection(city.Color);
+        }
+
+        public void BuildResearchStation(MapCity mapCity)
+        {
+            mapCity.HasResearchStation = true;
+            ResearchStationsPile--;
+        }
+
+        public void BuildResearchStation(MapCity mapCity, PlayerCard card)
+        {
+            BuildResearchStation(mapCity);
+            PlayerDiscardPile.Add(card);
+        }
+
+        public void DestroyResearchStation(MapCity mapCity)
+        {
+            mapCity.HasResearchStation = false;
+            ResearchStationsPile++;
+        }
+
+        public bool CheckCubesPile(DiseaseColor color)
+        {
+            switch (color)
+            {
+                case DiseaseColor.Black:
+                    return BlackCubesPile == 0;
+                case DiseaseColor.Blue:
+                    return BlueCubesPile == 0;
+                case DiseaseColor.Red:
+                    return RedCubesPile == 0;
+                case DiseaseColor.Yellow:
+                    return YellowCubesPile == 0;
+                default:
+                    return false;
+            }
+        }
+
+        public void IncreaseCubePile(DiseaseColor color, int cubesCount)
+        {
+            switch (color)
+            {
+                case DiseaseColor.Black:
+                    BlackCubesPile += cubesCount;
+                    break;
+                case DiseaseColor.Blue:
+                    BlueCubesPile += cubesCount;
+                    break;
+                case DiseaseColor.Red:
+                    RedCubesPile += cubesCount;
+                    break;
+                case DiseaseColor.Yellow:
+                    YellowCubesPile += cubesCount;
+                    break;
+            }
+        }
+
+        public void DecreaseCubePile(DiseaseColor color, int cubesCount)
+        {
+            switch (color)
+            {
+                case DiseaseColor.Black:
+                    BlackCubesPile -= cubesCount;
+                    break;
+                case DiseaseColor.Blue:
+                    BlueCubesPile -= cubesCount;
+                    break;
+                case DiseaseColor.Red:
+                    RedCubesPile -= cubesCount;
+                    break;
+                case DiseaseColor.Yellow:
+                    YellowCubesPile -= cubesCount;
+                    break;
+            }
         }
     }
 }

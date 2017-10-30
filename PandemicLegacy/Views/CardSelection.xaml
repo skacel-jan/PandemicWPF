@@ -7,7 +7,8 @@
              xmlns:converters="clr-namespace:PandemicLegacy.Converters"
              mc:Ignorable="d"
              d:DesignHeight="100"
-             d:DesignWidth="300">
+             d:DesignWidth="300"
+             x:Name="root">
     <UserControl.Resources>
         <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
     </UserControl.Resources>
@@ -16,12 +17,12 @@
                       Background="Black">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button BorderBrush="{Binding City.Color, Converter={StaticResource diseaseToColor}}"
+                    <ToggleButton BorderBrush="{Binding City.Color, Converter={StaticResource diseaseToColor}}"
                             BorderThickness="2"
                             Content="{Binding City.Name, Mode=OneWay}"
                             Foreground="White"
                             FontSize="15"
-                            Command="{Binding DataContext.CardSelectedCommand, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:CardSelection}}}"
+                            Command="{Binding DataContext.CardSelectedCommand, Mode=OneWay, ElementName=root}"
                             CommandParameter="{Binding}"
                             Background="Black"
                             Padding="7" />

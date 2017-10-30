@@ -22,15 +22,36 @@ namespace PandemicLegacy
             }
         }
 
+        private DiseaseColor _mostCardsColor;
+        public DiseaseColor MostCardsColor
+        {
+            get => _mostCardsColor;
+        }
+
         public Player()
         {
             Cards = new ObservableCollection<PlayerCard>();
+            Cards.CollectionChanged += Cards_CollectionChanged;
+        }
+
+        private void Cards_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (Cards.Count > 0)
+                _mostCardsColor =  Cards.GroupBy(x => x.City.Color).OrderByDescending(gb => gb.Count()).Select(y => y.Key).First();
+            else
+                _mostCardsColor = DiseaseColor.Black;
         }
 
         public PlayerCard RemoveCard(PlayerCard card)
         {
             this.Cards.Remove(card);
             return card;
+        }
+
+        public PlayerCard RemoveCard(City city)
+        {
+            var card = Cards.Single(c => c.City == city);
+            return RemoveCard(card);
         }
 
         public void AddCard(PlayerCard card)
@@ -46,11 +67,6 @@ namespace PandemicLegacy
         public bool HasCityCard(City city)
         {
             return Cards.Any(card => card.City == city);
-        }
-
-        public PlayerCard RemoveCardWithCity(City city)
-        {
-            return RemoveCard(Cards.Single(c => c.City == city));
         }
     }
 }

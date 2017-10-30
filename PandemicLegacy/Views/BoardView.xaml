@@ -4,12 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:PandemicLegacy.Converters"
              xmlns:local="clr-namespace:PandemicLegacy.Views"
+             xmlns:helpers="clr-namespace:PandemicLegacy.Helpers"
              xmlns:viewModels="clr-namespace:PandemicLegacy.ViewModels"
              x:Class="PandemicLegacy.Views.BoardView"
              TextOptions.TextFormattingMode="Display"
              mc:Ignorable="d"
              d:DesignHeight="800"
-             d:DesignWidth="1400">
+             d:DesignWidth="1400"
+             x:Name="BoardViewName">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
@@ -19,7 +21,11 @@
             <local:DiseaseSelection />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type viewModels:CardsSelectionViewModel}">
+        <DataTemplate DataType="{x:Type viewModels:CardSelectionViewModel}">
+            <local:CardSelection />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type viewModels:MultiCardsSelectionViewModel}">
             <local:CardSelection />
         </DataTemplate>
 
@@ -41,10 +47,12 @@
                     Value="60" />
             <Setter Property="Width"
                     Value="60" />
-            <Setter Property="ClickCommand"
+            <Setter Property="helpers:MultiClickBehavior.SingleClickCommand"
                     Value="{Binding CityCommand}" />
-            <Setter Property="DoubleClickCommand"
-                    Value="{Binding DataContext.MoveActionCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:BoardView}}}" />
+            <Setter Property="helpers:MultiClickBehavior.DoubleClickCommand"
+                    Value="{Binding DataContext.InstantMoveCommand, ElementName=BoardViewName}" />
+            <Setter Property="helpers:MultiClickBehavior.DoubleClickCommandParameter"
+                    Value="{Binding }" />
             <Setter Property="YellowInfection"
                     Value="{Binding YellowInfection}" />
             <Setter Property="RedInfection"
@@ -75,6 +83,29 @@
             <Setter Property="Effect"
                     Value="{StaticResource LineBlur}" />
         </Style>
+
+        <Style TargetType="{x:Type Border}"
+               x:Key="PileBorder">
+            <Setter Property="BorderThickness"
+                    Value="3" />
+            <Setter Property="Margin"
+                    Value="1" />
+        </Style>
+        
+        <Style TargetType="{x:Type Label}"
+               x:Key="PileLabel">
+            <Setter Property="Foreground"
+                    Value="White" />
+            <Setter Property="FontSize"
+                    Value="17" />
+            <Setter Property="Padding"
+                    Value="0" />
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Center" />
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center" />
+        </Style>
+
     </UserControl.Resources>
     <Grid Background="Black">
         <Grid.RowDefinitions>
@@ -83,20 +114,14 @@
             <RowDefinition Height="33*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Label Content="{Binding CurrentCharacter.MapCity}"
-               VerticalAlignment="Bottom"
-               HorizontalAlignment="Center"
-               FontSize="12"
-               Foreground="White"
-               Grid.Row="3" />
         <!--<Viewbox Stretch="Uniform"
                  Grid.Row="0">
             <Image Source="/PandemicLegacy;component/Resources/pandemicMap.jpg" />
         </Viewbox>-->
-        <local:WorldMap/>
-        
+        <local:WorldMap Grid.Row="0" />
+
         <Viewbox Grid.Row="0"
-                 Stretch="Uniform" >
+                 Stretch="Uniform">
             <Canvas Width="1400"
                     Height="700">
                 <Line X1="654"
@@ -393,56 +418,6 @@
                                       CityColor="Blue" />
             </Canvas>
         </Viewbox>
-        <Grid Grid.Row="2"
-              HorizontalAlignment="Center"
-              Grid.IsSharedSizeScope="True">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition SharedSizeGroup="A" />
-                <ColumnDefinition SharedSizeGroup="A" />
-                <ColumnDefinition SharedSizeGroup="A" />
-                <ColumnDefinition SharedSizeGroup="A" />
-                <ColumnDefinition SharedSizeGroup="A" />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0"
-                    Style="{StaticResource ActionButtonStyle}"
-                    Content="Move"
-                    Command="{Binding MoveActionCommand}" />
-            <Button Grid.Column="1"
-                    Content="Treat"
-                    Style="{StaticResource ActionButtonStyle}"
-                    Command="{Binding TreatActionCommand}" />
-            <Button Grid.Column="2"
-                    Content="Share"
-                    Style="{StaticResource ActionButtonStyle}" />
-            <Button Grid.Column="3"
-                    Content="Build"
-                    Style="{StaticResource ActionButtonStyle}"
-                    Command="{Binding BuildActionCommand}" />
-            <Button Grid.Column="4"
-                    Content="Find"
-                    Style="{StaticResource ActionButtonStyle}"
-                    Command="{Binding DiscoverCureActionCommand}" />
-            <Button Content="Cancel"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Width="53"
-                    Margin="-122,0,0,0"
-                    Height="36"
-                    Background="Black"
-                    Foreground="Red"
-                    Command="{Binding CancelCommand}"
-                    RenderTransformOrigin="-5.83,-0.056" />
-            <Button Content="Generate"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Width="53"
-                    Margin="93,0,-95,0"
-                    Height="36"
-                    Background="Black"
-                    Foreground="Red"
-                    Command="{Binding GenerateCommand}"
-                    Grid.Column="4" />
-        </Grid>
         <ItemsControl Grid.Row="1"
                       ItemsSource="{Binding CurrentCharacter.Player.Cards}"
                       Background="Black"
@@ -473,6 +448,180 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
+        <Grid  Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid HorizontalAlignment="Center"
+                  Grid.Column="0"
+                  Width="144">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="14*" />
+                    <RowDefinition Height="17*" />
+                </Grid.RowDefinitions>
+                <Label Grid.ColumnSpan="4"
+                       Content="Cure markers"
+                       Style="{StaticResource PileLabel}" />
+                <Border Grid.Row="1"
+                        BorderBrush="DarkGray">
+                    <Border.Style>
+                        <Style TargetType="{x:Type Border}" BasedOn="{StaticResource PileBorder}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Diseases.Black.IsCured}"
+                                             Value="True">
+                                    <Setter Property="Background"
+                                            Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+                <Border Grid.Row="1"
+                        Grid.Column="1"
+                        BorderBrush="Blue">
+                    <Border.Style>
+                        <Style TargetType="{x:Type Border}"
+                               BasedOn="{StaticResource PileBorder}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Diseases.Blue.IsCured}"
+                                             Value="True">
+                                    <Setter Property="Background"
+                                            Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+                <Border Grid.Row="1"
+                        Grid.Column="2"
+                        BorderBrush="Red">
+                    <Border.Style>
+                        <Style TargetType="{x:Type Border}"
+                               BasedOn="{StaticResource PileBorder}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Diseases.Red.IsCured}"
+                                             Value="True">
+                                    <Setter Property="Background"
+                                            Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+                <Border Grid.Row="1"
+                        Grid.Column="3"
+                        BorderBrush="Yellow">
+                    <Border.Style>
+                        <Style TargetType="{x:Type Border}"
+                               BasedOn="{StaticResource PileBorder}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Diseases.Yellow.IsCured}"
+                                             Value="True">
+                                    <Setter Property="Background"
+                                            Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                </Border>
+            </Grid>
+            <Button Content="Next turn"
+                    Background="Black"
+                    Foreground="Red"
+                    Command="{Binding GenerateCommand}"
+                    Grid.Column="0"
+                    HorizontalAlignment="Right"
+                    Width="83" />
+            <Button Content="Cancel"
+                    Grid.Column="2"
+                    Background="Black"
+                    Foreground="Red"
+                    Command="{Binding CancelCommand}"
+                    HorizontalAlignment="Left"
+                    Width="90" />
+            <Grid Grid.Column="1"
+                  HorizontalAlignment="Center"
+                  Grid.IsSharedSizeScope="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="A" />
+                    <ColumnDefinition SharedSizeGroup="A" />
+                    <ColumnDefinition SharedSizeGroup="A" />
+                    <ColumnDefinition SharedSizeGroup="A" />
+                    <ColumnDefinition SharedSizeGroup="A" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Content="Move"
+                        Command="{Binding MoveActionCommand}" />
+                <Button Grid.Column="1"
+                        Content="Treat"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Command="{Binding TreatActionCommand}" />
+                <Button Grid.Column="2"
+                        Content="Share"
+                        Style="{StaticResource ActionButtonStyle}" />
+                <Button Grid.Column="3"
+                        Content="Build"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Command="{Binding BuildActionCommand}" />
+                <Button Grid.Column="4"
+                        Content="Find"
+                        Style="{StaticResource ActionButtonStyle}"
+                        Command="{Binding DiscoverCureActionCommand}" />
+            </Grid>
+            <Grid HorizontalAlignment="Center"
+                  Grid.Column="2"
+                  Width="144">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="14*" />
+                    <RowDefinition Height="17*" />
+                </Grid.RowDefinitions>
+                <Label Grid.ColumnSpan="4"
+                       Content="Cube piles"
+                       Style="{StaticResource PileLabel}" />
+                <Border Grid.Row="1"
+                        BorderBrush="DarkGray"
+                        Style="{StaticResource PileBorder}">
+                    <Label Content="{Binding Board.BlackCubesPile}"
+                           Style="{StaticResource PileLabel}" />
+                </Border>
+                <Border Grid.Row="1"
+                        Grid.Column="1"
+                        BorderBrush="Blue"
+                        Style="{StaticResource PileBorder}">
+                    <Label Content="{Binding Board.BlueCubesPile}"
+                           Style="{StaticResource PileLabel}" />
+                </Border>
+                <Border Grid.Row="1"
+                        Grid.Column="2"
+                        BorderBrush="Red"
+                        Style="{StaticResource PileBorder}">
+                    <Label Content="{Binding Board.RedCubesPile}"
+                           Style="{StaticResource PileLabel}" />
+                </Border>
+                <Border Grid.Row="1"
+                        Grid.Column="3"
+                        BorderBrush="Yellow"
+                        Style="{StaticResource PileBorder}">
+                    <Label Content="{Binding Board.YellowCubesPile}"
+                           Style="{StaticResource PileLabel}" />
+                </Border>
+            </Grid>
+        </Grid>
         <Grid Visibility="{Binding IsInfoVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -494,5 +643,10 @@
                                 HorizontalContentAlignment="Stretch" />
             </Border>
         </Grid>
+        <Label Content="{Binding CurrentCharacter.CurrentMapCity, FallbackValue=Atlanta}"
+               VerticalAlignment="Bottom"
+               HorizontalAlignment="Center"
+               FontSize="12"
+               Grid.Row="4" />
     </Grid>
 </UserControl>

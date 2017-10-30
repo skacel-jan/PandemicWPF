@@ -9,7 +9,7 @@
         Title="Pandemic Legacy"
         Height="1080"
         Width="1920"
-        WindowState="Maximized">
+        WindowState="Maximized" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Grayscale">
     <Window.DataContext>
         <viewModels:MainViewModel />
     </Window.DataContext>

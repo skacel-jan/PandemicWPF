@@ -12,6 +12,9 @@ namespace PandemicLegacy
         private const int STANDARD_ACTIONS_COUNT = 4;
         private const int STANDARD_CARDS_FOR_CURE = 5;
 
+        public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
+        public virtual int CardsForCure { get => STANDARD_CARDS_FOR_CURE; } 
+
         private Player _player;
         public Player Player
         {
@@ -22,28 +25,26 @@ namespace PandemicLegacy
             }
         }
 
-        private MapCity _mapCity;
-        public MapCity MapCity
+        private MapCity _currentMapCity;
+        public MapCity CurrentMapCity
         {
-            get { return _mapCity; }
+            get { return _currentMapCity; }
             set
             {
-                _mapCity?.Pawns.Remove(Player.Pawn);
-                Set(ref _mapCity, value);
-                _mapCity.Pawns.Add(Player.Pawn);
+                _currentMapCity?.Pawns.Remove(Player.Pawn);
+                Set(ref _currentMapCity, value);
+                _currentMapCity.Pawns.Add(Player.Pawn);
             }
         }
 
-        public virtual int ActionsCount { get { return STANDARD_ACTIONS_COUNT; } }
-
         public virtual bool CanDriveOrFerry(MapCity toCity)
         {
-            return MapCity.IsCityConnected(toCity);
+            return CurrentMapCity.IsCityConnected(toCity);
         }
 
         public virtual void DriveOrFerry(MapCity toCity)
         {
-            MapCity = toCity;
+            CurrentMapCity = toCity;
         }
 
         public virtual bool CanDirectFlight(MapCity toCity)
@@ -51,10 +52,10 @@ namespace PandemicLegacy
             return Player.HasCityCard(toCity.City);
         }
 
-        public virtual void DirectFlight(MapCity toCity)
+        public virtual PlayerCard DirectFlight(MapCity toCity)
         {
-            MapCity = toCity;
-            Player.RemoveCardWithCity(toCity.City);
+            CurrentMapCity = toCity;
+            return Player.RemoveCard(toCity.City);
         }
 
         public virtual bool CanCharterFlight()
@@ -62,57 +63,58 @@ namespace PandemicLegacy
             return HasCardOfCurrentCity();
         }
 
-        public virtual void CharterFlight(MapCity toCity)
+        public virtual PlayerCard CharterFlight(MapCity toCity)
         {
-            Player.RemoveCardWithCity(MapCity.City);
-            MapCity = toCity;
+            var card = Player.RemoveCard(CurrentMapCity.City);
+            CurrentMapCity = toCity;
+            return card;
         }
 
         public virtual bool CanShuttleFlight(MapCity toCity)
         {
-            return MapCity.HasResearchStation && toCity.HasResearchStation;
+            return CurrentMapCity.HasResearchStation && toCity.HasResearchStation;
         }
 
         public virtual void ShuttleFlight(MapCity toCity)
         {
-            MapCity = toCity;
+            CurrentMapCity = toCity;
         }
 
         public virtual bool CanBuildResearchStation()
         {
-            return HasCardOfCurrentCity() && !MapCity.HasResearchStation;
+            return HasCardOfCurrentCity() && !CurrentMapCity.HasResearchStation;
         }
 
-        public virtual void BuildResearhStation()
+        public virtual PlayerCard BuildResearhStation()
         {
-            MapCity.HasResearchStation = true;
-            Player.RemoveCardWithCity(MapCity.City);
+            CurrentMapCity.HasResearchStation = true;
+            return Player.RemoveCard(CurrentMapCity.City);
         }
 
         internal bool CanTreatDisease()
         {
-            return MapCity.BlackInfection > 0 || MapCity.BlueInfection > 0 || MapCity.RedInfection > 0 || MapCity.YellowInfection > 0;
+            return CurrentMapCity.BlackInfection > 0 || CurrentMapCity.BlueInfection > 0 || CurrentMapCity.RedInfection > 0 || CurrentMapCity.YellowInfection > 0;
         }
 
-        public virtual void TreatDisease(Disease disease)
+        public virtual int TreatDisease(Disease disease)
         {
-            MapCity.ChangeInfection(disease.Color, -1);
+            CurrentMapCity.ChangeInfection(disease.Color, -1);
+            return 1;
         }
 
         public virtual bool CanDiscoverCure(Disease disease)
         {
-            return MapCity.HasResearchStation && Player.SameColorCards(disease) >= STANDARD_CARDS_FOR_CURE;
+            return CurrentMapCity.HasResearchStation && Player.SameColorCards(disease) >= CardsForCure;
         }
 
         public virtual void DiscoverCure(Disease disease)
         {
-
-            disease.KnownCure = true;
+            disease.IsCured = true;
         }
 
         public virtual bool CanShareKnowledge(PlayerCard card, Character character)
         {
-            return MapCity == character.MapCity && MapCity.City == card.City;
+            return CurrentMapCity == character.CurrentMapCity && CurrentMapCity.City == card.City;
         }
 
         public virtual void ShareKnowledgeGive(PlayerCard card, Character character)
@@ -131,7 +133,7 @@ namespace PandemicLegacy
 
         protected virtual bool HasCardOfCurrentCity()
         {
-            return Player.HasCityCard(MapCity.City);
+            return Player.HasCityCard(CurrentMapCity.City);
         }
     }
 }

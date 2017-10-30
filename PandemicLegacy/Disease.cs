@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,30 +15,36 @@ namespace PandemicLegacy
         Yellow
     }
 
-    public class Disease
+    public class Disease : ObservableObject
     {
         public DiseaseColor Color { get; private set; }
 
-        public bool IsEradicated { get; set; }
+        private bool _isEradicated;
+        public bool IsEradicated { get => _isEradicated; set => Set(ref _isEradicated, value); }
 
-        public bool KnownCure { get; set; }
+        private bool _isCured;
+        public bool IsCured { get => _isCured; set => Set(ref _isCured, value); }
 
         public Disease(DiseaseColor color)
         {
             this.Color = color;
         }
+    }
 
-        public static Dictionary<DiseaseColor, Disease> Diseases { get; private set; }
-
-        static Disease()
+    public class Diseases : Dictionary<DiseaseColor, Disease>
+    {
+        public Diseases()
         {
-            Diseases = new Dictionary<DiseaseColor, Disease>(4)
-            {
-                {DiseaseColor.Black, new Disease(DiseaseColor.Black)},
-                {DiseaseColor.Blue, new Disease(DiseaseColor.Blue)},
-                {DiseaseColor.Red, new Disease(DiseaseColor.Red)},
-                {DiseaseColor.Yellow, new Disease(DiseaseColor.Yellow)}
-            };
+            this.Add(DiseaseColor.Black, new Disease(DiseaseColor.Black));
+            this.Add(DiseaseColor.Blue, new Disease(DiseaseColor.Blue));
+            this.Add(DiseaseColor.Red, new Disease(DiseaseColor.Red));
+            this.Add(DiseaseColor.Yellow, new Disease(DiseaseColor.Yellow));
         }
+
+        public Disease Black { get => this[DiseaseColor.Black]; }
+        public Disease Blue { get => this[DiseaseColor.Blue]; }
+        public Disease Red { get => this[DiseaseColor.Red]; }
+        public Disease Yellow { get => this[DiseaseColor.Yellow]; }
+
     }
 }

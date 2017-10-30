@@ -77,16 +77,18 @@
     <Compile Include="Board.cs" />
     <Compile Include="Cards\EventCard.cs" />
     <Compile Include="Characters\Scientist.cs" />
-    <Compile Include="Converters\InfectionToVisibilityConverter.cs" />
+    <Compile Include="Helpers\Converters\InfectionToVisibilityConverter.cs" />
+    <Compile Include="Helpers\MultiClickBehavior.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\CardsSelectionViewModel.cs" />
+    <Compile Include="ViewModels\CardSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseTemplateSelector.cs" />
     <Compile Include="ViewModels\GameViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
+    <Compile Include="ViewModels\MultiCardsSelectionViewModel.cs" />
     <Compile Include="Views\BoardView.xaml.cs">
       <DependentUpon>BoardView.xaml</DependentUpon>
     </Compile>
@@ -102,8 +104,8 @@
     <Compile Include="Pawn.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="ThreadSafeRandom.cs" />
-    <Compile Include="Converters\DiseaseToColorConverter.cs" />
-    <Compile Include="Converters\HeightToFontSizeConverter.cs" />
+    <Compile Include="Helpers\Converters\DiseaseToColorConverter.cs" />
+    <Compile Include="Helpers\Converters\HeightToFontSizeConverter.cs" />
     <Compile Include="Views\CardSelection.xaml.cs">
       <DependentUpon>CardSelection.xaml</DependentUpon>
     </Compile>
@@ -200,5 +202,6 @@
   <ItemGroup>
     <Resource Include="Resources\PandemicIcon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

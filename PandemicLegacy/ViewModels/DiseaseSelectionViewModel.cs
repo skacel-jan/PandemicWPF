@@ -11,8 +11,6 @@ namespace PandemicLegacy.ViewModels
 {
     public class DiseaseSelectionViewModel : ViewModelBase
     {
-        public event EventHandler<DiseaseColor> DiseaseSelected;
-
         public ICommand DiseaseSelectedCommand { get; private set; }
 
         public IEnumerable<DiseaseColor> Diseases { get; private set; }
@@ -25,7 +23,7 @@ namespace PandemicLegacy.ViewModels
 
         protected void OnDiseaseSelected(DiseaseColor color)
         {
-            DiseaseSelected?.Invoke(this, color);
+            MessengerInstance.Send(color, "DiseaseSelection");
         }
     }
 }

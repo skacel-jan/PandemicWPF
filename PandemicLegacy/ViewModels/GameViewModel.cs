@@ -4,6 +4,7 @@ using PandemicLegacy.Characters;
 using PandemicLegacy.Decks;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -20,6 +21,7 @@ namespace PandemicLegacy.ViewModels
         public ICommand CardCommand { get; set; }
         public ICommand GenerateCommand { get; set; }
         public ICommand DiseaseSelectedCommand { get; set; }
+        public ICommand InstantMoveCommand { get; set; }
 
         public Board Board { get; private set; }
 
@@ -68,63 +70,127 @@ namespace PandemicLegacy.ViewModels
             }
         }
 
+        public bool ResearchStationDestroy { get; private set; }
+
+        public Diseases Diseases { get; private set; }
+        public MapCity SelectedCity { get; private set; }
+        public MoveType? MoveTypeSelected { get; private set; }
+
         public GameViewModel()
         {
             var mapFactory = new WorldMapFactory();
             var cities = mapFactory.GetCities();
 
+            Diseases = new Diseases();
+
             Board = new Board(mapFactory.BuildMap(), new InfectionDeck(cities), new PlayerDeck(cities));
             Board.InfectionDeck.Shuffle();
             Board.PlayerDeck.Shuffle();
 
-            DiscoverCureActionCommand = new RelayCommand(DiscoverCure, CanDiscoverCure);
+            DiscoverCureActionCommand = new RelayCommand(SelectCardsToDiscoverCure, CanDiscoverCure);
             BuildActionCommand = new RelayCommand(BuildStructure, CanBuildStructure);
             MoveActionCommand = new RelayCommand(MoveActionSelected);
             CancelCommand = new RelayCommand(Cancel);
             //CardCommand = new RelayCommand<PlayerCard>(CardSelected);
             TreatActionCommand = new RelayCommand(SelectDisease, CanTreatDisease);
-            GenerateCommand = new RelayCommand(Generate);
+            GenerateCommand = new RelayCommand(NextTurn);
+            InstantMoveCommand = new RelayCommand<MapCity>(InstantMove);
+            ShareActionCommand = new RelayCommand(() => {; });
+
+            InitialInfection();
 
             _characters = new List<Character>(4)
             {
                 new Medic()
                 {
                     Player = new Player() { Pawn = new Pawn(Colors.Brown) },
-                    MapCity = Board.WorldMap.Cities[City.Atlanta]
+                    CurrentMapCity = Board.WorldMap.Cities[City.Atlanta]
                 },
                 new Scientist()
                 {
                     Player = new Player() { Pawn = new Pawn(Colors.Green) },
-                    MapCity = Board.WorldMap.Cities[City.Atlanta]
+                    CurrentMapCity = Board.WorldMap.Cities[City.Atlanta]
                 }
             };
 
             CurrentCharacter = _characters[0];
 
-            Board.WorldMap.Cities[City.Atlanta].HasResearchStation = true;
+            Board.BuildResearchStation(Board.WorldMap.GetCity(City.Atlanta));
 
-            PlayerCard card = Board.DrawPlayerCard();
-            if (card != null)
+            foreach (var character in _characters)
             {
-                CurrentCharacter.Player.AddCard(card);
+                DrawPlayerCards(6 - _characters.Count, character);
             }
+            AddEpidemicCards();
 
-            card = Board.DrawPlayerCard();
-            if (card != null)
-            {
-                CurrentCharacter.Player.AddCard(card);
-            }
-
-            MessengerInstance.Register<MapCity>(this, "CityClicked", CityClicked);
+            MessengerInstance.Register<MapCity>(this, "CityClicked", CitySelected);
+            MessengerInstance.Register<Card>(this, "CardSelection", CardSelected);
+            MessengerInstance.Register<DiseaseColor>(this, "DiseaseSelection", TreateDisease);
+            MessengerInstance.Register<MoveType>(this, "MoveSelection", MoveSelection);
+            MessengerInstance.Register<IList<CityCard>>(this, "CardsSelection", DiscoverCure);
         }
 
-        private void Generate()
+        private void RefreshAllCommands()
         {
-            //CurrentCharacter.MapCity.BlackInfection++;
-            //CurrentCharacter.MapCity.BlueInfection++;
-            //CurrentCharacter.MapCity.RedInfection++;
-            //CurrentCharacter.MapCity.YellowInfection++;
-            DrawEpidemicCard();
+            (BuildActionCommand as RelayCommand).RaiseCanExecuteChanged();
+            (DiscoverCureActionCommand as RelayCommand).RaiseCanExecuteChanged();
+            (MoveActionCommand as RelayCommand).RaiseCanExecuteChanged();
+            (TreatActionCommand as RelayCommand).RaiseCanExecuteChanged();
+            (ShareActionCommand as RelayCommand).RaiseCanExecuteChanged();
+        }
+
+        private void InitialInfection()
+        {
+            for (int i = 3; i > 0; i--)
+            {
+                foreach (var x in Enumerable.Range(0, 3))
+                {
+                    var infectionCard = Board.DrawInfectionCard();
+                    Board.WorldMap.GetCity(infectionCard.City.Name).ChangeInfection(infectionCard.City.Color, i);
+                    Board.DecreaseCubePile(infectionCard.City.Color, i);
+                }
+            }
+        }
+
+        private void AddEpidemicCards()
+        {
+            var deckCount = Board.PlayerDeck.Count / 5;
+            var deckIncrement = Board.PlayerDeck.Count % 5;
+
+            List<Card> resultDeck = new List<Card>();
+            foreach (var i in Enumerable.Range(0, 5))
+            {
+                var count = deckCount + (deckIncrement > 0 ? 1 : 0);
+                var cards = Board.PlayerDeck.Take(count).ToList();
+                deckIncrement = deckIncrement == 0 ? 0 : deckIncrement - 1;
+                cards.Add(new EpidemicCard());
+                resultDeck.AddRange(Deck<Card>.Shuffle(cards));
+                Board.PlayerDeck.RemoveRange(0, count);
+            }
+            Board.PlayerDeck.Clear();
+            Board.PlayerDeck.AddRange(resultDeck);
+        }
+
+        private void NextTurn()
+        {
+            DrawPlayerCards(2, CurrentCharacter);
+            DrawInfectionCard();
+        }
+
+        private void DrawPlayerCards(int count, Character character)
+        {
+            foreach (var i in Enumerable.Range(0, 2))
+            {
+                Card card = Board.DrawPlayerCard();
+
+                if (card == null)
+                    InfoViewModel = new TextViewModel("Game over");
+
+                if (card is PlayerCard playerCard)
+                    character.Player.AddCard(playerCard);
+                else if (card is EpidemicCard epidemicCard)
+                    InfoViewModel = new TextViewModel("Epidemic");
+            }
         }
 
         private bool CanTreatDisease()
@@ -134,21 +200,19 @@ namespace PandemicLegacy.ViewModels
 
         private void SelectDisease()
         {
-            var list = new List<DiseaseColor>();
-            if (CurrentCharacter.MapCity.BlackInfection > 0) list.Add(DiseaseColor.Black);
-            if (CurrentCharacter.MapCity.BlueInfection > 0) list.Add(DiseaseColor.Blue);
-            if (CurrentCharacter.MapCity.RedInfection > 0) list.Add(DiseaseColor.Red);
-            if (CurrentCharacter.MapCity.YellowInfection > 0) list.Add(DiseaseColor.Yellow);
+            var diseases = new List<DiseaseColor>();
+            if (CurrentCharacter.CurrentMapCity.BlackInfection > 0) diseases.Add(DiseaseColor.Black);
+            if (CurrentCharacter.CurrentMapCity.BlueInfection > 0) diseases.Add(DiseaseColor.Blue);
+            if (CurrentCharacter.CurrentMapCity.RedInfection > 0) diseases.Add(DiseaseColor.Red);
+            if (CurrentCharacter.CurrentMapCity.YellowInfection > 0) diseases.Add(DiseaseColor.Yellow);
 
-            var diseaseSelectionVM = new DiseaseSelectionViewModel(list);
-            diseaseSelectionVM.DiseaseSelected += TreateDisease;
-
-            InfoViewModel = diseaseSelectionVM;
+            InfoViewModel = new DiseaseSelectionViewModel(diseases);
         }
 
-        private void TreateDisease(object sender, DiseaseColor color)
+        private void TreateDisease(DiseaseColor color)
         {
-            CurrentCharacter.TreatDisease(Disease.Diseases[color]);
+            var cubesCount = CurrentCharacter.TreatDisease(Diseases[color]);
+            Board.IncreaseCubePile(color, cubesCount);
             InfoViewModel = null;
             (TreatActionCommand as RelayCommand).RaiseCanExecuteChanged();
         }
@@ -166,10 +230,9 @@ namespace PandemicLegacy.ViewModels
                 {
                     city.IsEnabled = true;
                 }
-                else if (city != CurrentCharacter.MapCity)
+                else if (city != CurrentCharacter.CurrentMapCity)
                 {
-                    var enabled = CurrentCharacter.CanDriveOrFerry(city) || CurrentCharacter.CanShuttleFlight(city) || CurrentCharacter.CanDirectFlight(city);
-                    city.IsEnabled = enabled;
+                    city.IsEnabled = CurrentCharacter.CanDriveOrFerry(city) || CurrentCharacter.CanShuttleFlight(city) || CurrentCharacter.CanDirectFlight(city);
                 }
                 else
                 {
@@ -182,35 +245,65 @@ namespace PandemicLegacy.ViewModels
         {
             InfoViewModel = null;
             MoveSelected = false;
+            RefreshAllCommands();
         }
 
-        private void CardSelected(Card card, MapCity destinationCity)
+        private void CardSelected(Card card)
         {
-            if (_moveSelected)
+            if (MoveSelected)
             {
                 if (card is PlayerCard playerCard)
                 {
-                    if (playerCard.City == CurrentCharacter.MapCity.City && CurrentCharacter.CanCharterFlight())
+                    if ((MoveTypeSelected == MoveType.Direct || MoveTypeSelected == null) && playerCard.City == SelectedCity.City && CurrentCharacter.CanDirectFlight(SelectedCity))
                     {
-                        CurrentCharacter.CharterFlight(destinationCity);
+                        DirectFlightAction();
                     }
-                    else if (playerCard.City == destinationCity.City && CurrentCharacter.CanDirectFlight(destinationCity))
+                    else if ((MoveTypeSelected == MoveType.Charter || MoveTypeSelected == null) && playerCard.City == CurrentCharacter.CurrentMapCity.City && CurrentCharacter.CanCharterFlight())
                     {
-                        CurrentCharacter.DirectFlight(destinationCity);
+                        CharterFlightAction();
                     }
                     OnCharacterMove();
                 }
             }
         }
 
-        private bool CanDiscoverCure()
+        private void CharterFlightAction()
         {
-            return CurrentCharacter.CanDiscoverCure(Disease.Diseases[DiseaseColor.Yellow]);
+            var card = CurrentCharacter.CharterFlight(SelectedCity);
+            Board.PlayerDiscardPile.Add(card);
         }
 
-        private void DiscoverCure()
+        private void DirectFlightAction()
         {
+            var card = CurrentCharacter.DirectFlight(SelectedCity);
+            Board.PlayerDiscardPile.Add(card);
+        }
 
+        private void MoveSelection(MoveType type)
+        {
+            MoveTypeSelected = type;
+            InfoViewModel = new CardSelectionViewModel(CurrentCharacter.Player.Cards);
+        }
+
+        private bool CanDiscoverCure()
+        {
+            return CurrentCharacter.CanDiscoverCure(Diseases[CurrentCharacter.Player.MostCardsColor]);
+        }
+
+        private void DiscoverCure(IList<CityCard> cards)
+        {
+            CurrentCharacter.DiscoverCure(Diseases[CurrentCharacter.Player.MostCardsColor]);
+            foreach (var card in cards)
+            {
+                CurrentCharacter.Player.RemoveCard(card as PlayerCard);
+                Board.PlayerDiscardPile.Add(card);
+            }
+            InfoViewModel = null;
+        }
+
+        private void SelectCardsToDiscoverCure()
+        {
+            InfoViewModel = new MultiCardsSelectionViewModel(CurrentCharacter.Player.Cards, CurrentCharacter.CardsForCure, Diseases[CurrentCharacter.Player.MostCardsColor].Color);
         }
 
         private bool CanBuildStructure()
@@ -220,13 +313,20 @@ namespace PandemicLegacy.ViewModels
 
         private void BuildStructure()
         {
-            CurrentCharacter.MapCity.HasResearchStation = true;
-            var card = CurrentCharacter.Player.RemoveCardWithCity(CurrentCharacter.MapCity.City);
-            Board.PlayerDiscardPile.Add(card);
-            (BuildActionCommand as RelayCommand).RaiseCanExecuteChanged();
+            if (Board.ResearchStationsPile > 0)
+            {
+                var card = CurrentCharacter.Player.RemoveCard(CurrentCharacter.CurrentMapCity.City);
+                Board.BuildResearchStation(CurrentCharacter.CurrentMapCity, card);
+                (BuildActionCommand as RelayCommand).RaiseCanExecuteChanged();
+            }
+            else
+            {
+                InfoViewModel = new TextViewModel("Select a city where do you want to destroy research station");
+                ResearchStationDestroy = true;
+            }
         }
 
-        private void CityClicked(MapCity mapCity)
+        private void CitySelected(MapCity mapCity)
         {
             if (MoveSelected)
             {
@@ -242,42 +342,33 @@ namespace PandemicLegacy.ViewModels
                 }
                 else
                 {
+                    SelectedCity = mapCity;
                     if (CurrentCharacter.CanDirectFlight(mapCity) && CurrentCharacter.CanCharterFlight())
                     {
-                        var viewModel = new MoveSelectionViewModel(new List<string>() { "Direct flight", "Charter flight" });
-                        InfoViewModel = viewModel;
+                        InfoViewModel = new MoveSelectionViewModel(new List<string>() { "Direct flight", "Charter flight" });
                     }
                     else
                     {
-                        var cardSelectionVM = new CardsSelectionViewModel(CurrentCharacter.Player.Cards, mapCity);
-                        cardSelectionVM.CardSelected += (sender, card) => CardSelected(card, mapCity);
-
-                        InfoViewModel = cardSelectionVM;
+                        InfoViewModel = new CardSelectionViewModel(CurrentCharacter.Player.Cards);
                     }
-
-
-                    //_destinationCity = city;
-                    //InfoViewModel = new TextViewModel("Select card of destination city");
-                    return;
                 }
             }
-            else
+            else if (ResearchStationDestroy)
             {
-                PlayerCard card = Board.DrawPlayerCard();
-                if (card != null)
-                {
-                    CurrentCharacter.Player.AddCard(card);
-                }
+                Board.DestroyResearchStation(mapCity);
+                BuildStructure();
+                ResearchStationDestroy = false;
+
+                (DiscoverCureActionCommand as RelayCommand).RaiseCanExecuteChanged();
             }
 
-            (DiscoverCureActionCommand as RelayCommand).RaiseCanExecuteChanged();
         }
 
         private void OnCharacterMove()
         {
-            (BuildActionCommand as RelayCommand).RaiseCanExecuteChanged();
-            (TreatActionCommand as RelayCommand).RaiseCanExecuteChanged();
+            RefreshAllCommands();
             MoveSelected = false;
+            MoveTypeSelected = null;
             InfoViewModel = null;
         }
 
@@ -289,12 +380,28 @@ namespace PandemicLegacy.ViewModels
             }
         }
 
-        private void DrawEpidemicCard()
+        private void DrawInfectionCard()
         {
-            InfectionCard card = Board.DrawInfectionBottomCard();
-            var isOutbreak = Board.WorldMap.Cities[card.City.Name].RaiseInfection(card.City.Color);
-            if (isOutbreak)
-                InfoViewModel = new TextViewModel("Outbreak");
+            InfectionCard card = Board.DrawInfectionCard();
+            if (Board.CheckCubesPile(card.City.Color))
+            {
+                InfoViewModel = new TextViewModel("Game over: no more cubes");
+            }
+            else
+            {
+                var isOutbreak = Board.RaiseInfection(card.City);
+                if (isOutbreak)
+                    InfoViewModel = new TextViewModel("Outbreak");
+            }
+        }
+
+        private void InstantMove(MapCity mapCity)
+        {
+            if (CurrentCharacter.CanDriveOrFerry(mapCity))
+            {
+                CurrentCharacter.DriveOrFerry(mapCity);
+                RefreshAllCommands();
+            }
         }
     }
 }

@@ -14,18 +14,19 @@ namespace PandemicLegacy.Characters
             SpecialTreatDisease();
         }
 
-        public override void TreatDisease(Disease disease)
+        public override int TreatDisease(Disease disease)
         {
-            this.MapCity.RemoveInfection(disease.Color);
+            this.CurrentMapCity.RemoveInfection(disease.Color);
+            return 3;
         }
 
         protected virtual void SpecialTreatDisease()
         {
-            foreach (var disease in Disease.Diseases.Values)
-            {
-                if (disease.KnownCure)
-                    this.MapCity.RemoveInfection(disease.Color);
-            }
+            //foreach (var disease in Enum.GetValues(typeof(DiseaseColor)))
+            //{
+            //    if (disease.KnownCure)
+            //        this.CurrentMapCity.RemoveInfection(disease.Color);
+            //}
         }
     }
 }

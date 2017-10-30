@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PandemicLegacy.Views
 {
@@ -28,8 +29,8 @@ namespace PandemicLegacy.Views
             set { SetValue(ClickCommandProperty, value); }
         }
 
-        public static readonly DependencyProperty ClickCommandProperty =
-    DependencyProperty.Register(nameof(ClickCommand), typeof(ICommand), typeof(MapCityControl), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty ClickCommandProperty = DependencyProperty.Register(nameof(ClickCommand), typeof(ICommand), typeof(MapCityControl), new UIPropertyMetadata(null));
+
 
         public ICommand DoubleClickCommand
         {
@@ -112,6 +113,18 @@ namespace PandemicLegacy.Views
         public static readonly DependencyProperty PawnsProperty =
             DependencyProperty.Register(nameof(Pawns), typeof(ObservableCollection<Pawn>), typeof(MapCityControl), new PropertyMetadata(null, PawnsChanged));
 
+        public static readonly DependencyProperty ClickWaitTimerProperty = DependencyProperty.RegisterAttached("Timer", typeof(DispatcherTimer), typeof(MapCityControl));
+
+        private static DispatcherTimer GetClickWaitTimer(DependencyObject obj)
+        {
+            return (DispatcherTimer)obj.GetValue(ClickWaitTimerProperty);
+        }
+
+        private static void SetClickWaitTimer(DependencyObject obj, DispatcherTimer timer)
+        {
+            obj.SetValue(ClickWaitTimerProperty, timer);
+        }
+
         private List<Ellipse> ellipses;
 
         private static void PawnsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -173,7 +186,7 @@ namespace PandemicLegacy.Views
 
                 MainGrid.Children.Add(ellipse);
 
-                margin += 4;;
+                margin += 4;
             }
         }
 
@@ -191,7 +204,6 @@ namespace PandemicLegacy.Views
         private void CityButton_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             DoubleClickCommand?.Execute(null);
-            e.Handled = true;
-        }       
+        }
     }
 }

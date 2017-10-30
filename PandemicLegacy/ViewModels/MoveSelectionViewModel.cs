@@ -11,8 +11,6 @@ namespace PandemicLegacy.ViewModels
 {
     public class MoveSelectionViewModel : ViewModelBase
     {
-        public event EventHandler<string> MoveSelected;
-
         public ICommand MoveSelectedCommand { get; private set; }
 
         public IEnumerable<string> Moves { get; private set; }
@@ -25,8 +23,19 @@ namespace PandemicLegacy.ViewModels
 
         protected void OnMoveSelected(string move)
         {
-            MoveSelected?.Invoke(this, move);
+            MoveType type;
+            if (move == "Direct flight")
+                type = MoveType.Direct;
+            else
+                type = MoveType.Charter;
+            MessengerInstance.Send(type, "MoveSelection");
         }
+    }
+
+    public enum MoveType
+    {
+        Direct,
+        Charter
     }
 }
 

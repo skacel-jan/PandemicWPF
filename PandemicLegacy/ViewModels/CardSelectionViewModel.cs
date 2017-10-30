@@ -9,15 +9,12 @@ using System.Windows.Input;
 
 namespace PandemicLegacy.ViewModels
 {
-    public class CardsSelectionViewModel : ViewModelBase
+    public class CardSelectionViewModel : ViewModelBase
     {
-        public event EventHandler<Card> CardSelected;
-
         public ICommand CardSelectedCommand { get; private set; }
-
         public IEnumerable<Card> Cards { get; private set; }
 
-        public CardsSelectionViewModel(IEnumerable<Card> cards, MapCity city)
+        public CardSelectionViewModel(IEnumerable<Card> cards)
         {
             Cards = cards;
             CardSelectedCommand = new RelayCommand<Card>(card => OnCardSelected(card));
@@ -25,7 +22,7 @@ namespace PandemicLegacy.ViewModels
 
         protected void OnCardSelected(Card card)
         {
-            CardSelected?.Invoke(this, card);
+            MessengerInstance.Send(card, "CardSelection");
         }
     }
 }

@@ -8,11 +8,11 @@ namespace PandemicLegacy.Characters
 {
     public class Scientist : Character
     {
-        private const int SCIENTIST_CARDS_FOR_CURE = 5;
+        public override int CardsForCure { get => 4; }
 
         public override bool CanDiscoverCure(Disease disease)
         {
-            return this.MapCity.HasResearchStation && this.Player.SameColorCards(disease) >= SCIENTIST_CARDS_FOR_CURE;
+            return this.CurrentMapCity.HasResearchStation && this.Player.SameColorCards(disease) >= CardsForCure;
         }
     }
 }
