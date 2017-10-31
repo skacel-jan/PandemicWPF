@@ -1,0 +1,24 @@
+﻿<Window x:Class="Pandemic.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
+        xmlns:views="clr-namespace:Pandemic.Views"
+        mc:Ignorable="d"
+        Title="Pandemic Legacy"
+        Height="1080"
+        Width="1920"
+        WindowState="Maximized" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Grayscale">
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModels:GameViewModel}">
+            <views:BoardView />
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <ContentControl Content="{Binding CurrentViewModel}" />
+    </Grid>
+</Window>
