@@ -111,7 +111,7 @@ namespace Pandemic.Views
         }
 
         public static readonly DependencyProperty PawnsProperty =
-            DependencyProperty.Register(nameof(Pawns), typeof(ObservableCollection<Pawn>), typeof(MapCityControl), new PropertyMetadata(null, PawnsChanged));
+            DependencyProperty.Register(nameof(Pawns), typeof(ObservableCollection<Pawn>), typeof(MapCityControl), new PropertyMetadata(null));
 
         public static readonly DependencyProperty ClickWaitTimerProperty = DependencyProperty.RegisterAttached("Timer", typeof(DispatcherTimer), typeof(MapCityControl));
 
@@ -125,75 +125,9 @@ namespace Pandemic.Views
             obj.SetValue(ClickWaitTimerProperty, timer);
         }
 
-        private List<Ellipse> ellipses;
-
-        private static void PawnsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var mapCityControl = d as MapCityControl;
-
-            if (e.OldValue != null)
-            {
-                var coll = (INotifyCollectionChanged)e.OldValue;
-                // Unsubscribe from CollectionChanged on the old collection
-                coll.CollectionChanged -= mapCityControl.Pawns_CollectionChanged;
-            }
-
-            if (e.NewValue != null)
-            {
-                var coll = (ObservableCollection<Pawn>)e.NewValue;
-                // Subscribe to CollectionChanged on the new collection
-                coll.CollectionChanged += mapCityControl.Pawns_CollectionChanged;
-            }
-
-            if (mapCityControl.Pawns?.Count > 0)
-                mapCityControl.LayoutItemsInGrid();
-        }
-
-        private void Pawns_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            foreach (var ellipse in ellipses)
-            {
-                MainGrid.Children.Remove(ellipse);
-            }
-            ellipses.Clear();
-
-            if (Pawns.Count > 0)
-                LayoutItemsInGrid();
-        }
-
-        private void LayoutItemsInGrid()
-        {
-            int margin = 0;
-            int zindex = Pawns.Count;
-            foreach (var pawn in Pawns)
-            {
-                Ellipse ellipse = new Ellipse()
-                {
-                    Fill = new SolidColorBrush() { Color = pawn.Color, Opacity = 0.9 },
-                    IsHitTestVisible = false,
-                    Width = 10,
-                    HorizontalAlignment = HorizontalAlignment.Left
-                };
-
-                Grid.SetColumn(ellipse, 1);
-                Grid.SetRow(ellipse, 1);
-                Grid.SetRowSpan(ellipse, 3);
-                Grid.SetColumnSpan(ellipse, 2);
-                Panel.SetZIndex(ellipse, zindex--);
-                ellipse.Margin = new Thickness(margin, 2, 0, 2);
-
-                ellipses.Add(ellipse);
-
-                MainGrid.Children.Add(ellipse);
-
-                margin += 4;
-            }
-        }
-
         public MapCityControl()
         {
             InitializeComponent();
-            ellipses = new List<Ellipse>();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

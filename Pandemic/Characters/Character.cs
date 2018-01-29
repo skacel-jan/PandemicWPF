@@ -15,6 +15,8 @@ namespace Pandemic
         public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
         public virtual int CardsForCure { get => STANDARD_CARDS_FOR_CURE; } 
 
+        public abstract string Role { get; }
+
         private Player _player;
         public Player Player
         {
@@ -98,13 +100,20 @@ namespace Pandemic
 
         public virtual int TreatDisease(Disease disease)
         {
-            CurrentMapCity.ChangeInfection(disease.Color, -1);
-            return 1;
+            if (disease.IsCured)
+            {                
+                return CurrentMapCity.RemoveInfection(disease.Color); ;
+            }
+            else
+            {
+                return CurrentMapCity.ChangeInfection(disease.Color, -1);                
+            }
+            
         }
 
         public virtual bool CanDiscoverCure(Disease disease)
         {
-            return CurrentMapCity.HasResearchStation && Player.SameColorCards(disease) >= CardsForCure;
+            return CurrentMapCity.HasResearchStation && Player.ColorCardsCount(disease) >= CardsForCure;
         }
 
         public virtual void DiscoverCure(Disease disease)
@@ -119,7 +128,6 @@ namespace Pandemic
 
         public virtual void ShareKnowledgeGive(PlayerCard card, Character character)
         {
-
             Player.RemoveCard(card);
             character.Player.AddCard(card);
         }

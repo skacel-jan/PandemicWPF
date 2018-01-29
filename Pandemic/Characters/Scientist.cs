@@ -10,9 +10,11 @@ namespace Pandemic.Characters
     {
         public override int CardsForCure { get => 4; }
 
+        public override string Role => "Scientist";
+
         public override bool CanDiscoverCure(Disease disease)
         {
-            return this.CurrentMapCity.HasResearchStation && this.Player.SameColorCards(disease) >= CardsForCure;
+            return this.CurrentMapCity.HasResearchStation && this.Player.ColorCardsCount(disease) >= CardsForCure;
         }
     }
 }

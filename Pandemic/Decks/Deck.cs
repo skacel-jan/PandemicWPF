@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -7,11 +9,10 @@ using System.Threading.Tasks;
 
 namespace Pandemic.Decks
 {
-    public class Deck<T> : List<T> where T : Card
+    public class Deck<T> : ObservableCollection<T> where T : Card
     {
-        public Deck(IEnumerable<T> cards)
+        public Deck(IEnumerable<T> cards) : base(cards)
         {
-            this.AddRange(cards);
         }
 
         public void Shuffle()

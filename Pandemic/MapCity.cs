@@ -20,7 +20,7 @@ namespace Pandemic
         private bool _hasResearchStation;
         public bool HasResearchStation { get { return _hasResearchStation; } set { Set(ref _hasResearchStation, value); } }
 
-        private IEnumerable<MapCity> ConnectedCities { get; set; }
+        public IEnumerable<MapCity> ConnectedCities { get; set; }
 
         private int _yellowInfection;
         public int YellowInfection
@@ -90,56 +90,67 @@ namespace Pandemic
             Pawns = new ObservableCollection<Pawn>();
         }
 
+        public void PawnsChanged()
+        {
+            RaisePropertyChanged(nameof(Pawns));
+        }
+
         public bool IsCityConnected(MapCity toCity)
         {
             return ConnectedCities.Contains(toCity);
         }
 
-        public void ChangeInfection(DiseaseColor color, int value)
+        public int ChangeInfection(DiseaseColor color, int value)
         {
             if (value < 0) value = 0;
             else if (value > 3) value = 3;
 
+            int removedInfection = 0;
             switch (color)
             {
                 case DiseaseColor.Yellow:
+                    removedInfection = YellowInfection - value;
                     YellowInfection = value;
                     break;
                 case DiseaseColor.Red:
+                    removedInfection = RedInfection - value;
                     RedInfection = value;
                     break;
                 case DiseaseColor.Blue:
+                    removedInfection = BlueInfection - value;
                     BlueInfection = value;
                     break;
                 case DiseaseColor.Black:
+                    removedInfection = BlackInfection - value;
                     BlackInfection = value;
                     break;
             }
+            return Math.Abs(removedInfection);
         }
 
         public bool RaiseInfection(DiseaseColor color)
         {
-            bool result = false;
+            bool isOutbreak = false;
             switch (color)
             {
                 case DiseaseColor.Yellow:
-                    result = YellowInfection == 3;
+                    isOutbreak = YellowInfection == 3;
                     YellowInfection += 1;
                     break;
                 case DiseaseColor.Red:
-                    result = RedInfection == 3;
+                    isOutbreak = RedInfection == 3;
                     RedInfection += 1;
                     break;
                 case DiseaseColor.Blue:
-                    result = BlueInfection == 3;
+                    isOutbreak = BlueInfection == 3;
                     BlueInfection += 1;
                     break;
                 case DiseaseColor.Black:
-                    result = BlackInfection == 3;
+                    isOutbreak = BlackInfection == 3;
                     BlackInfection += 1;
                     break;
             }
-            return result;
+            return isOutbreak;
         }
 
         public void DecreaseInfection(DiseaseColor color)
@@ -161,9 +172,9 @@ namespace Pandemic
             }
         }
 
-        public void RemoveInfection(DiseaseColor color)
+        public int RemoveInfection(DiseaseColor color)
         {
-            ChangeInfection(color, 0);
+            return ChangeInfection(color, 0);
         }
 
         public void AddConnectedCities(params MapCity[] cities)

@@ -59,7 +59,7 @@ namespace Pandemic
             this.Cards.Add(card);
         }
 
-        public int SameColorCards(Disease disease)
+        public int ColorCardsCount(Disease disease)
         {
             return this.Cards.Count(x => x.City.Color == disease.Color);
         }

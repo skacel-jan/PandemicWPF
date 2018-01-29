@@ -26,10 +26,18 @@ namespace Pandemic
             private set { Set(ref _colorBrush, value); }
         }
 
+        private bool _isAsctive;
+        public bool IsActive
+        {
+            get { return _isAsctive; }
+            set { Set(ref _isAsctive, value); }
+        }
+
         public Pawn(Color color)
         {
             this.Color = color;
             this.ColorBrush = new SolidColorBrush(color);
+            this.IsActive = false;
         }
     }
 }

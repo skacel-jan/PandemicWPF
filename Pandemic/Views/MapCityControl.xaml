@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:Pandemic.Converters"
              xmlns:local="clr-namespace:Pandemic.Views"
-             xmlns:helpers="clr-namespace:Pandemic.Helpers"
              x:Name="mapCityControl"
              x:Class="Pandemic.Views.MapCityControl"
              mc:Ignorable="d"
@@ -13,6 +12,7 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:InfectionToVisibilityConverter x:Key="InfectionToVisibilityConverter" />
+        <converters:BooleanToZindex x:Key="BooleanToZIndex" />
         <Style x:Key="DiseaseLabelStyle"
                TargetType="{x:Type Label}">
             <Setter Property="Padding"
@@ -24,7 +24,7 @@
             <Setter Property="VerticalContentAlignment"
                     Value="Center" />
             <Setter Property="FontSize"
-                    Value="8" />
+                    Value="9" />
             <Setter Property="FontWeight"
                     Value="DemiBold" />
         </Style>
@@ -47,14 +47,16 @@
                                     <BlurEffect Radius="3" />
                                 </Ellipse.Effect>
                                 <Ellipse.LayoutTransform>
-                                    <ScaleTransform ScaleX="0.9" ScaleY="0.9"/>
+                                    <ScaleTransform ScaleX="0.9"
+                                                    ScaleY="0.9" />
                                 </Ellipse.LayoutTransform>
                             </Ellipse>
                             <Ellipse Fill="{TemplateBinding Background}"
                                      StrokeThickness="1"
-                                     Stroke="#FFBDBD92" >
+                                     Stroke="#FFBDBD92">
                                 <Ellipse.LayoutTransform>
-                                    <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+                                    <ScaleTransform ScaleX="0.8"
+                                                    ScaleY="0.8" />
                                 </Ellipse.LayoutTransform>
                             </Ellipse>
                             <Control Margin="4"
@@ -196,17 +198,19 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Grid>
-                            <Ellipse Fill="#FFE43D44" >
+                            <Ellipse Fill="#FFE43D44">
                                 <Ellipse.Effect>
                                     <BlurEffect Radius="30" />
                                 </Ellipse.Effect>
                             </Ellipse>
-                            <Ellipse Fill="#FFD6757B" RenderTransformOrigin="0.5 0.5">
+                            <Ellipse Fill="#FFD6757B"
+                                     RenderTransformOrigin="0.5 0.5">
                                 <Ellipse.Effect>
                                     <BlurEffect Radius="3" />
                                 </Ellipse.Effect>
                                 <Ellipse.RenderTransform>
-                                    <ScaleTransform ScaleX="0.93" ScaleY="0.93" />
+                                    <ScaleTransform ScaleX="0.93"
+                                                    ScaleY="0.93" />
                                 </Ellipse.RenderTransform>
                             </Ellipse>
                             <Ellipse RenderTransformOrigin="0.5 0.5"
@@ -217,13 +221,15 @@
                                     <BlurEffect Radius="2" />
                                 </Ellipse.Effect>
                                 <Ellipse.RenderTransform>
-                                    <ScaleTransform ScaleX="0.86" ScaleY="0.86" />
+                                    <ScaleTransform ScaleX="0.86"
+                                                    ScaleY="0.86" />
                                 </Ellipse.RenderTransform>
                             </Ellipse>
                             <Control RenderTransformOrigin="0.5 0.5"
-                                     Template="{StaticResource YellowVirusShape}" >
+                                     Template="{StaticResource YellowVirusShape}">
                                 <Control.RenderTransform>
-                                    <ScaleTransform ScaleX="0.65" ScaleY="0.65" />
+                                    <ScaleTransform ScaleX="0.65"
+                                                    ScaleY="0.65" />
                                 </Control.RenderTransform>
                             </Control>
                         </Grid>
@@ -295,8 +301,7 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    
-    
+
     <Grid x:Name="MainGrid"
           DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MapCityControl}}}">
         <Grid.RowDefinitions>
@@ -312,15 +317,19 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Viewbox Grid.Row="4" Grid.ColumnSpan="4">
-            <Label Content="{Binding CityName, FallbackValue=No city}"               
-               Foreground="White" Padding="0,0,0,2"
-               FontWeight="DemiBold">
+        <Viewbox Grid.Row="4"
+                 Grid.ColumnSpan="4">
+            <Label Content="{Binding CityName, FallbackValue=No city}"
+                   Foreground="White"
+                   FontWeight="DemiBold"
+                   HorizontalContentAlignment="Center"
+                   VerticalContentAlignment="Center"
+                   Padding="0">
                 <Label.Effect>
                     <DropShadowEffect Opacity="0.9"
-                                  ShadowDepth="2"
-                                  Direction="320"
-                                  BlurRadius="1" />
+                                      ShadowDepth="2"
+                                      Direction="320"
+                                      BlurRadius="1" />
                 </Label.Effect>
             </Label>
         </Viewbox>
@@ -333,28 +342,24 @@
         <Label Content="{Binding YellowInfection}"
                Visibility="{Binding YellowInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
-               Background="Yellow"
-               FontWeight="DemiBold" />
+               Background="Yellow" />
         <Label Content="{Binding RedInfection}"
                Background="Red"
                Visibility="{Binding RedInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
-               Grid.Column="1"
-               FontWeight="DemiBold" />
+               Grid.Column="1" />
         <Label Content="{Binding BlueInfection}"
                Visibility="{Binding BlueInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
                Background="Blue"
                Grid.Column="2"
-               Foreground="White"
-               FontWeight="DemiBold" />
+               Foreground="White" />
         <Label Content="{Binding BlackInfection}"
                Visibility="{Binding BlackInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
                Background="Black"
                Grid.Column="3"
-               Foreground="White"
-               FontWeight="DemiBold" />
+               Foreground="White" />
         <Polygon Points="0,5 10,0 20,5 20,10 0,10"
                  Stretch="Uniform"
                  Stroke="#FFBDBD92"
@@ -365,5 +370,49 @@
                  Visibility="{Binding HasResearchStation, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}"
                  Grid.Column="1"
                  HorizontalAlignment="Center" />
+        <ItemsControl x:Name="pawnsControl"
+                      Grid.Column="1"
+                      Grid.ColumnSpan="2"
+                      Grid.RowSpan="3"
+                      Grid.Row="1"
+                      ItemsSource="{Binding Pawns}"
+                      Margin="4,0,0,0"
+                      AlternationCount="{Binding Pawns.Count}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Ellipse IsHitTestVisible="False"
+                             HorizontalAlignment="Left"
+                             Margin="-4,2,0,2"
+                             Opacity="0.9"
+                             Width="9">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="{Binding Color}" />
+                        </Ellipse.Fill>
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=IsActive}"
+                                                 Value="True">
+                                        <Setter Property="Stroke"
+                                                Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="StackPanel.ZIndex"
+                            Value="{Binding IsActive, Converter={StaticResource BooleanToZIndex}}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
     </Grid>
 </UserControl>

@@ -3,46 +3,69 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converters="clr-namespace:Pandemic.Converters"
-             xmlns:local="clr-namespace:Pandemic.Views"
+             xmlns:view="clr-namespace:Pandemic.Views"
              xmlns:helpers="clr-namespace:Pandemic.Helpers"
              xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
+             xmlns:default="clr-namespace:Pandemic"
              x:Class="Pandemic.Views.BoardView"
-             TextOptions.TextFormattingMode="Display"
              mc:Ignorable="d"
              d:DesignHeight="800"
              d:DesignWidth="1400"
-             x:Name="BoardViewName">
+             x:Name="Board"
+             FontFamily="Calibri">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
         <converters:HeightToFontSizeConverter x:Key="heightToFontSize" />
 
         <DataTemplate DataType="{x:Type viewModels:DiseaseSelectionViewModel}">
-            <local:DiseaseSelection />
+            <view:DiseaseSelection />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type viewModels:CardSelectionViewModel}">
-            <local:CardSelection />
+            <view:CardSelection>
+                <view:CardSelection.Triggers>
+                    <EventTrigger RoutedEvent="view:CardSelection.Loaded">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Duration="0:0:.8"
+                                                 Storyboard.TargetProperty="MaxWidth"
+                                                 From="10"
+                                                 To="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ContentControl}}}"
+                                                 AccelerationRatio=".1" />
+                                <ThicknessAnimation Duration="0:0:.8"
+                                                    Storyboard.Target="{x:Reference InfoBorder}"
+                                                 Storyboard.TargetProperty="Margin"
+                                                 From="0,100,0,-100"                                                 
+                                                 AccelerationRatio=".1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </view:CardSelection.Triggers>
+            </view:CardSelection>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type viewModels:MultiCardsSelectionViewModel}">
-            <local:CardSelection />
+            <view:CardSelection />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type viewModels:MoveSelectionViewModel}">
-            <local:MoveSelection />
+            <view:MoveSelection />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type viewModels:TextViewModel}">
             <TextBlock Text="{Binding Text}"
+                       Padding="10"
                        FontSize="30"
                        Background="Black"
                        Foreground="White"
+                       FontWeight="SemiBold"
+                       Opacity="0.7"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
+                       VerticalAlignment="Center"/>
         </DataTemplate>
 
-        <Style TargetType="{x:Type local:MapCityControl}">
+        <Style TargetType="{x:Type view:MapCityControl}">
             <Setter Property="Height"
                     Value="60" />
             <Setter Property="Width"
@@ -50,7 +73,7 @@
             <Setter Property="helpers:MultiClickBehavior.SingleClickCommand"
                     Value="{Binding CityCommand}" />
             <Setter Property="helpers:MultiClickBehavior.DoubleClickCommand"
-                    Value="{Binding DataContext.InstantMoveCommand, ElementName=BoardViewName}" />
+                    Value="{Binding DataContext.InstantMoveCommand, ElementName=Board}" />
             <Setter Property="helpers:MultiClickBehavior.DoubleClickCommandParameter"
                     Value="{Binding }" />
             <Setter Property="YellowInfection"
@@ -69,6 +92,8 @@
                     Value="{Binding Pawns}" />
             <Setter Property="IsEnabled"
                     Value="{Binding IsEnabled}" />
+            <Setter Property="Visibility"
+                    Value="Visible" />
         </Style>
 
         <Style TargetType="{x:Type Line}">
@@ -91,7 +116,7 @@
             <Setter Property="Margin"
                     Value="1" />
         </Style>
-        
+
         <Style TargetType="{x:Type Label}"
                x:Key="PileLabel">
             <Setter Property="Foreground"
@@ -107,6 +132,7 @@
         </Style>
 
     </UserControl.Resources>
+
     <Grid Background="Black">
         <Grid.RowDefinitions>
             <RowDefinition Height="382*" />
@@ -118,9 +144,11 @@
                  Grid.Row="0">
             <Image Source="/Pandemic;component/Resources/pandemicMap.jpg" />
         </Viewbox>-->
-        <local:WorldMap Grid.Row="0" />
+        <view:WorldMap Grid.Row="0"
+                       Grid.RowSpan="2" />
 
         <Viewbox Grid.Row="0"
+                 Grid.RowSpan="2"
                  Stretch="Uniform">
             <Canvas Width="1400"
                     Height="700">
@@ -224,198 +252,198 @@
                       Y1="355"
                       X2="182"
                       Y2="286" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Lagos]}"
-                                      Canvas.Left="624"
-                                      Canvas.Top="390"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Kinshasa]}"
-                                      Canvas.Left="683"
-                                      Canvas.Top="445"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Sao Paulo]}"
-                                      Canvas.Left="461"
-                                      Canvas.Top="488"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Johannesburg]}"
-                                      Canvas.Left="725"
-                                      Canvas.Top="525"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Madrid]}"
-                                      Canvas.Left="560"
-                                      Canvas.Top="259"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Algiers]}"
-                                      Canvas.Left="652"
-                                      Canvas.Top="302"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Jakarta]}"
-                                      Canvas.Left="1004"
-                                      Canvas.Top="467"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Cairo]}"
-                                      Canvas.Left="719"
-                                      Canvas.Top="313"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Istanbul]}"
-                                      Canvas.Left="731"
-                                      Canvas.Top="247"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Moscow]}"
-                                      Canvas.Left="794"
-                                      Canvas.Top="200"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Baghdad]}"
-                                      Canvas.Left="791"
-                                      Canvas.Top="275"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Tehran]}"
-                                      Canvas.Left="853"
-                                      Canvas.Top="237"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Karachi]}"
-                                      Canvas.Left="872"
-                                      Canvas.Top="303"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Riyadh]}"
-                                      Canvas.Left="802"
-                                      Canvas.Top="345"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Mumbai]}"
-                                      Canvas.Left="880"
-                                      Canvas.Top="366"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Delhi]}"
-                                      Canvas.Left="932"
-                                      Canvas.Top="274"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Kolkata]}"
-                                      Canvas.Left="989"
-                                      Canvas.Top="299"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Chennai]}"
-                                      Canvas.Left="951"
-                                      Canvas.Top="397"
-                                      CityColor="Black" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Ho Chi Minh City]}"
-                                      Canvas.Left="1056"
-                                      Canvas.Top="411"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Bangkok]}"
-                                      Canvas.Left="1013"
-                                      Canvas.Top="364"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Hong Kong]}"
-                                      Canvas.Left="1054"
-                                      Canvas.Top="325"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Shanghai]}"
-                                      Canvas.Left="1050"
-                                      Canvas.Top="259"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Beijing]}"
-                                      Canvas.Left="1049"
-                                      Canvas.Top="203"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Seoul]}"
-                                      Canvas.Left="1120"
-                                      Canvas.Top="199"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Tokyo]}"
-                                      Canvas.Left="1188"
-                                      Canvas.Top="233"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Osaka]}"
-                                      Canvas.Left="1198"
-                                      Canvas.Top="296"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Taipei]}"
-                                      Canvas.Left="1125"
-                                      Canvas.Top="319"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Manila]}"
-                                      Canvas.Left="1143"
-                                      Canvas.Top="406"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Sydney]}"
-                                      Canvas.Left="1188"
-                                      Canvas.Top="546"
-                                      CityColor="Red" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Khartoum]}"
-                                      Canvas.Left="734"
-                                      Canvas.Top="374"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Buenos Aires]}"
-                                      Canvas.Left="410"
-                                      Canvas.Top="547"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Santiago]}"
-                                      Canvas.Left="319"
-                                      Canvas.Top="566"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Lima]}"
-                                      Canvas.Left="300"
-                                      Canvas.Top="487"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Bogota]}"
-                                      Canvas.Left="342"
-                                      Canvas.Top="410"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Mexico City]}"
-                                      Canvas.Left="251"
-                                      Canvas.Top="345"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Miami]}"
-                                      Canvas.Left="353"
-                                      Canvas.Top="332"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Los Angeles]}"
-                                      Canvas.Left="166"
-                                      Canvas.Top="325"
-                                      CityColor="Yellow" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[London]}"
-                                      Canvas.Left="570"
-                                      Canvas.Top="182"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Paris]}"
-                                      Canvas.Left="640"
-                                      Canvas.Top="223"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Essen]}"
-                                      Canvas.Left="662"
-                                      Canvas.Top="170"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Milan]}"
-                                      Canvas.Left="701"
-                                      Canvas.Top="213"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[St. Petersburg]}"
-                                      Canvas.Left="756"
-                                      Canvas.Top="148"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[New York]}"
-                                      Canvas.Left="420"
-                                      Canvas.Top="220"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Washington]}"
-                                      Canvas.Left="397"
-                                      Canvas.Top="270"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Montreal]}"
-                                      Canvas.Left="346"
-                                      Canvas.Top="217"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Atlanta]}"
-                                      Canvas.Left="294"
-                                      Canvas.Top="278"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Chicago]}"
-                                      Canvas.Left="258"
-                                      Canvas.Top="223"
-                                      CityColor="Blue" />
-                <local:MapCityControl DataContext="{Binding Board.WorldMap.Cities[San Francisco]}"
-                                      Canvas.Left="152"
-                                      Canvas.Top="253"
-                                      CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Lagos]}"
+                                     Canvas.Left="624"
+                                     Canvas.Top="390"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Kinshasa]}"
+                                     Canvas.Left="683"
+                                     Canvas.Top="445"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Sao Paulo]}"
+                                     Canvas.Left="461"
+                                     Canvas.Top="488"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Johannesburg]}"
+                                     Canvas.Left="725"
+                                     Canvas.Top="525"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Madrid]}"
+                                     Canvas.Left="560"
+                                     Canvas.Top="259"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Algiers]}"
+                                     Canvas.Left="652"
+                                     Canvas.Top="302"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Jakarta]}"
+                                     Canvas.Left="1004"
+                                     Canvas.Top="467"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Cairo]}"
+                                     Canvas.Left="719"
+                                     Canvas.Top="313"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Istanbul]}"
+                                     Canvas.Left="731"
+                                     Canvas.Top="247"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Moscow]}"
+                                     Canvas.Left="794"
+                                     Canvas.Top="200"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Baghdad]}"
+                                     Canvas.Left="791"
+                                     Canvas.Top="275"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Tehran]}"
+                                     Canvas.Left="853"
+                                     Canvas.Top="237"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Karachi]}"
+                                     Canvas.Left="872"
+                                     Canvas.Top="303"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Riyadh]}"
+                                     Canvas.Left="802"
+                                     Canvas.Top="345"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Mumbai]}"
+                                     Canvas.Left="880"
+                                     Canvas.Top="366"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Delhi]}"
+                                     Canvas.Left="932"
+                                     Canvas.Top="274"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Kolkata]}"
+                                     Canvas.Left="989"
+                                     Canvas.Top="299"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Chennai]}"
+                                     Canvas.Left="951"
+                                     Canvas.Top="397"
+                                     CityColor="Black" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Ho Chi Minh City]}"
+                                     Canvas.Left="1056"
+                                     Canvas.Top="411"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Bangkok]}"
+                                     Canvas.Left="1013"
+                                     Canvas.Top="364"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Hong Kong]}"
+                                     Canvas.Left="1054"
+                                     Canvas.Top="325"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Shanghai]}"
+                                     Canvas.Left="1050"
+                                     Canvas.Top="259"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Beijing]}"
+                                     Canvas.Left="1049"
+                                     Canvas.Top="203"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Seoul]}"
+                                     Canvas.Left="1120"
+                                     Canvas.Top="199"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Tokyo]}"
+                                     Canvas.Left="1188"
+                                     Canvas.Top="233"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Osaka]}"
+                                     Canvas.Left="1198"
+                                     Canvas.Top="296"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Taipei]}"
+                                     Canvas.Left="1125"
+                                     Canvas.Top="319"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Manila]}"
+                                     Canvas.Left="1143"
+                                     Canvas.Top="406"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Sydney]}"
+                                     Canvas.Left="1188"
+                                     Canvas.Top="546"
+                                     CityColor="Red" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Khartoum]}"
+                                     Canvas.Left="734"
+                                     Canvas.Top="374"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Buenos Aires]}"
+                                     Canvas.Left="410"
+                                     Canvas.Top="547"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Santiago]}"
+                                     Canvas.Left="319"
+                                     Canvas.Top="566"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Lima]}"
+                                     Canvas.Left="300"
+                                     Canvas.Top="487"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Bogota]}"
+                                     Canvas.Left="342"
+                                     Canvas.Top="410"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Mexico City]}"
+                                     Canvas.Left="251"
+                                     Canvas.Top="345"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Miami]}"
+                                     Canvas.Left="353"
+                                     Canvas.Top="332"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Los Angeles]}"
+                                     Canvas.Left="166"
+                                     Canvas.Top="325"
+                                     CityColor="Yellow" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[London]}"
+                                     Canvas.Left="570"
+                                     Canvas.Top="182"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Paris]}"
+                                     Canvas.Left="640"
+                                     Canvas.Top="223"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Essen]}"
+                                     Canvas.Left="662"
+                                     Canvas.Top="170"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Milan]}"
+                                     Canvas.Left="701"
+                                     Canvas.Top="213"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[St. Petersburg]}"
+                                     Canvas.Left="756"
+                                     Canvas.Top="148"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[New York]}"
+                                     Canvas.Left="420"
+                                     Canvas.Top="220"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Washington]}"
+                                     Canvas.Left="397"
+                                     Canvas.Top="270"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Montreal]}"
+                                     Canvas.Left="346"
+                                     Canvas.Top="217"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Atlanta]}"
+                                     Canvas.Left="294"
+                                     Canvas.Top="278"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[Chicago]}"
+                                     Canvas.Left="258"
+                                     Canvas.Top="223"
+                                     CityColor="Blue" />
+                <view:MapCityControl DataContext="{Binding Board.WorldMap.Cities[San Francisco]}"
+                                     Canvas.Left="152"
+                                     Canvas.Top="253"
+                                     CityColor="Blue" />
             </Canvas>
         </Viewbox>
         <ItemsControl Grid.Row="1"
@@ -435,7 +463,7 @@
                             Content="{Binding City.Name, Mode=OneWay}"
                             Foreground="White"
                             FontSize="12"
-                            Command="{Binding DataContext.CardCommand, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:BoardView}}}"
+                            Command="{Binding DataContext.CardCommand, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:BoardView}}}"
                             CommandParameter="{Binding}"
                             Background="Black"
                             Padding="10" />
@@ -448,15 +476,15 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-        <Grid  Grid.Row="2">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
+                <ColumnDefinition Width="0.25*" />
             </Grid.ColumnDefinitions>
-            <Grid HorizontalAlignment="Center"
-                  Grid.Column="0"
-                  Width="144">
+            <Grid HorizontalAlignment="Left"
+                  Grid.Column="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -473,9 +501,10 @@
                 <Border Grid.Row="1"
                         BorderBrush="DarkGray">
                     <Border.Style>
-                        <Style TargetType="{x:Type Border}" BasedOn="{StaticResource PileBorder}">
+                        <Style TargetType="{x:Type Border}"
+                               BasedOn="{StaticResource PileBorder}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Diseases.Black.IsCured}"
+                                <DataTrigger Binding="{Binding Black.IsCured, Source={x:Static default:Disease.Diseases}}"
                                              Value="True">
                                     <Setter Property="Background"
                                             Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
@@ -491,7 +520,7 @@
                         <Style TargetType="{x:Type Border}"
                                BasedOn="{StaticResource PileBorder}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Diseases.Blue.IsCured}"
+                                <DataTrigger Binding="{Binding Blue.IsCured, Source={x:Static default:Disease.Diseases}}"
                                              Value="True">
                                     <Setter Property="Background"
                                             Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
@@ -507,7 +536,7 @@
                         <Style TargetType="{x:Type Border}"
                                BasedOn="{StaticResource PileBorder}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Diseases.Red.IsCured}"
+                                <DataTrigger Binding="{Binding Red.IsCured, Source={x:Static default:Disease.Diseases}}"
                                              Value="True">
                                     <Setter Property="Background"
                                             Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
@@ -523,7 +552,7 @@
                         <Style TargetType="{x:Type Border}"
                                BasedOn="{StaticResource PileBorder}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Diseases.Yellow.IsCured}"
+                                <DataTrigger Binding="{Binding Yellow.IsCured, Source={x:Static default:Disease.Diseases}}"
                                              Value="True">
                                     <Setter Property="Background"
                                             Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
@@ -533,24 +562,11 @@
                     </Border.Style>
                 </Border>
             </Grid>
-            <Button Content="Next turn"
-                    Background="Black"
-                    Foreground="Red"
-                    Command="{Binding GenerateCommand}"
-                    Grid.Column="0"
-                    HorizontalAlignment="Right"
-                    Width="83" />
-            <Button Content="Cancel"
-                    Grid.Column="2"
-                    Background="Black"
-                    Foreground="Red"
-                    Command="{Binding CancelCommand}"
-                    HorizontalAlignment="Left"
-                    Width="90" />
-            <Grid Grid.Column="1"
-                  HorizontalAlignment="Center"
-                  Grid.IsSharedSizeScope="True">
+            <Grid HorizontalAlignment="Center"
+                  Grid.IsSharedSizeScope="True"
+                  Grid.ColumnSpan="3">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition SharedSizeGroup="A" />
                     <ColumnDefinition SharedSizeGroup="A" />
                     <ColumnDefinition SharedSizeGroup="A" />
                     <ColumnDefinition SharedSizeGroup="A" />
@@ -559,27 +575,36 @@
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0"
                         Style="{StaticResource ActionButtonStyle}"
-                        Content="Move"
-                        Command="{Binding MoveActionCommand}" />
+                        Command="{Binding MoveActionCommand}"
+                        Content="Move" />
                 <Button Grid.Column="1"
-                        Content="Treat"
                         Style="{StaticResource ActionButtonStyle}"
-                        Command="{Binding TreatActionCommand}" />
+                        Command="{Binding TreatActionCommand}"
+                        Content="Treat" />
                 <Button Grid.Column="2"
-                        Content="Share"
-                        Style="{StaticResource ActionButtonStyle}" />
+                        Style="{StaticResource ActionButtonStyle}"
+                        Content="Share" />
                 <Button Grid.Column="3"
-                        Content="Build"
                         Style="{StaticResource ActionButtonStyle}"
-                        Command="{Binding BuildActionCommand}" />
+                        Command="{Binding BuildActionCommand}"
+                        Content="Build" />
                 <Button Grid.Column="4"
-                        Content="Find"
                         Style="{StaticResource ActionButtonStyle}"
-                        Command="{Binding DiscoverCureActionCommand}" />
+                        Command="{Binding DiscoverCureActionCommand}"
+                        Content="Find" />
+
+                <Button Content="Cancel"
+                        Grid.Column="5"
+                        Background="Black"
+                        Foreground="Red"
+                        Command="{Binding CancelCommand}"
+                        HorizontalAlignment="Left"
+                        Width="90"
+                        IsCancel="True" />
             </Grid>
-            <Grid HorizontalAlignment="Center"
+            <Grid HorizontalAlignment="Right"
                   Grid.Column="2"
-                  Width="144">
+                  Margin="0,0,100,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
@@ -596,8 +621,10 @@
                 <Border Grid.Row="1"
                         BorderBrush="DarkGray"
                         Style="{StaticResource PileBorder}">
-                    <Label Content="{Binding Board.BlackCubesPile}"
-                           Style="{StaticResource PileLabel}" />
+                    <Viewbox>
+                        <Label Content="{Binding Board.BlackCubesPile}"
+                               Style="{StaticResource PileLabel}" />
+                    </Viewbox>
                 </Border>
                 <Border Grid.Row="1"
                         Grid.Column="1"
@@ -621,6 +648,10 @@
                            Style="{StaticResource PileLabel}" />
                 </Border>
             </Grid>
+            <Button Content="{Binding LastCardInPlayerDiscardPile, FallbackValue=No cards}"
+                    Grid.Column="3"
+                    Command="{Binding PlayerDiscardPileCommand}"
+                    Grid.ColumnSpan="2" />
         </Grid>
         <Grid Visibility="{Binding IsInfoVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
@@ -629,7 +660,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="15*" />
+                <RowDefinition Height="8*" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
@@ -637,16 +668,17 @@
                     Grid.Row="1"
                     Background="#CC000000"
                     BorderBrush="{StaticResource ActionEnabledBrush}"
-                    BorderThickness="2">
+                    BorderThickness="2" x:Name="InfoBorder">
                 <ContentControl Content="{Binding InfoViewModel}"
                                 VerticalContentAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch" />
             </Border>
         </Grid>
-        <Label Content="{Binding CurrentCharacter.CurrentMapCity, FallbackValue=Atlanta}"
+        <Label Content="{Binding InfoText, FallbackValue=Info}"
                VerticalAlignment="Bottom"
                HorizontalAlignment="Center"
-               FontSize="12"
-               Grid.Row="4" />
+               FontSize="14"
+               Grid.Row="4"
+               Foreground="White" />
     </Grid>
 </UserControl>

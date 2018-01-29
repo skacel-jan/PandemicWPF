@@ -16,7 +16,11 @@ namespace Pandemic.Decks
 
         public void AddEpidemicCards(int epidemicCount)
         {
-            this.AddRange(Enumerable.Repeat(new EpidemicCard(), epidemicCount));
+            foreach (var card in Enumerable.Repeat(new EpidemicCard(), epidemicCount))
+            {
+                this.Add(card);
+            }
+
         }
     }
 }

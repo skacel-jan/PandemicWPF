@@ -9,7 +9,8 @@
         Title="Pandemic Legacy"
         Height="1080"
         Width="1920"
-        WindowState="Maximized" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="Grayscale">
+        WindowState="Maximized"
+        TextOptions.TextFormattingMode="Display">
     <Window.DataContext>
         <viewModels:MainViewModel />
     </Window.DataContext>
@@ -19,6 +20,8 @@
         </DataTemplate>
     </Window.Resources>
     <Grid>
-        <ContentControl Content="{Binding CurrentViewModel}" />
+        <Viewbox Stretch="Fill">
+            <ContentControl Content="{Binding CurrentViewModel}" />
+        </Viewbox>
     </Grid>
 </Window>

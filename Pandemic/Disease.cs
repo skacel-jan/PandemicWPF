@@ -29,6 +29,8 @@ namespace Pandemic
         {
             this.Color = color;
         }
+
+        public static Diseases Diseases = new Diseases();
     }
 
     public class Diseases : Dictionary<DiseaseColor, Disease>

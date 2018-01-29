@@ -13,7 +13,7 @@ namespace Pandemic
         public int InfectionRate { get; private set; }
         public int InfectionPosition { get; private set; }
         public int Outbreaks { get; private set; }
-        public InfectionDeck InfectionDeck { get; private set; }
+        public InfectionDeck InfectionDeck { get; set; }
         public InfectionDeck InfectionDiscardPile { get; private set; }
         public PlayerDeck PlayerDeck { get; private set; }
         public PlayerDeck PlayerDiscardPile { get; private set; }
@@ -87,9 +87,9 @@ namespace Pandemic
             return card;
         }
 
-        public bool RaiseInfection(City city)
+        public bool RaiseInfection(City city, DiseaseColor color)
         {
-            switch (city.Color)
+            switch (color)
             {
                 case DiseaseColor.Black:
                     BlackCubesPile--;
@@ -104,7 +104,7 @@ namespace Pandemic
                     YellowCubesPile--;
                     break;
             }
-            return WorldMap.GetCity(city.Name).RaiseInfection(city.Color);
+            return WorldMap.GetCity(city.Name).RaiseInfection(color);
         }
 
         public void BuildResearchStation(MapCity mapCity)

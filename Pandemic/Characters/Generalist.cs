@@ -11,5 +11,7 @@ namespace Pandemic
         private const int GENERALIST_ACTIONS_COUNT = 5;
 
         public override int ActionsCount => GENERALIST_ACTIONS_COUNT;
+
+        public override string Role => "Generalist";
     }
 }
