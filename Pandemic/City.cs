@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Pandemic
 {
-    public struct City : IEquatable<City>
+    public class City : IEquatable<City>
     {
         public string Name { get; private set; }
         public DiseaseColor Color { get; private set; }
 
         public City(string name, DiseaseColor color)
         {
-            this.Name = name;
-            this.Color = color;
+            Name = name;
+            Color = color;
         }
 
         public override string ToString()
@@ -26,7 +26,7 @@ namespace Pandemic
         {
             // other could be a reference type, the is operator will return false if null
             if (other is City)
-                return this.Equals((City)other);
+                return Equals((City)other);
             else
                 return false;
         }

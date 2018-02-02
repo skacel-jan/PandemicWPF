@@ -35,9 +35,9 @@
                                                  AccelerationRatio=".1" />
                                 <ThicknessAnimation Duration="0:0:.8"
                                                     Storyboard.Target="{x:Reference InfoBorder}"
-                                                 Storyboard.TargetProperty="Margin"
-                                                 From="0,100,0,-100"                                                 
-                                                 AccelerationRatio=".1" />
+                                                    Storyboard.TargetProperty="Margin"
+                                                    From="0,100,0,-100"
+                                                    AccelerationRatio=".1" />
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
@@ -62,7 +62,7 @@
                        FontWeight="SemiBold"
                        Opacity="0.7"
                        HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
+                       VerticalAlignment="Center" />
         </DataTemplate>
 
         <Style TargetType="{x:Type view:MapCityControl}">
@@ -130,6 +130,8 @@
             <Setter Property="VerticalContentAlignment"
                     Value="Center" />
         </Style>
+        <CollectionViewSource x:Key="boardViewSource"
+                              d:DesignSource="{d:DesignInstance {x:Type default:Board}, CreateList=True}" />
 
     </UserControl.Resources>
 
@@ -504,7 +506,7 @@
                         <Style TargetType="{x:Type Border}"
                                BasedOn="{StaticResource PileBorder}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Black.IsCured, Source={x:Static default:Disease.Diseases}}"
+                                <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Black].IsCured}"
                                              Value="True">
                                     <Setter Property="Background"
                                             Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
@@ -520,10 +522,10 @@
                         <Style TargetType="{x:Type Border}"
                                BasedOn="{StaticResource PileBorder}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Blue.IsCured, Source={x:Static default:Disease.Diseases}}"
-                                             Value="True">
+                                <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Blue].IsCured}"
+                                             Value  ="True">
                                     <Setter Property="Background"
-                                            Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                            Value   ="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -536,7 +538,7 @@
                         <Style TargetType="{x:Type Border}"
                                BasedOn="{StaticResource PileBorder}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Red.IsCured, Source={x:Static default:Disease.Diseases}}"
+                                <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Red].IsCured}"
                                              Value="True">
                                     <Setter Property="Background"
                                             Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
@@ -552,7 +554,7 @@
                         <Style TargetType="{x:Type Border}"
                                BasedOn="{StaticResource PileBorder}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Yellow.IsCured, Source={x:Static default:Disease.Diseases}}"
+                                <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Yellow].IsCured}"
                                              Value="True">
                                     <Setter Property="Background"
                                             Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
@@ -652,6 +654,14 @@
                     Grid.Column="3"
                     Command="{Binding PlayerDiscardPileCommand}"
                     Grid.ColumnSpan="2" />
+            <Label Content="{Binding Path=Board.InfectionRate, FallbackValue=2}"
+                   ContentStringFormat="Infection rate: {0}"
+                   Style="{StaticResource PileLabel}"
+                   Margin="163,0,349,29" />
+            <Label Content="{Binding Path=Board.Outbreaks, FallbackValue=0}"
+                   ContentStringFormat="Outbreaks: {0}"
+                   Style="{StaticResource PileLabel}"
+                   Margin="163,32,349,0" />
         </Grid>
         <Grid Visibility="{Binding IsInfoVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
@@ -668,7 +678,8 @@
                     Grid.Row="1"
                     Background="#CC000000"
                     BorderBrush="{StaticResource ActionEnabledBrush}"
-                    BorderThickness="2" x:Name="InfoBorder">
+                    BorderThickness="2"
+                    x:Name="InfoBorder">
                 <ContentControl Content="{Binding InfoViewModel}"
                                 VerticalContentAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch" />

@@ -8,10 +8,17 @@ using static Pandemic.City;
 namespace Pandemic
 {
     public class WorldMapFactory
-    {
+    {       
+        public WorldMapFactory(IDictionary<DiseaseColor, Disease> diseases)
+        {
+            Diseases = diseases ?? throw new ArgumentNullException(nameof(diseases));
+        }
+
+        public IDictionary<DiseaseColor, Disease> Diseases { get; set; }
+
         public WorldMap BuildMap()
         {
-            var mapCities = new Dictionary<string, MapCity>(GetCities().ToDictionary(x => x.Name, x => new MapCity(x)));
+            var mapCities = new Dictionary<string, MapCity>(GetCities().ToDictionary(x => x.Name, x => new MapCity(x, Diseases)));
 
             mapCities[Algiers].AddConnectedCities(mapCities[Cairo], mapCities[Istanbul], mapCities[Madrid], mapCities[Paris]);
             mapCities[Atlanta].AddConnectedCities(mapCities[Chicago], mapCities[Miami], mapCities[Washington]);

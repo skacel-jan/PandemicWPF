@@ -17,8 +17,8 @@ namespace Pandemic.Characters
         }
 
         public override PlayerCard CharterFlight(MapCity toCity)
-        {            
-            PlayerCard card =  base.CharterFlight(toCity);
+        {
+            PlayerCard card = base.CharterFlight(toCity);
             SpecialTreatDisease();
             return card;
         }
@@ -36,17 +36,14 @@ namespace Pandemic.Characters
             return card;
         }
 
-        public override int TreatDisease(Disease disease)
+        public override int TreatDisease(DiseaseColor diseaseColor)
         {
-            return CurrentMapCity.RemoveInfection(disease.Color);
+            return CurrentMapCity.RemoveInfection(diseaseColor);
         }
 
         protected virtual void SpecialTreatDisease()
         {
-            foreach (var disease in Disease.Diseases.Where(x => x.Value.IsCured))
-            {
-                this.CurrentMapCity.RemoveInfection(disease.Value.Color);
-            }            
+            CurrentMapCity.RemoveCuredInfections();
         }
     }
 }

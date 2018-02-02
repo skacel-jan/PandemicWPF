@@ -12,9 +12,9 @@ namespace Pandemic.Characters
 
         public override string Role => "Scientist";
 
-        public override bool CanDiscoverCure(Disease disease)
+        public override bool CanDiscoverCure(DiseaseColor disease)
         {
-            return this.CurrentMapCity.HasResearchStation && this.Player.ColorCardsCount(disease) >= CardsForCure;
+            return CurrentMapCity.HasResearchStation && Player.ColorCardsCount(disease) >= CardsForCure;
         }
     }
 }

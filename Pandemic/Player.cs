@@ -37,9 +37,13 @@ namespace Pandemic
         private void Cards_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (Cards.Count > 0)
-                _mostCardsColor =  Cards.GroupBy(x => x.City.Color).OrderByDescending(gb => gb.Count()).Select(y => y.Key).First();
+            {
+                _mostCardsColor = Cards.GroupBy(x => x.City.Color).OrderByDescending(gb => gb.Count()).Select(y => y.Key).First();
+            }
             else
+            {
                 _mostCardsColor = DiseaseColor.Black;
+            }
         }
 
         public PlayerCard RemoveCard(PlayerCard card)
@@ -59,9 +63,9 @@ namespace Pandemic
             this.Cards.Add(card);
         }
 
-        public int ColorCardsCount(Disease disease)
+        public int ColorCardsCount(DiseaseColor diseaseColor)
         {
-            return this.Cards.Count(x => x.City.Color == disease.Color);
+            return this.Cards.Count(x => x.City.Color == diseaseColor);
         }
 
         public bool HasCityCard(City city)

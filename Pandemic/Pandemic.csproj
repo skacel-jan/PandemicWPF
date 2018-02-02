@@ -88,6 +88,7 @@
     <Compile Include="ViewModels\CardSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseTemplateSelector.cs" />
+    <Compile Include="ViewModels\EpidemicViewModel.cs" />
     <Compile Include="ViewModels\GameViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
@@ -205,6 +206,8 @@
   <ItemGroup>
     <Resource Include="Resources\PandemicIcon.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Properties\DataSources\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

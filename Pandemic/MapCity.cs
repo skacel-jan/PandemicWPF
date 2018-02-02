@@ -15,10 +15,18 @@ namespace Pandemic
     public class MapCity : ViewModelBase
     {
         private City _city;
-        public City City { get { return _city; } set { Set(ref _city, value); } }
+        public City City
+        {
+            get => _city;
+            set => Set(ref _city, value);
+        }
 
         private bool _hasResearchStation;
-        public bool HasResearchStation { get { return _hasResearchStation; } set { Set(ref _hasResearchStation, value); } }
+        public bool HasResearchStation
+        {
+            get => _hasResearchStation;
+            set => Set(ref _hasResearchStation, value);
+        }
 
         public IEnumerable<MapCity> ConnectedCities { get; set; }
 
@@ -26,29 +34,24 @@ namespace Pandemic
         public int YellowInfection
         {
             get => _yellowInfection;
-            set
-            {
-                Set(ref _yellowInfection, value);
-                CoerceInfection(ref _yellowInfection);
-            }
-        }
-
-        private void CoerceInfection(ref int infection)
-        {
-            if (infection < 0)
-                infection = 0;
-            else if (infection > 3)
-                infection = 3;
+            set => Set(ref _yellowInfection, CoerceInfection(value));
         }
 
         private int _redInfection;
         public int RedInfection
         {
             get => _redInfection;
-            set
+            set => Set(ref _redInfection, CoerceInfection(value));
+        }
+
+        internal void RemoveCuredInfections()
+        {
+            foreach (var disease in Diseases.Values)
             {
-                Set(ref _redInfection, value);
-                CoerceInfection(ref _redInfection);
+                if (disease.IsCured)
+                {
+                    RemoveInfection(disease.Color);
+                }
             }
         }
 
@@ -56,35 +59,51 @@ namespace Pandemic
         public int BlueInfection
         {
             get => _blueInfection;
-            set
-            {
-                Set(ref _blueInfection, value);
-                CoerceInfection(ref _blueInfection);
-            }
+            set => Set(ref _blueInfection, CoerceInfection(value));
         }
 
         private int _blackInfection;
         public int BlackInfection
         {
             get => _blackInfection;
-            set
+            set => Set(ref _blackInfection, CoerceInfection(value));
+        }
+
+        private int CoerceInfection(int infection)
+        {
+            if (infection < 0)
             {
-                Set(ref _blackInfection, value);
-                CoerceInfection(ref _blackInfection);
+                return 0;
+            }
+            else if (infection > 3)
+            {
+                return 3;
+            }
+            else
+            {
+                return infection;
             }
         }
 
         private int _population;
-        public int Population { get { return _population; } private set { Set(ref _population, value); } }
+        public int Population
+        {
+            get => _population;
+            private set => Set(ref _population, value);
+        }
+
         public double Area { get; private set; }
 
         public ICommand CityCommand { get; set; }
 
         public ObservableCollection<Pawn> Pawns { get; }
 
-        public MapCity(City city)
-        {
-            this.City = city;
+        public IDictionary<DiseaseColor, Disease> Diseases { get; private set; }
+
+        public MapCity(City city, IDictionary<DiseaseColor, Disease> diseases)
+        {            
+            City = city ?? throw new ArgumentNullException("city");
+            Diseases = diseases ?? throw new ArgumentNullException("diseses");
 
             CityCommand = new RelayCommand(() => CityButtonClicked(), () => IsEnabled);
             Pawns = new ObservableCollection<Pawn>();
@@ -98,6 +117,18 @@ namespace Pandemic
         public bool IsCityConnected(MapCity toCity)
         {
             return ConnectedCities.Contains(toCity);
+        }
+
+        internal int TreatDisease(DiseaseColor diseaseColor)
+        {
+            if (Diseases[diseaseColor].IsCured)
+            {
+                return RemoveInfection(diseaseColor);
+            }
+            else
+            {
+                return ChangeInfection(diseaseColor, -1);
+            }
         }
 
         public int ChangeInfection(DiseaseColor color, int value)

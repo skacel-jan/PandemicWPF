@@ -98,27 +98,14 @@ namespace Pandemic
             return CurrentMapCity.BlackInfection > 0 || CurrentMapCity.BlueInfection > 0 || CurrentMapCity.RedInfection > 0 || CurrentMapCity.YellowInfection > 0;
         }
 
-        public virtual int TreatDisease(Disease disease)
+        public virtual int TreatDisease(DiseaseColor diseaseColor)
         {
-            if (disease.IsCured)
-            {                
-                return CurrentMapCity.RemoveInfection(disease.Color); ;
-            }
-            else
-            {
-                return CurrentMapCity.ChangeInfection(disease.Color, -1);                
-            }
-            
+            return CurrentMapCity.TreatDisease(diseaseColor);            
         }
 
-        public virtual bool CanDiscoverCure(Disease disease)
+        public virtual bool CanDiscoverCure(DiseaseColor diseaseColor)
         {
-            return CurrentMapCity.HasResearchStation && Player.ColorCardsCount(disease) >= CardsForCure;
-        }
-
-        public virtual void DiscoverCure(Disease disease)
-        {
-            disease.IsCured = true;
+            return CurrentMapCity.HasResearchStation && Player.ColorCardsCount(diseaseColor) >= CardsForCure;
         }
 
         public virtual bool CanShareKnowledge(PlayerCard card, Character character)
@@ -134,7 +121,6 @@ namespace Pandemic
 
         public virtual void ShareKnowledgeTake(PlayerCard card, Character character)
         {
-
             character.Player.RemoveCard(card);
             Player.AddCard(card);
         }

@@ -1,9 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pandemic
 {
@@ -17,36 +13,47 @@ namespace Pandemic
 
     public class Disease : ObservableObject
     {
-        public DiseaseColor Color { get; private set; }
-
-        private bool _isEradicated;
-        public bool IsEradicated { get => _isEradicated; set => Set(ref _isEradicated, value); }
+        public static readonly int STARTING_CUBES_COUNT = 24;
 
         private bool _isCured;
-        public bool IsCured { get => _isCured; set => Set(ref _isCured, value); }
+        private bool _isEradicated;
+        private int _cubes;
 
         public Disease(DiseaseColor color)
         {
-            this.Color = color;
+            Color = color;
+            Cubes = STARTING_CUBES_COUNT;
         }
 
-        public static Diseases Diseases = new Diseases();
-    }
+        public DiseaseColor Color { get; private set; }
 
-    public class Diseases : Dictionary<DiseaseColor, Disease>
-    {
-        public Diseases()
+        public bool IsCured
         {
-            this.Add(DiseaseColor.Black, new Disease(DiseaseColor.Black));
-            this.Add(DiseaseColor.Blue, new Disease(DiseaseColor.Blue));
-            this.Add(DiseaseColor.Red, new Disease(DiseaseColor.Red));
-            this.Add(DiseaseColor.Yellow, new Disease(DiseaseColor.Yellow));
+            get => _isCured;
+            set => Set(ref _isCured, value);
         }
 
-        public Disease Black { get => this[DiseaseColor.Black]; }
-        public Disease Blue { get => this[DiseaseColor.Blue]; }
-        public Disease Red { get => this[DiseaseColor.Red]; }
-        public Disease Yellow { get => this[DiseaseColor.Yellow]; }
+        public bool IsEradicated
+        {
+            get => _isEradicated;
+            set => Set(ref _isEradicated, value);
+        }
 
+        public int Cubes
+        {
+            get => _cubes;
+            set => Set(ref _cubes, value);
+        }
+
+        public static Dictionary<DiseaseColor, Disease> CreateDiseases()
+        {
+            return new Dictionary<DiseaseColor, Disease>()
+            {
+                { DiseaseColor.Black, new Disease(DiseaseColor.Black) },
+                { DiseaseColor.Blue, new Disease(DiseaseColor.Blue)},
+                { DiseaseColor.Red, new Disease(DiseaseColor.Red)},
+                { DiseaseColor.Yellow, new Disease(DiseaseColor.Yellow)}
+            };
+        }
     }
 }

@@ -113,10 +113,11 @@ namespace Pandemic.ViewModels
 
         public GameViewModel()
         {
-            var mapFactory = new WorldMapFactory();
+            var diseases = Disease.CreateDiseases();
+            var mapFactory = new WorldMapFactory(diseases);
             var cities = mapFactory.GetCities();
 
-            Board = new Board(mapFactory.BuildMap(), new InfectionDeck(cities), new PlayerDeck(cities));
+            Board = new Board(mapFactory.BuildMap(), new InfectionDeck(cities), new PlayerDeck(cities), diseases);
             Board.InfectionDeck.Shuffle();
             Board.PlayerDeck.Shuffle();
 
@@ -259,10 +260,14 @@ namespace Pandemic.ViewModels
                 Card card = Board.DrawPlayerCard();
 
                 if (card == null)
-                    InfoViewModel = new TextViewModel("Game over");
+                {
+                    InfoViewModel = new TextViewModel("Game over: No more cards");
+                }
 
                 if (card is PlayerCard playerCard)
+                {
                     character.Player.AddCard(playerCard);
+                }                    
                 else if (card is EpidemicCard epidemicCard)
                 {
                     DoEpidemicActions();
@@ -278,22 +283,15 @@ namespace Pandemic.ViewModels
             bool isOutbreak = Board.RaiseInfection(card.City, card.City.Color);
             if (isOutbreak)
             {
-                DoOutbreak(card.City, Disease.Diseases[card.City.Color]);
+                DoOutbreak(card.City, card.City.Color);
             }
             else
             {
-                var newDeck = new InfectionDeck(Board.InfectionDiscardPile);
-                newDeck.Shuffle();
-                foreach (var infectionCard in Board.InfectionDeck)
-                {
-                    newDeck.Add(infectionCard);
-                }
-                Board.InfectionDeck = newDeck;
-                Board.InfectionDiscardPile.Clear();
+                Board.ShuffleDiscardPile();
             }
         }
 
-        private void DoOutbreak(City city, Disease disease)
+        private void DoOutbreak(City city, DiseaseColor diseaseColor)
         {
             //TODO: outbreaks
             InfoViewModel = new TextViewModel(string.Format("Outbreak in city {0}", city.Name));
@@ -301,15 +299,15 @@ namespace Pandemic.ViewModels
             {
                 city
             };
-            OutbreakCity(city, disease, new List<City>(), alreadyOutbreakedCities);
+            OutbreakCity(city, diseaseColor, new List<City>(), alreadyOutbreakedCities);
         }
 
-        private void OutbreakCity(City city, Disease disease, IList<City> citiesToOutbreak, IList<City> alreadyOutbreakedCities)
+        private void OutbreakCity(City city, DiseaseColor diseaseColor, IList<City> citiesToOutbreak, IList<City> alreadyOutbreakedCities)
         {
             var copiedCitiesToOutbreak = new List<City>(citiesToOutbreak);
             foreach (var connectedCity in Board.WorldMap.Cities[city.Name].ConnectedCities)
             {
-                bool isOutbreak = Board.RaiseInfection(connectedCity.City, disease.Color);
+                bool isOutbreak = Board.RaiseInfection(connectedCity.City, diseaseColor);
                 if (Board.CheckCubesPile(city.Color))
                 {
                     InfoViewModel = new TextViewModel("Game over: no more cubes");
@@ -330,7 +328,7 @@ namespace Pandemic.ViewModels
                 foreach (var nextCity in copiedCitiesToOutbreak)
                 {
                     alreadyOutbreakedCities.Add(nextCity);
-                    OutbreakCity(nextCity, disease, copiedCitiesToOutbreak, alreadyOutbreakedCities);
+                    OutbreakCity(nextCity, diseaseColor, copiedCitiesToOutbreak, alreadyOutbreakedCities);
                 }
             }
             else
@@ -364,7 +362,7 @@ namespace Pandemic.ViewModels
 
         private void TreatDisease(DiseaseColor color)
         {
-            var cubesCount = CurrentCharacter.TreatDisease(Disease.Diseases[color]);
+            var cubesCount = CurrentCharacter.TreatDisease(color);
             Board.IncreaseCubePile(color, cubesCount);
             InfoViewModel = null;
             DoAction();
@@ -441,12 +439,12 @@ namespace Pandemic.ViewModels
 
         private bool CanDiscoverCure()
         {
-            return CurrentCharacter.CanDiscoverCure(Disease.Diseases[CurrentCharacter.Player.MostCardsColor]);
+            return CurrentCharacter.CanDiscoverCure(CurrentCharacter.Player.MostCardsColor);
         }
 
         private void DiscoverCure(IList<CityCard> cards)
         {
-            CurrentCharacter.DiscoverCure(Disease.Diseases[CurrentCharacter.Player.MostCardsColor]);
+            Board.DiscoverCure(CurrentCharacter.Player.MostCardsColor);
             foreach (var card in cards)
             {
                 CurrentCharacter.Player.RemoveCard(card as PlayerCard);
@@ -458,7 +456,7 @@ namespace Pandemic.ViewModels
 
         private void ShowSelecionOfCardsForCure()
         {
-            InfoViewModel = new MultiCardsSelectionViewModel(CurrentCharacter.Player.Cards, CurrentCharacter.CardsForCure, Disease.Diseases[CurrentCharacter.Player.MostCardsColor].Color);
+            InfoViewModel = new MultiCardsSelectionViewModel(CurrentCharacter.Player.Cards, CurrentCharacter.CardsForCure, CurrentCharacter.Player.MostCardsColor);
         }
 
         private bool CanBuildStructure()
@@ -549,7 +547,7 @@ namespace Pandemic.ViewModels
                 var isOutbreak = Board.RaiseInfection(card.City, card.City.Color);
                 if (isOutbreak)
                 {
-                    DoOutbreak(card.City, Disease.Diseases[card.City.Color]);
+                    DoOutbreak(card.City, card.City.Color);
                 }
             }
         }
