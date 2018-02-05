@@ -1,47 +1,165 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace Pandemic
 {
     public class MapCity : ViewModelBase
     {
+        private bool _canMove = true;
         private City _city;
+        private bool _hasResearchStation;
+
+        private IDictionary<DiseaseColor, int> _infections;
+        private bool _isEnabled = true;
+
+        private int _population;
+
+        public MapCity(City city, IDictionary<DiseaseColor, Disease> diseases)
+        {
+            City = city ?? throw new ArgumentNullException("city");
+            Diseases = diseases ?? throw new ArgumentNullException("diseases");
+
+            CityCommand = new RelayCommand(() => MapCitySelected(), () => IsEnabled);
+            Characters = new ObservableCollection<Character>();
+            Infections = new Dictionary<DiseaseColor, int>(4)
+            {
+                {DiseaseColor.Black, 0 },
+                {DiseaseColor.Blue, 0 },
+                {DiseaseColor.Red, 0 },
+                {DiseaseColor.Yellow, 0 }
+            };
+        }
+
+        public double Area { get; private set; }
+
+        public int BlackInfection
+        {
+            get => _infections[DiseaseColor.Black];
+        }
+
+        public int BlueInfection
+        {
+            get => _infections[DiseaseColor.Blue];
+        }
+
+        public bool CanMove
+        {
+            get => _canMove;
+            set => Set(ref _canMove, value);
+        }
+
         public City City
         {
             get => _city;
             set => Set(ref _city, value);
         }
 
-        private bool _hasResearchStation;
+        public ICommand CityCommand { get; set; }
+
+        public IEnumerable<MapCity> ConnectedCities { get; set; }
+
+        public IDictionary<DiseaseColor, Disease> Diseases { get; private set; }
+
         public bool HasResearchStation
         {
             get => _hasResearchStation;
             set => Set(ref _hasResearchStation, value);
         }
 
-        public IEnumerable<MapCity> ConnectedCities { get; set; }
+        public ObservableCollection<Character> Characters { get; }
 
-        private int _yellowInfection;
-        public int YellowInfection
+        public IDictionary<DiseaseColor, int> Infections
         {
-            get => _yellowInfection;
-            set => Set(ref _yellowInfection, CoerceInfection(value));
+            get { return _infections; }
+            set { _infections = value; }
         }
 
-        private int _redInfection;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set => Set(ref _isEnabled, value);
+        }
+
+        public int Population
+        {
+            get => _population;
+            private set => Set(ref _population, value);
+        }
+
         public int RedInfection
         {
-            get => _redInfection;
-            set => Set(ref _redInfection, CoerceInfection(value));
+            get => _infections[DiseaseColor.Red];
+        }
+
+        public int YellowInfection
+        {
+            get => _infections[DiseaseColor.Yellow];
+        }
+
+        public void AddConnectedCities(params MapCity[] cities)
+        {
+            ConnectedCities = cities.ToList();
+        }
+
+        public int ChangeInfection(DiseaseColor color, int value)
+        {
+            if (value < -3 || value > 3)
+            {
+                throw new ArgumentException("Value cannot be lesser then -3 or greater then 3", "value");
+            }
+
+            int oldInfections = Infections[color];
+            var newInfection = CoerceInfection(oldInfections + value);
+            if (_infections[color] != newInfection)
+            {
+                _infections[color] = newInfection;
+
+                switch (color)
+                {
+                    case DiseaseColor.Black:
+                        RaisePropertyChanged(nameof(BlackInfection));
+                        break;
+
+                    case DiseaseColor.Blue:
+                        RaisePropertyChanged(nameof(BlueInfection));
+                        break;
+
+                    case DiseaseColor.Red:
+                        RaisePropertyChanged(nameof(RedInfection));
+                        break;
+
+                    case DiseaseColor.Yellow:
+                        RaisePropertyChanged(nameof(YellowInfection));
+                        break;
+                }
+            }
+
+            return Math.Abs(oldInfections - Infections[color]);
+        }
+
+        public void CharactersChanged()
+        {
+            RaisePropertyChanged(nameof(Characters));
+        }
+
+        public bool IsCityConnected(MapCity toCity)
+        {
+            return ConnectedCities.Contains(toCity);
+        }
+
+        public int RemoveInfection(DiseaseColor color)
+        {
+            return ChangeInfection(color, -3);
+        }
+
+        public override string ToString()
+        {
+            return City.ToString();
         }
 
         internal void RemoveCuredInfections()
@@ -55,18 +173,16 @@ namespace Pandemic
             }
         }
 
-        private int _blueInfection;
-        public int BlueInfection
+        internal int TreatDisease(DiseaseColor diseaseColor)
         {
-            get => _blueInfection;
-            set => Set(ref _blueInfection, CoerceInfection(value));
-        }
-
-        private int _blackInfection;
-        public int BlackInfection
-        {
-            get => _blackInfection;
-            set => Set(ref _blackInfection, CoerceInfection(value));
+            if (Diseases[diseaseColor].IsCured)
+            {
+                return RemoveInfection(diseaseColor);
+            }
+            else
+            {
+                return ChangeInfection(diseaseColor, -1);
+            }
         }
 
         private int CoerceInfection(int infection)
@@ -85,156 +201,9 @@ namespace Pandemic
             }
         }
 
-        private int _population;
-        public int Population
+        private void MapCitySelected()
         {
-            get => _population;
-            private set => Set(ref _population, value);
-        }
-
-        public double Area { get; private set; }
-
-        public ICommand CityCommand { get; set; }
-
-        public ObservableCollection<Pawn> Pawns { get; }
-
-        public IDictionary<DiseaseColor, Disease> Diseases { get; private set; }
-
-        public MapCity(City city, IDictionary<DiseaseColor, Disease> diseases)
-        {            
-            City = city ?? throw new ArgumentNullException("city");
-            Diseases = diseases ?? throw new ArgumentNullException("diseses");
-
-            CityCommand = new RelayCommand(() => CityButtonClicked(), () => IsEnabled);
-            Pawns = new ObservableCollection<Pawn>();
-        }
-
-        public void PawnsChanged()
-        {
-            RaisePropertyChanged(nameof(Pawns));
-        }
-
-        public bool IsCityConnected(MapCity toCity)
-        {
-            return ConnectedCities.Contains(toCity);
-        }
-
-        internal int TreatDisease(DiseaseColor diseaseColor)
-        {
-            if (Diseases[diseaseColor].IsCured)
-            {
-                return RemoveInfection(diseaseColor);
-            }
-            else
-            {
-                return ChangeInfection(diseaseColor, -1);
-            }
-        }
-
-        public int ChangeInfection(DiseaseColor color, int value)
-        {
-            if (value < 0) value = 0;
-            else if (value > 3) value = 3;
-
-            int removedInfection = 0;
-            switch (color)
-            {
-                case DiseaseColor.Yellow:
-                    removedInfection = YellowInfection - value;
-                    YellowInfection = value;
-                    break;
-                case DiseaseColor.Red:
-                    removedInfection = RedInfection - value;
-                    RedInfection = value;
-                    break;
-                case DiseaseColor.Blue:
-                    removedInfection = BlueInfection - value;
-                    BlueInfection = value;
-                    break;
-                case DiseaseColor.Black:
-                    removedInfection = BlackInfection - value;
-                    BlackInfection = value;
-                    break;
-            }
-            return Math.Abs(removedInfection);
-        }
-
-        public bool RaiseInfection(DiseaseColor color)
-        {
-            bool isOutbreak = false;
-            switch (color)
-            {
-                case DiseaseColor.Yellow:
-                    isOutbreak = YellowInfection == 3;
-                    YellowInfection += 1;
-                    break;
-                case DiseaseColor.Red:
-                    isOutbreak = RedInfection == 3;
-                    RedInfection += 1;
-                    break;
-                case DiseaseColor.Blue:
-                    isOutbreak = BlueInfection == 3;
-                    BlueInfection += 1;
-                    break;
-                case DiseaseColor.Black:
-                    isOutbreak = BlackInfection == 3;
-                    BlackInfection += 1;
-                    break;
-            }
-            return isOutbreak;
-        }
-
-        public void DecreaseInfection(DiseaseColor color)
-        {
-            switch (color)
-            {
-                case DiseaseColor.Yellow:
-                    YellowInfection--;
-                    break;
-                case DiseaseColor.Red:
-                    RedInfection--;
-                    break;
-                case DiseaseColor.Blue:
-                    BlueInfection--;
-                    break;
-                case DiseaseColor.Black:
-                    BlackInfection--;
-                    break;
-            }
-        }
-
-        public int RemoveInfection(DiseaseColor color)
-        {
-            return ChangeInfection(color, 0);
-        }
-
-        public void AddConnectedCities(params MapCity[] cities)
-        {
-            this.ConnectedCities = cities.ToList();
-        }
-
-        public override string ToString()
-        {
-            return City.ToString();
-        }
-
-        private bool _isEnabled = true;
-        public bool IsEnabled
-        {
-            get => _isEnabled;
-            set => Set(ref _isEnabled, value);
-        }
-
-        private bool _canMove = true;
-        public bool CanMove
-        {
-            get => _canMove;
-            set => Set(ref _canMove, value);
-        }
-
-        private void CityButtonClicked()
-        {
-            MessengerInstance.Send(this, "CityClicked");
+            MessengerInstance.Send(this, Messenger.CitySelected);
         }
     }
 }

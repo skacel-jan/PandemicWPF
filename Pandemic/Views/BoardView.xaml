@@ -88,8 +88,8 @@
                     Value="{Binding City.Name}" />
             <Setter Property="HasResearchStation"
                     Value="{Binding HasResearchStation}" />
-            <Setter Property="Pawns"
-                    Value="{Binding Pawns}" />
+            <Setter Property="Characters"
+                    Value="{Binding Characters}" />
             <Setter Property="IsEnabled"
                     Value="{Binding IsEnabled}" />
             <Setter Property="Visibility"
@@ -130,8 +130,6 @@
             <Setter Property="VerticalContentAlignment"
                     Value="Center" />
         </Style>
-        <CollectionViewSource x:Key="boardViewSource"
-                              d:DesignSource="{d:DesignInstance {x:Type default:Board}, CreateList=True}" />
 
     </UserControl.Resources>
 
@@ -483,7 +481,8 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
-                <ColumnDefinition Width="0.25*" />
+                <ColumnDefinition Width="0.15*" />
+                <ColumnDefinition Width="0.15*" />
             </Grid.ColumnDefinitions>
             <Grid HorizontalAlignment="Left"
                   Grid.Column="0">
@@ -624,36 +623,40 @@
                         BorderBrush="DarkGray"
                         Style="{StaticResource PileBorder}">
                     <Viewbox>
-                        <Label Content="{Binding Board.BlackCubesPile}"
+                        <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Black].Cubes}"
                                Style="{StaticResource PileLabel}" />
                     </Viewbox>
                 </Border>
-                <Border Grid.Row="1"
+                <Border Grid.Row ="1"
                         Grid.Column="1"
                         BorderBrush="Blue"
-                        Style="{StaticResource PileBorder}">
-                    <Label Content="{Binding Board.BlueCubesPile}"
-                           Style="{StaticResource PileLabel}" />
+                        Style ="{StaticResource PileBorder}">
+                    <Label Content ="{Binding Path=Board.Diseases[(default:DiseaseColor)Blue].Cubes}"
+                           Style ="{StaticResource PileLabel}" />
                 </Border>
                 <Border Grid.Row="1"
                         Grid.Column="2"
                         BorderBrush="Red"
                         Style="{StaticResource PileBorder}">
-                    <Label Content="{Binding Board.RedCubesPile}"
+                    <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Red].Cubes}"
                            Style="{StaticResource PileLabel}" />
                 </Border>
-                <Border Grid.Row="1"
+                <Border Grid.Row ="1"
                         Grid.Column="3"
                         BorderBrush="Yellow"
-                        Style="{StaticResource PileBorder}">
-                    <Label Content="{Binding Board.YellowCubesPile}"
-                           Style="{StaticResource PileLabel}" />
+                        Style ="{StaticResource PileBorder}">
+                    <Label Content ="{Binding Path=Board.Diseases[(default:DiseaseColor)Yellow].Cubes}"
+                           Style ="{StaticResource PileLabel}" />
                 </Border>
             </Grid>
             <Button Content="{Binding LastCardInPlayerDiscardPile, FallbackValue=No cards}"
                     Grid.Column="3"
-                    Command="{Binding PlayerDiscardPileCommand}"
-                    Grid.ColumnSpan="2" />
+                    Command="{Binding DiscardPileCommand}" CommandParameter="Player"
+                    />
+            <Button Content="{Binding LastCardInInfectionDiscardPile, FallbackValue=No cards}"
+                    Grid.Column="4"
+                    Command="{Binding DiscardPileCommand}" CommandParameter="Infection"
+                     />
             <Label Content="{Binding Path=Board.InfectionRate, FallbackValue=2}"
                    ContentStringFormat="Infection rate: {0}"
                    Style="{StaticResource PileLabel}"

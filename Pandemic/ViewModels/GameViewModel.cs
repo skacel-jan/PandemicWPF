@@ -21,7 +21,7 @@ namespace Pandemic.ViewModels
         public RelayCommand CardCommand { get; set; }
         public RelayCommand DiseaseSelectedCommand { get; set; }
         public RelayCommand<MapCity> InstantMoveCommand { get; set; }
-        public RelayCommand PlayerDiscardPileCommand { get; set; }
+        public RelayCommand<string> DiscardPileCommand { get; set; }
 
         public Board Board { get; private set; }
 
@@ -40,12 +40,12 @@ namespace Pandemic.ViewModels
             {
                 if (_currentCharacter != null)
                 {
-                    _currentCharacter.Player.Pawn.IsActive = false;
-                    _currentCharacter.CurrentMapCity.PawnsChanged();
+                    _currentCharacter.IsActive = false;
+                    _currentCharacter.CurrentMapCity.CharactersChanged();
                 }
                 Set(ref _currentCharacter, value);
-                _currentCharacter.Player.Pawn.IsActive = true;
-                _currentCharacter.CurrentMapCity.PawnsChanged();
+                _currentCharacter.IsActive = true;
+                _currentCharacter.CurrentMapCity.CharactersChanged();
             }
         }
 
@@ -74,6 +74,11 @@ namespace Pandemic.ViewModels
         {
             get => Board.PlayerDiscardPile.LastOrDefault();
         }
+
+        public Card LastCardInInfectionDiscardPile
+        {
+            get => Board.InfectionDiscardPile.LastOrDefault();
+        }        
 
         private ViewModelBase _infoViewModel;
         public ViewModelBase InfoViewModel
@@ -122,15 +127,15 @@ namespace Pandemic.ViewModels
             Board.PlayerDeck.Shuffle();
 
             DiscoverCureActionCommand = new RelayCommand(ShowSelecionOfCardsForCure, CanDiscoverCure);
-            BuildActionCommand = new RelayCommand(BuildStructure, CanBuildStructure);
-            MoveActionCommand = new RelayCommand(MoveActionSelected);
+            BuildActionCommand = new RelayCommand(OnBuildStructure, CanBuildStructure);
+            MoveActionCommand = new RelayCommand(OnMoveActionSelected);
             CancelCommand = new RelayCommand(Cancel);
-            TreatActionCommand = new RelayCommand(SelectDisease, CanTreatDisease);
+            TreatActionCommand = new RelayCommand(OnSelectDisease, CanTreatDisease);
             InstantMoveCommand = new RelayCommand<MapCity>(InstantMove);
             // TODO: Share command
             ShareActionCommand = new RelayCommand(() => {; });
 
-            PlayerDiscardPileCommand = new RelayCommand(ShowPlayerDiscardPile);
+            DiscardPileCommand = new RelayCommand<string>(ShowDiscardPile);
 
             InitialInfection();
 
@@ -159,23 +164,38 @@ namespace Pandemic.ViewModels
             }
             AddEpidemicCards();
 
-            MessengerInstance.Register<MapCity>(this, "CityClicked", CitySelected);
-            MessengerInstance.Register<Card>(this, "CardSelection", CardSelected);
-            MessengerInstance.Register<DiseaseColor>(this, "DiseaseSelection", TreatDisease);
+            MessengerInstance.Register<MapCity>(this, Messenger.CitySelected, OnCitySelected);
+            MessengerInstance.Register<Card>(this, Messenger.CardSelected, CardSelected);
+            MessengerInstance.Register<DiseaseColor>(this, Messenger.DiseaseSelected, TreatDisease);
             MessengerInstance.Register<MoveType>(this, "MoveSelection", MoveSelected);
-            MessengerInstance.Register<IList<CityCard>>(this, "CardsSelection", DiscoverCure);
+            MessengerInstance.Register<IList<CityCard>>(this, Messenger.MultipleCardsSelected, DiscoverCure);
         }
 
-        private void ShowPlayerDiscardPile()
+        private void ShowDiscardPile(string pileType)
         {
-            if (InfoViewModel is CardSelectionViewModel)
+            if (pileType == "Infection")
             {
-                InfoViewModel = null;
+                if (InfoViewModel is CardSelectionViewModel)
+                {
+                    InfoViewModel = null;
+                }
+                else
+                {
+                    InfoViewModel = new CardSelectionViewModel(Board.InfectionDiscardPile);
+                }
             }
-            else
+            else if (pileType == "Player")
             {
-                InfoViewModel = new CardSelectionViewModel(Board.PlayerDiscardPile);
+                if (InfoViewModel is CardSelectionViewModel)
+                {
+                    InfoViewModel = null;
+                }
+                else
+                {
+                    InfoViewModel = new CardSelectionViewModel(Board.PlayerDiscardPile);
+                }
             }
+
         }
 
         private void AddToPlayerDiscardPile(Card card)
@@ -219,8 +239,8 @@ namespace Pandemic.ViewModels
                 foreach (var x in Enumerable.Range(0, 3))
                 {
                     var infectionCard = Board.DrawInfectionCard();
-                    Board.WorldMap.GetCity(infectionCard.City.Name).ChangeInfection(infectionCard.City.Color, i);
-                    Board.DecreaseCubePile(infectionCard.City.Color, i);
+                    int changeInfections = Board.WorldMap.GetCity(infectionCard.City.Name).ChangeInfection(infectionCard.City.Color, i);
+                    Board.DecreaseCubePile(infectionCard.City.Color, changeInfections);
                 }
             }
         }
@@ -342,7 +362,7 @@ namespace Pandemic.ViewModels
             return CurrentCharacter.CanTreatDisease();
         }
 
-        private void SelectDisease()
+        private void OnSelectDisease()
         {
             var diseases = new List<DiseaseColor>();
             if (CurrentCharacter.CurrentMapCity.BlackInfection > 0) diseases.Add(DiseaseColor.Black);
@@ -369,7 +389,7 @@ namespace Pandemic.ViewModels
             TreatActionCommand.RaiseCanExecuteChanged();
         }
 
-        private void MoveActionSelected()
+        private void OnMoveActionSelected()
         {
             IsMoveSelected = true;
             InfoViewModel = new TextViewModel("Select city where do you want to move");
@@ -464,7 +484,7 @@ namespace Pandemic.ViewModels
             return CurrentCharacter.CanBuildResearchStation();
         }
 
-        private void BuildStructure()
+        private void OnBuildStructure()
         {
             if (Board.ResearchStationsPile > 0)
             {
@@ -480,7 +500,7 @@ namespace Pandemic.ViewModels
             }
         }
 
-        private void CitySelected(MapCity mapCity)
+        private void OnCitySelected(MapCity mapCity)
         {
             if (IsMoveSelected)
             {
@@ -510,7 +530,7 @@ namespace Pandemic.ViewModels
             else if (ResearchStationDestroy)
             {
                 Board.DestroyResearchStation(mapCity);
-                BuildStructure();
+                OnBuildStructure();
                 ResearchStationDestroy = false;
 
                 DiscoverCureActionCommand.RaiseCanExecuteChanged();

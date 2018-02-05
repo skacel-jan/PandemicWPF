@@ -8,13 +8,9 @@ namespace Pandemic
 {
     public class Board : ObservableObject
     {
-        private int _blackCubesPile;
-        private int _blueCubesPile;
         private int _infectionRate;
         private int _outbreaks;
-        private int _redCubesPile;
         private int _researchStationPile;
-        private int _yellowCubesPile;
 
         public Board(WorldMap map, InfectionDeck infectionDeck, PlayerDeck playerDeck, IDictionary<DiseaseColor, Disease> diseases)
         {
@@ -24,12 +20,7 @@ namespace Pandemic
 
             InfectionRate = 2;
             InfectionPosition = 0;
-            Outbreaks = 0;            
-
-            BlueCubesPile = 24;
-            BlackCubesPile = 24;
-            YellowCubesPile = 24;
-            RedCubesPile = 24;
+            Outbreaks = 0;
 
             ResearchStationsPile = 6;
 
@@ -37,18 +28,6 @@ namespace Pandemic
 
             InfectionDiscardPile = new InfectionDeck(new List<InfectionCard>());
             PlayerDiscardPile = new PlayerDeck(new List<PlayerCard>());
-        }
-
-        public int BlackCubesPile
-        {
-            get => _blackCubesPile;
-            private set => Set(ref _blackCubesPile, value);
-        }
-
-        public int BlueCubesPile
-        {
-            get => _blueCubesPile;
-            private set => Set(ref _blueCubesPile, value);
         }
 
         public InfectionDeck InfectionDeck { get; set; }
@@ -70,11 +49,6 @@ namespace Pandemic
         public PlayerDeck PlayerDeck { get; private set; }
         public PlayerDeck PlayerDiscardPile { get; private set; }
 
-        public int RedCubesPile
-        {
-            get => _redCubesPile;
-            private set => Set(ref _redCubesPile, value);
-        }
 
         public int ResearchStationsPile
         {
@@ -84,19 +58,12 @@ namespace Pandemic
 
         public WorldMap WorldMap { get; private set; }
 
-        public int YellowCubesPile
-        {
-            get => _yellowCubesPile;
-            private set => Set(ref _yellowCubesPile, value);
-        }
-
         private IDictionary<DiseaseColor, Disease> _diseases;
         public IDictionary<DiseaseColor, Disease> Diseases
         {
             get => _diseases;
             set => Set(ref _diseases, value);
         }
-
 
         public void BuildResearchStation(MapCity mapCity)
         {
@@ -156,17 +123,17 @@ namespace Pandemic
 
         public bool RaiseInfection(City city, DiseaseColor color)
         {
-            var isOutbreak = WorldMap.GetCity(city.Name).RaiseInfection(color);
-            if (!isOutbreak)
+            int addedInfections = WorldMap.GetCity(city.Name).ChangeInfection(color, 1);
+            if (addedInfections == 0)
             {
-                DecreaseCubePile(color, 1);
+                Outbreaks++;                
             }
             else
             {
-                Outbreaks++;
+                DecreaseCubePile(color, 1);
             }
 
-            return isOutbreak;
+            return addedInfections == 0;
         }
 
         public void RaiseInfectionPosition()

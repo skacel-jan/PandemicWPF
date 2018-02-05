@@ -25,10 +25,14 @@ namespace Pandemic.ViewModels
         {
             MoveType type;
             if (move == "Direct flight")
+            {
                 type = MoveType.Direct;
+            }
             else
+            {
                 type = MoveType.Charter;
-            MessengerInstance.Send(type, "MoveSelection");
+            }
+            MessengerInstance.Send(type, Messenger.MoveSelected);
         }
     }
 

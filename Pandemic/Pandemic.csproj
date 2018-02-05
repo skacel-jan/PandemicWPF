@@ -78,9 +78,14 @@
     </ApplicationDefinition>
     <Compile Include="Board.cs" />
     <Compile Include="Cards\EventCard.cs" />
+    <Compile Include="Characters\ContingencyPlanner.cs" />
+    <Compile Include="Characters\Dispatcher.cs" />
+    <Compile Include="Characters\OperationsExpert.cs" />
+    <Compile Include="Characters\QuarantineSpecialist.cs" />
     <Compile Include="Characters\Scientist.cs" />
     <Compile Include="Helpers\Converters\BooleanToZindex.cs" />
     <Compile Include="Helpers\Converters\InfectionToVisibilityConverter.cs" />
+    <Compile Include="Helpers\Messenger.cs" />
     <Compile Include="Helpers\MultiClickBehavior.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

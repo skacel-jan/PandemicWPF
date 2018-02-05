@@ -375,18 +375,18 @@
                       Grid.ColumnSpan="2"
                       Grid.RowSpan="3"
                       Grid.Row="1"
-                      ItemsSource="{Binding Pawns}"
+                      ItemsSource="{Binding Characters}"
                       Margin="4,0,0,0"
-                      AlternationCount="{Binding Pawns.Count}">
+                      AlternationCount="{Binding Characters.Count}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Ellipse IsHitTestVisible="False"
                              HorizontalAlignment="Left"
                              Margin="-4,2,0,2"
                              Opacity="0.9"
-                             Width="9">
+                             Width="9" >
                         <Ellipse.Fill>
-                            <SolidColorBrush Color="{Binding Color}" />
+                            <SolidColorBrush Color="{Binding Player.Pawn.Color}" />
                         </Ellipse.Fill>
                         <Ellipse.Style>
                             <Style TargetType="Ellipse">

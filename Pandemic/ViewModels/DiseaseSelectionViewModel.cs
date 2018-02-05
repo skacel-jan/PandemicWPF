@@ -23,7 +23,7 @@ namespace Pandemic.ViewModels
 
         protected void OnDiseaseSelected(DiseaseColor color)
         {
-            MessengerInstance.Send(color, "DiseaseSelection");
+            MessengerInstance.Send(color, Messenger.DiseaseSelected);
         }
     }
 }

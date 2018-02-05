@@ -22,7 +22,7 @@ namespace Pandemic.ViewModels
 
         protected void OnCardSelected(Card card)
         {
-            MessengerInstance.Send(card, "CardSelection");
+            MessengerInstance.Send(card, Messenger.CardSelected);
         }
     }
 }

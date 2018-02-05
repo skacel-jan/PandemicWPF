@@ -49,7 +49,7 @@ namespace Pandemic.ViewModels
 
             if (SelectCardCount == SelectedCards.Count)
             {
-                MessengerInstance.Send(SelectedCards, "CardsSelection");
+                MessengerInstance.Send(SelectedCards, Messenger.MultipleCardsSelected);
             }
         }
     }

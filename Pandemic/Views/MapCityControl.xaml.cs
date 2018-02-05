@@ -104,14 +104,14 @@ namespace Pandemic.Views
         public static readonly DependencyProperty BlackInfectionProperty =
             DependencyProperty.Register(nameof(BlackInfection), typeof(int), typeof(MapCityControl), new PropertyMetadata(0));
 
-        public ObservableCollection<Pawn> Pawns
+        public ObservableCollection<Character> Characters
         {
-            get { return GetValue(PawnsProperty) as ObservableCollection<Pawn>; }
-            set { SetValue(PawnsProperty, value); }
+            get { return GetValue(CharactersProperty) as ObservableCollection<Character>; }
+            set { SetValue(CharactersProperty, value); }
         }
 
-        public static readonly DependencyProperty PawnsProperty =
-            DependencyProperty.Register(nameof(Pawns), typeof(ObservableCollection<Pawn>), typeof(MapCityControl), new PropertyMetadata(null));
+        public static readonly DependencyProperty CharactersProperty =
+            DependencyProperty.Register(nameof(Characters), typeof(ObservableCollection<Character>), typeof(MapCityControl), new PropertyMetadata(null));
 
         public static readonly DependencyProperty ClickWaitTimerProperty = DependencyProperty.RegisterAttached("Timer", typeof(DispatcherTimer), typeof(MapCityControl));
 
