@@ -78,7 +78,7 @@ namespace Pandemic.ViewModels
         public Card LastCardInInfectionDiscardPile
         {
             get => Board.InfectionDiscardPile.LastOrDefault();
-        }        
+        }
 
         private ViewModelBase _infoViewModel;
         public ViewModelBase InfoViewModel
@@ -247,13 +247,13 @@ namespace Pandemic.ViewModels
 
         private void AddEpidemicCards()
         {
-            var deckCount = Board.PlayerDeck.Count / 5;
+            var numberOfDecks = Board.PlayerDeck.Count / 5;
             var deckIncrement = Board.PlayerDeck.Count % 5;
 
             List<Card> resultDeck = new List<Card>();
             foreach (var i in Enumerable.Range(0, 5))
             {
-                var count = deckCount + (deckIncrement > 0 ? 1 : 0);
+                var count = numberOfDecks + (deckIncrement > 0 ? 1 : 0);
                 var cards = Board.PlayerDeck.Take(count).ToList();
                 deckIncrement = deckIncrement == 0 ? 0 : deckIncrement - 1;
                 cards.Add(new EpidemicCard());
@@ -281,13 +281,13 @@ namespace Pandemic.ViewModels
 
                 if (card == null)
                 {
-                    InfoViewModel = new TextViewModel("Game over: No more cards");
+                    GameOver(20);
                 }
 
                 if (card is PlayerCard playerCard)
                 {
                     character.Player.AddCard(playerCard);
-                }                    
+                }
                 else if (card is EpidemicCard epidemicCard)
                 {
                     DoEpidemicActions();
@@ -303,6 +303,7 @@ namespace Pandemic.ViewModels
             bool isOutbreak = Board.RaiseInfection(card.City, card.City.Color);
             if (isOutbreak)
             {
+                Board.Outbreaks++;
                 DoOutbreak(card.City, card.City.Color);
             }
             else
@@ -313,47 +314,43 @@ namespace Pandemic.ViewModels
 
         private void DoOutbreak(City city, DiseaseColor diseaseColor)
         {
-            //TODO: outbreaks
+            var citiesToOutbreak = new Queue<City>(1);
+            var alreadyOutbreakedCities = new List<City>();
+            citiesToOutbreak.Enqueue(city);
+
             InfoViewModel = new TextViewModel(string.Format("Outbreak in city {0}", city.Name));
-            var alreadyOutbreakedCities = new List<City>
+
+            while (citiesToOutbreak.Count > 0)
             {
-                city
-            };
-            OutbreakCity(city, diseaseColor, new List<City>(), alreadyOutbreakedCities);
+                var outbreakCity = citiesToOutbreak.Dequeue();
+                alreadyOutbreakedCities.Add(outbreakCity);
+
+                foreach (var connectedCity in Board.WorldMap.Cities[outbreakCity.Name].ConnectedCities)
+                {
+                    bool isOutbreak = Board.RaiseInfection(connectedCity.City, diseaseColor);
+                    if (Board.CheckCubesPile(city.Color))
+                    {
+                        GameOver(10);
+                    }
+
+                    if (isOutbreak && !alreadyOutbreakedCities.Contains(connectedCity.City) && !citiesToOutbreak.Contains(connectedCity.City))
+                    {
+                        citiesToOutbreak.Enqueue(connectedCity.City);
+                        Board.Outbreaks++;
+                    }
+                }
+            }
         }
 
-        private void OutbreakCity(City city, DiseaseColor diseaseColor, IList<City> citiesToOutbreak, IList<City> alreadyOutbreakedCities)
+        private void GameOver(int type)
         {
-            var copiedCitiesToOutbreak = new List<City>(citiesToOutbreak);
-            foreach (var connectedCity in Board.WorldMap.Cities[city.Name].ConnectedCities)
+            if (type == 10)
             {
-                bool isOutbreak = Board.RaiseInfection(connectedCity.City, diseaseColor);
-                if (Board.CheckCubesPile(city.Color))
-                {
-                    InfoViewModel = new TextViewModel("Game over: no more cubes");
-                }
-                if (isOutbreak && !alreadyOutbreakedCities.Contains(connectedCity.City))
-                {
-                    copiedCitiesToOutbreak.Add(connectedCity.City);
-                }
+                InfoViewModel = new TextViewModel("Game over: No more cubes");
             }
-
-            foreach (var outbreakedCity in alreadyOutbreakedCities)
+            else if (type == 20)
             {
-                copiedCitiesToOutbreak.Remove(outbreakedCity);
-            }
-
-            if (copiedCitiesToOutbreak.Count > 0)
-            {
-                foreach (var nextCity in copiedCitiesToOutbreak)
-                {
-                    alreadyOutbreakedCities.Add(nextCity);
-                    OutbreakCity(nextCity, diseaseColor, copiedCitiesToOutbreak, alreadyOutbreakedCities);
-                }
-            }
-            else
-            {
-                return;
+                InfoViewModel = new TextViewModel("Game over: No more cards");
             }
         }
 
@@ -560,7 +557,7 @@ namespace Pandemic.ViewModels
             InfectionCard card = Board.DrawInfectionCard();
             if (Board.CheckCubesPile(card.City.Color))
             {
-                InfoViewModel = new TextViewModel("Game over: no more cubes");
+                GameOver(10);                
             }
             else
             {

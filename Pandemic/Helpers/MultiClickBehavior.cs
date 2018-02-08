@@ -14,8 +14,7 @@ namespace Pandemic.Helpers
     {
         #region private timer 
 
-        [DllImport("user32.dll")]
-        static extern uint GetDoubleClickTime();
+        public const int DOUBLE_CLICK_TIME = 500;
 
         public static readonly DependencyProperty ClickWaitTimer = DependencyProperty.RegisterAttached("Timer", typeof(DispatcherTimer), typeof(MultiClickBehavior));
 
@@ -83,13 +82,47 @@ namespace Pandemic.Helpers
             return obj.GetValue(DoubleClickCommandParameter);
         }
 
-        public static void SetDoubleClickCommandParameter(DependencyObject obj, ICommand command)
+        public static void SetDoubleClickCommandParameter(DependencyObject obj, object parameter)
         {
-            obj.SetValue(DoubleClickCommandParameter, command);
+            obj.SetValue(DoubleClickCommandParameter, parameter);
         }
 
         public static readonly DependencyProperty DoubleClickCommandParameter = DependencyProperty.RegisterAttached("DoubleClickCommandParameter",
             typeof(object), typeof(MultiClickBehavior));
+
+
+        public static bool GetDoubleClickCommandEnabled(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(DoubleClickCommandParameter);
+        }
+
+        public static void SetDoubleClickCommandEnabled(DependencyObject obj, bool enabled)
+        {
+            obj.SetValue(DoubleClickCommandParameter, enabled);
+        }
+
+        public static readonly DependencyProperty DoubleClickCommandEnabled = DependencyProperty.RegisterAttached("DoubleClickCommandEnabled",
+            typeof(bool), typeof(MultiClickBehavior), new UIPropertyMetadata(EnabledChanged));
+
+        private static void EnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            bool enabled = (bool)d.GetValue(e.Property);
+            DispatcherTimer timer = GetClickWaitTimer(d);
+            if (enabled)
+            {
+                if (timer != null)
+                {
+                    timer.Tag = "stopped";
+                }
+            }
+            else
+            {
+                if (timer != null)
+                {
+                    timer.Tag = null;
+                }
+            }
+        }
 
         #endregion
 
@@ -109,16 +142,15 @@ namespace Pandemic.Helpers
                 if (timer == null)
                 {
                     timer = new DispatcherTimer() { IsEnabled = false };
-                    timer.Interval = new TimeSpan(0, 0, 0, 0, (int)GetDoubleClickTime());
+                    timer.Interval = new TimeSpan(0, 0, 0, 0, DOUBLE_CLICK_TIME);
                     timer.Tick += (s, args) =>
                     {
                         //if the interval has been reached without a second click then execute the SingClickCommand  
                         timer.Stop();
 
-                        var command = targetElement.GetValue(SingleClickCommand) as ICommand;
                         var commandParameter = targetElement.GetValue(SingleClickCommandParameter);
 
-                        if (command != null)
+                        if (targetElement.GetValue(SingleClickCommand) is ICommand command)
                         {
                             if (command.CanExecute(e))
                             {
@@ -134,7 +166,6 @@ namespace Pandemic.Helpers
 
         private static void element_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
             if (sender is UIElement targetElement)
             {
                 var timer = GetClickWaitTimer(targetElement);
@@ -145,10 +176,9 @@ namespace Pandemic.Helpers
                 {
                     timer.Stop();
 
-                    var command = targetElement.GetValue(DoubleClickCommand) as ICommand;
                     var commandParameter = targetElement.GetValue(DoubleClickCommandParameter);
 
-                    if (command != null)
+                    if (targetElement.GetValue(DoubleClickCommand) is ICommand command)
                     {
                         if (command.CanExecute(e))
                         {
@@ -156,9 +186,21 @@ namespace Pandemic.Helpers
                         }
                     }
                 }
-                else
+                else if (timer.Tag == null || timer.Tag.ToString() != "stopped")
                 {
                     timer.Start();
+                }
+                else
+                {
+                    var commandParameter = targetElement.GetValue(SingleClickCommandParameter);
+
+                    if (targetElement.GetValue(SingleClickCommand) is ICommand command)
+                    {
+                        if (command.CanExecute(e))
+                        {
+                            command.Execute(commandParameter);
+                        }
+                    }
                 }
             }
         }

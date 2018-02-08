@@ -4,7 +4,6 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:converters="clr-namespace:Pandemic.Converters"
                     mc:Ignorable="d">
-    <converters:HeightToFontSizeConverter x:Key="heightToFontSize" />
 
     <!--Control colors.-->
     <Color x:Key="DisabledColor">#FFE8EDF9</Color>

@@ -15,8 +15,7 @@
              FontFamily="Calibri">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
-        <converters:HeightToFontSizeConverter x:Key="heightToFontSize" />
+        <converters:DiseaseToColorConverter x:Key="DiseaseToColorConverter" />
 
         <DataTemplate DataType="{x:Type viewModels:DiseaseSelectionViewModel}">
             <view:DiseaseSelection />
@@ -74,6 +73,8 @@
                     Value="{Binding CityCommand}" />
             <Setter Property="helpers:MultiClickBehavior.DoubleClickCommand"
                     Value="{Binding DataContext.InstantMoveCommand, ElementName=Board}" />
+            <Setter Property="helpers:MultiClickBehavior.DoubleClickCommandEnabled" 
+                    Value="{Binding DataContext.IsMoveSelected, ElementName=Board}" />
             <Setter Property="helpers:MultiClickBehavior.DoubleClickCommandParameter"
                     Value="{Binding }" />
             <Setter Property="YellowInfection"
@@ -458,7 +459,7 @@
             </ItemsControl.ItemContainerStyle>-->
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button BorderBrush="{Binding City.Color, Converter={StaticResource diseaseToColor}}"
+                    <Button BorderBrush="{Binding City.Color, Converter={StaticResource DiseaseToColorConverter}}"
                             BorderThickness="2"
                             Content="{Binding City.Name, Mode=OneWay}"
                             Foreground="White"

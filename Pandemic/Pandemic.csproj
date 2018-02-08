@@ -84,7 +84,6 @@
     <Compile Include="Characters\QuarantineSpecialist.cs" />
     <Compile Include="Characters\Scientist.cs" />
     <Compile Include="Helpers\Converters\BooleanToZindex.cs" />
-    <Compile Include="Helpers\Converters\InfectionToVisibilityConverter.cs" />
     <Compile Include="Helpers\Messenger.cs" />
     <Compile Include="Helpers\MultiClickBehavior.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -114,7 +113,6 @@
     <Compile Include="Player.cs" />
     <Compile Include="ThreadSafeRandom.cs" />
     <Compile Include="Helpers\Converters\DiseaseToColorConverter.cs" />
-    <Compile Include="Helpers\Converters\HeightToFontSizeConverter.cs" />
     <Compile Include="Views\CardSelection.xaml.cs">
       <DependentUpon>CardSelection.xaml</DependentUpon>
     </Compile>

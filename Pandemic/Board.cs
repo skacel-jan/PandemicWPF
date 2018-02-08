@@ -43,7 +43,7 @@ namespace Pandemic
         public int Outbreaks
         {
             get => _outbreaks;
-            private set => Set(ref _outbreaks, value);
+            set => Set(ref _outbreaks, value);
         }
 
         public PlayerDeck PlayerDeck { get; private set; }
@@ -124,13 +124,9 @@ namespace Pandemic
         public bool RaiseInfection(City city, DiseaseColor color)
         {
             int addedInfections = WorldMap.GetCity(city.Name).ChangeInfection(color, 1);
-            if (addedInfections == 0)
+            if (addedInfections > 0)
             {
-                Outbreaks++;                
-            }
-            else
-            {
-                DecreaseCubePile(color, 1);
+                DecreaseCubePile(color, addedInfections);
             }
 
             return addedInfections == 0;

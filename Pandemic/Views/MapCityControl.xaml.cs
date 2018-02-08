@@ -113,31 +113,9 @@ namespace Pandemic.Views
         public static readonly DependencyProperty CharactersProperty =
             DependencyProperty.Register(nameof(Characters), typeof(ObservableCollection<Character>), typeof(MapCityControl), new PropertyMetadata(null));
 
-        public static readonly DependencyProperty ClickWaitTimerProperty = DependencyProperty.RegisterAttached("Timer", typeof(DispatcherTimer), typeof(MapCityControl));
-
-        private static DispatcherTimer GetClickWaitTimer(DependencyObject obj)
-        {
-            return (DispatcherTimer)obj.GetValue(ClickWaitTimerProperty);
-        }
-
-        private static void SetClickWaitTimer(DependencyObject obj, DispatcherTimer timer)
-        {
-            obj.SetValue(ClickWaitTimerProperty, timer);
-        }
-
         public MapCityControl()
         {
             InitializeComponent();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            ClickCommand?.Execute(null);
-        }
-
-        private void CityButton_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            DoubleClickCommand?.Execute(null);
         }
     }
 }

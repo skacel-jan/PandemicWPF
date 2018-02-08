@@ -11,7 +11,6 @@
              d:DesignWidth="60">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <converters:InfectionToVisibilityConverter x:Key="InfectionToVisibilityConverter" />
         <converters:BooleanToZindex x:Key="BooleanToZIndex" />
         <Style x:Key="DiseaseLabelStyle"
                TargetType="{x:Type Label}">
@@ -27,6 +26,14 @@
                     Value="9" />
             <Setter Property="FontWeight"
                     Value="DemiBold" />
+            <Setter Property="Visibility"
+                    Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="0">
+                    <Setter Property="Visibility"
+                            Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
         <Style TargetType="{x:Type Button}"
@@ -340,22 +347,18 @@
                 Grid.RowSpan="3"
                 Grid.ColumnSpan="2" />
         <Label Content="{Binding YellowInfection}"
-               Visibility="{Binding YellowInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
                Background="Yellow" />
         <Label Content="{Binding RedInfection}"
                Background="Red"
-               Visibility="{Binding RedInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
                Grid.Column="1" />
         <Label Content="{Binding BlueInfection}"
-               Visibility="{Binding BlueInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
                Background="Blue"
                Grid.Column="2"
                Foreground="White" />
         <Label Content="{Binding BlackInfection}"
-               Visibility="{Binding BlackInfection, Converter={StaticResource InfectionToVisibilityConverter}, FallbackValue=Collapsed}"
                Style="{StaticResource DiseaseLabelStyle}"
                Background="Black"
                Grid.Column="3"
