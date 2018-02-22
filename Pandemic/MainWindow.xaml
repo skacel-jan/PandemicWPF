@@ -19,9 +19,7 @@
             <views:BoardView />
         </DataTemplate>
     </Window.Resources>
-    <Grid>
-        <Viewbox Stretch="Fill">
-            <ContentControl Content="{Binding CurrentViewModel}" />
-        </Viewbox>
-    </Grid>
+    <Viewbox Stretch="Fill">
+        <ContentControl Content="{Binding CurrentViewModel}" />
+    </Viewbox>
 </Window>
