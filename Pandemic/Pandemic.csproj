@@ -82,6 +82,7 @@
     <Compile Include="Characters\OperationsExpert.cs" />
     <Compile Include="Characters\QuarantineSpecialist.cs" />
     <Compile Include="Characters\Scientist.cs" />
+    <Compile Include="Helpers\Converters\MovePointToCenter.cs" />
     <Compile Include="Helpers\Converters\BooleanToZindex.cs" />
     <Compile Include="Helpers\Messenger.cs" />
     <Compile Include="Helpers\MultiClickBehavior.cs" />
