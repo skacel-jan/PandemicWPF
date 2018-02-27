@@ -18,12 +18,11 @@ namespace Pandemic.Views
     /// <summary>
     /// Interaction logic for WorldMap.xaml
     /// </summary>
-    public partial class WorldMap : UserControl
+    public partial class WorldMapBackground : UserControl
     {
-        public WorldMap()
+        public WorldMapBackground()
         {
             InitializeComponent();
         }
-
     }
 }

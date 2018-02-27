@@ -19,8 +19,7 @@ namespace Pandemic.ViewModels
         public RelayCommand DiscoverCureActionCommand { get; set; }
         public RelayCommand CancelCommand { get; set; }
         public RelayCommand CardCommand { get; set; }
-        public RelayCommand DiseaseSelectedCommand { get; set; }
-        public RelayCommand<MapCity> InstantMoveCommand { get; set; }
+        public RelayCommand DiseaseSelectedCommand { get; set; }        
         public RelayCommand<string> DiscardPileCommand { get; set; }
 
         public Board Board { get; private set; }
@@ -131,7 +130,6 @@ namespace Pandemic.ViewModels
             MoveActionCommand = new RelayCommand(OnMoveActionSelected);
             CancelCommand = new RelayCommand(Cancel);
             TreatActionCommand = new RelayCommand(OnSelectDisease, CanTreatDisease);
-            InstantMoveCommand = new RelayCommand<MapCity>(InstantMove);
             // TODO: Share command
             ShareActionCommand = new RelayCommand(() => {; });
 
@@ -153,7 +151,7 @@ namespace Pandemic.ViewModels
                     }
                 }
             );
-
+            
             SetNextCharacter();
 
             Board.BuildResearchStation(Board.WorldMap.GetCity(City.Atlanta));
@@ -169,6 +167,7 @@ namespace Pandemic.ViewModels
             MessengerInstance.Register<DiseaseColor>(this, Messenger.DiseaseSelected, TreatDisease);
             MessengerInstance.Register<MoveType>(this, "MoveSelection", MoveSelected);
             MessengerInstance.Register<IList<CityCard>>(this, Messenger.MultipleCardsSelected, DiscoverCure);
+            MessengerInstance.Register<MapCity>(this, Messenger.InstantMove, InstantMove);
         }
 
         private void ShowDiscardPile(string pileType)

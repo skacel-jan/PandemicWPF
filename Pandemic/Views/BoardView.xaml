@@ -4,11 +4,9 @@
              xmlns:converters="clr-namespace:Pandemic.Converters"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:default="clr-namespace:Pandemic"
-             xmlns:helpers="clr-namespace:Pandemic.Helpers"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:view="clr-namespace:Pandemic.Views"
              xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              x:Name="Board"
              d:DesignHeight="800"
              d:DesignWidth="1400"
@@ -17,9 +15,6 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:DiseaseToColorConverter x:Key="DiseaseToColorConverter" />
-        <converters:MovePointToCenter x:Key="MovePointToCenter" />
-
-        <sys:Double x:Key="MoveLength">30.0</sys:Double>
 
         <DataTemplate DataType="{x:Type viewModels:DiseaseSelectionViewModel}">
             <view:DiseaseSelection />
@@ -68,33 +63,7 @@
                        Text="{Binding Text}" />
         </DataTemplate>
 
-        <Style TargetType="{x:Type view:MapCityControl}">
-            <Setter Property="Height" Value="60" />
-            <Setter Property="Width" Value="60" />
-            <Setter Property="helpers:MultiClickBehavior.SingleClickCommand" Value="{Binding CityCommand}" />
-            <Setter Property="helpers:MultiClickBehavior.DoubleClickCommand" Value="{Binding DataContext.InstantMoveCommand, ElementName=Board}" />
-            <Setter Property="helpers:MultiClickBehavior.DoubleClickCommandEnabled" Value="{Binding DataContext.IsMoveSelected, ElementName=Board}" />
-            <Setter Property="helpers:MultiClickBehavior.DoubleClickCommandParameter" Value="{Binding}" />
-            <Setter Property="YellowInfection" Value="{Binding YellowInfection}" />
-            <Setter Property="RedInfection" Value="{Binding RedInfection}" />
-            <Setter Property="BlueInfection" Value="{Binding BlueInfection}" />
-            <Setter Property="BlackInfection" Value="{Binding BlackInfection}" />
-            <Setter Property="CityName" Value="{Binding City.Name}" />
-            <Setter Property="HasResearchStation" Value="{Binding HasResearchStation}" />
-            <Setter Property="Characters" Value="{Binding Characters}" />
-            <Setter Property="IsEnabled" Value="{Binding IsEnabled}" />
-            <Setter Property="Visibility" Value="Visible" />
-        </Style>
 
-        <Style TargetType="{x:Type Line}">
-            <Style.Resources>
-                <BlurEffect x:Key="LineBlur"
-                            Radius="2" />
-            </Style.Resources>
-            <Setter Property="Stroke" Value="#FF8BC6C9" />
-            <Setter Property="StrokeThickness" Value="2" />
-            <Setter Property="Effect" Value="{StaticResource LineBlur}" />
-        </Style>
 
         <Style x:Key="PileBorder"
                TargetType="{x:Type Border}">
@@ -113,713 +82,258 @@
 
     </UserControl.Resources>
 
-    <DockPanel Background="Black">
-        <Label HorizontalAlignment="Stretch"
-               VerticalAlignment="Bottom"
-               HorizontalContentAlignment="Center"
-               Content="{Binding InfoText, FallbackValue=Info}"
-               DockPanel.Dock="Bottom"
-               FontSize="14"
-               Foreground="White" />
-        <Grid Width="1400"
-              DockPanel.Dock="Bottom">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-                <ColumnDefinition Width="0.15*" />
-                <ColumnDefinition Width="0.15*" />
-            </Grid.ColumnDefinitions>
-            <Grid Grid.ColumnSpan="3"
-                  HorizontalAlignment="Center"
-                  Grid.IsSharedSizeScope="True">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition SharedSizeGroup="A" />
-                    <ColumnDefinition SharedSizeGroup="A" />
-                    <ColumnDefinition SharedSizeGroup="A" />
-                    <ColumnDefinition SharedSizeGroup="A" />
-                    <ColumnDefinition SharedSizeGroup="A" />
-                    <ColumnDefinition SharedSizeGroup="A" />
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0"
-                        Command="{Binding MoveActionCommand}"
-                        Content="Move"
-                        Style="{StaticResource ActionButtonStyle}" />
-                <Button Grid.Column="1"
-                        Command="{Binding TreatActionCommand}"
-                        Content="Treat"
-                        Style="{StaticResource ActionButtonStyle}" />
-                <Button Grid.Column="2"
-                        Content="Share"
-                        Style="{StaticResource ActionButtonStyle}" />
-                <Button Grid.Column="3"
-                        Command="{Binding BuildActionCommand}"
-                        Content="Build"
-                        Style="{StaticResource ActionButtonStyle}" />
-                <Button Grid.Column="4"
-                        Command="{Binding DiscoverCureActionCommand}"
-                        Content="Find"
-                        Style="{StaticResource ActionButtonStyle}" />
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-                <Button Grid.Column="5"
-                        Width="90"
-                        HorizontalAlignment="Left"
-                        Background="Black"
-                        Command="{Binding CancelCommand}"
-                        Content="Cancel"
-                        Foreground="Red"
-                        IsCancel="True" />
-            </Grid>
-            <Label Margin="163,0,327,29"
-                   Content="{Binding Board.InfectionRate, FallbackValue=2}"
-                   ContentStringFormat="Infection rate: {0}"
-                   Style="{StaticResource PileLabel}" />
-            <Label Margin="163,32,349,0"
-                   Content="{Binding Board.Outbreaks, FallbackValue=0}"
-                   ContentStringFormat="Outbreaks: {0}"
-                   Style="{StaticResource PileLabel}" />
-            <Grid Grid.Column="0"
-                  HorizontalAlignment="Left">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="14*" />
-                    <RowDefinition Height="17*" />
-                </Grid.RowDefinitions>
-                <Label Grid.ColumnSpan="4"
-                       Content="Cure markers"
-                       Style="{StaticResource PileLabel}" />
-                <Border Grid.Row="1"
-                        BorderBrush="DarkGray">
-                    <Border.Style>
-                        <Style BasedOn="{StaticResource PileBorder}"
-                               TargetType="{x:Type Border}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Black].IsCured}"
-                                             Value="True">
-                                    <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                </Border>
-                <Border Grid.Row="1"
-                        Grid.Column="1"
-                        BorderBrush="Blue">
-                    <Border.Style>
-                        <Style BasedOn="{StaticResource PileBorder}"
-                               TargetType="{x:Type Border}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Blue].IsCured}"
-                                             Value="True">
-                                    <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                </Border>
-                <Border Grid.Row="1"
-                        Grid.Column="2"
-                        BorderBrush="Red">
-                    <Border.Style>
-                        <Style BasedOn="{StaticResource PileBorder}"
-                               TargetType="{x:Type Border}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Red].IsCured}"
-                                             Value="True">
-                                    <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                </Border>
-                <Border Grid.Row="1"
-                        Grid.Column="3"
-                        BorderBrush="Yellow">
-                    <Border.Style>
-                        <Style BasedOn="{StaticResource PileBorder}"
-                               TargetType="{x:Type Border}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Yellow].IsCured}"
-                                             Value="True">
-                                    <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
-                </Border>
-            </Grid>
-            <Grid Grid.Column="2"
-                  Margin="0,0,100,0"
-                  HorizontalAlignment="Right">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="14*" />
-                    <RowDefinition Height="17*" />
-                </Grid.RowDefinitions>
-                <Label Grid.ColumnSpan="4"
-                       Content="Cube piles"
-                       Style="{StaticResource PileLabel}" />
-                <Border Grid.Row="1"
-                        BorderBrush="DarkGray"
-                        Style="{StaticResource PileBorder}">
-                    <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Black].Cubes}"
-                           Style="{StaticResource PileLabel}" />
-                </Border>
-                <Border Grid.Row="1"
-                        Grid.Column="1"
-                        BorderBrush="Blue"
-                        Style="{StaticResource PileBorder}">
-                    <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Blue].Cubes}"
-                           Style="{StaticResource PileLabel}" />
-                </Border>
-                <Border Grid.Row="1"
-                        Grid.Column="2"
-                        BorderBrush="Red"
-                        Style="{StaticResource PileBorder}">
-                    <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Red].Cubes}"
-                           Style="{StaticResource PileLabel}" />
-                </Border>
-                <Border Grid.Row="1"
-                        Grid.Column="3"
-                        BorderBrush="Yellow"
-                        Style="{StaticResource PileBorder}">
-                    <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Yellow].Cubes}"
-                           Style="{StaticResource PileLabel}" />
-                </Border>
-            </Grid>
-            <Button Grid.Column="3"
-                    Command="{Binding DiscardPileCommand}"
-                    CommandParameter="Player"
-                    Content="{Binding LastCardInPlayerDiscardPile, FallbackValue=No cards}" />
-            <Button Grid.Column="4"
-                    Command="{Binding DiscardPileCommand}"
-                    CommandParameter="Infection"
-                    Content="{Binding LastCardInInfectionDiscardPile, FallbackValue=No cards}" />
-        </Grid>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid Panel.ZIndex="1"
-                  Visibility="{Binding IsInfoVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <DockPanel Grid.RowSpan="3"
+                   Grid.ColumnSpan="3"
+                   Background="Black">
+
+            <Label HorizontalAlignment="Stretch"
+                   VerticalAlignment="Bottom"
+                   HorizontalContentAlignment="Center"
+                   Content="{Binding InfoText, FallbackValue=Info}"
+                   DockPanel.Dock="Bottom"
+                   FontSize="14"
+                   Foreground="White" />
+            <Grid Width="1400"
+                  DockPanel.Dock="Bottom">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
+                    <ColumnDefinition Width="0.15*" />
+                    <ColumnDefinition Width="0.15*" />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="8*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Border x:Name="InfoBorder"
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Background="#CC000000"
-                        BorderBrush="{StaticResource ActionEnabledBrush}"
-                        BorderThickness="2">
-                    <ContentControl HorizontalContentAlignment="Stretch"
-                                    VerticalContentAlignment="Stretch"
-                                    Content="{Binding InfoViewModel}" />
-                </Border>
+                <Grid Grid.ColumnSpan="3"
+                      HorizontalAlignment="Center"
+                      Grid.IsSharedSizeScope="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="A" />
+                        <ColumnDefinition SharedSizeGroup="A" />
+                        <ColumnDefinition SharedSizeGroup="A" />
+                        <ColumnDefinition SharedSizeGroup="A" />
+                        <ColumnDefinition SharedSizeGroup="A" />
+                        <ColumnDefinition SharedSizeGroup="A" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            Command="{Binding MoveActionCommand}"
+                            Content="Move"
+                            Style="{StaticResource ActionButtonStyle}" />
+                    <Button Grid.Column="1"
+                            Command="{Binding TreatActionCommand}"
+                            Content="Treat"
+                            Style="{StaticResource ActionButtonStyle}" />
+                    <Button Grid.Column="2"
+                            Content="Share"
+                            Style="{StaticResource ActionButtonStyle}" />
+                    <Button Grid.Column="3"
+                            Command="{Binding BuildActionCommand}"
+                            Content="Build"
+                            Style="{StaticResource ActionButtonStyle}" />
+                    <Button Grid.Column="4"
+                            Command="{Binding DiscoverCureActionCommand}"
+                            Content="Find"
+                            Style="{StaticResource ActionButtonStyle}" />
+
+                    <Button Grid.Column="5"
+                            Width="90"
+                            HorizontalAlignment="Left"
+                            Background="Black"
+                            Command="{Binding CancelCommand}"
+                            Content="Cancel"
+                            Foreground="Red"
+                            IsCancel="True" />
+                </Grid>
+                <Label Margin="163,0,327,29"
+                       Content="{Binding Board.InfectionRate, FallbackValue=2}"
+                       ContentStringFormat="Infection rate: {0}"
+                       Style="{StaticResource PileLabel}" />
+                <Label Margin="163,32,349,0"
+                       Content="{Binding Board.Outbreaks, FallbackValue=0}"
+                       ContentStringFormat="Outbreaks: {0}"
+                       Style="{StaticResource PileLabel}" />
+                <Grid Grid.Column="0"
+                      HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="14*" />
+                        <RowDefinition Height="17*" />
+                    </Grid.RowDefinitions>
+                    <Label Grid.ColumnSpan="4"
+                           Content="Cure markers"
+                           Style="{StaticResource PileLabel}" />
+                    <Border Grid.Row="1"
+                            BorderBrush="DarkGray">
+                        <Border.Style>
+                            <Style BasedOn="{StaticResource PileBorder}"
+                                   TargetType="{x:Type Border}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Black].IsCured}"
+                                                 Value="True">
+                                        <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                    <Border Grid.Row="1"
+                            Grid.Column="1"
+                            BorderBrush="Blue">
+                        <Border.Style>
+                            <Style BasedOn="{StaticResource PileBorder}"
+                                   TargetType="{x:Type Border}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Blue].IsCured}"
+                                                 Value="True">
+                                        <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                    <Border Grid.Row="1"
+                            Grid.Column="2"
+                            BorderBrush="Red">
+                        <Border.Style>
+                            <Style BasedOn="{StaticResource PileBorder}"
+                                   TargetType="{x:Type Border}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Red].IsCured}"
+                                                 Value="True">
+                                        <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                    <Border Grid.Row="1"
+                            Grid.Column="3"
+                            BorderBrush="Yellow">
+                        <Border.Style>
+                            <Style BasedOn="{StaticResource PileBorder}"
+                                   TargetType="{x:Type Border}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Board.Diseases[(default:DiseaseColor)Yellow].IsCured}"
+                                                 Value="True">
+                                        <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                </Grid>
+                <Grid Grid.Column="2"
+                      Margin="0,0,100,0"
+                      HorizontalAlignment="Right">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="14*" />
+                        <RowDefinition Height="17*" />
+                    </Grid.RowDefinitions>
+                    <Label Grid.ColumnSpan="4"
+                           Content="Cube piles"
+                           Style="{StaticResource PileLabel}" />
+                    <Border Grid.Row="1"
+                            BorderBrush="DarkGray"
+                            Style="{StaticResource PileBorder}">
+                        <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Black].Cubes}"
+                               Style="{StaticResource PileLabel}" />
+                    </Border>
+                    <Border Grid.Row="1"
+                            Grid.Column="1"
+                            BorderBrush="Blue"
+                            Style="{StaticResource PileBorder}">
+                        <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Blue].Cubes}"
+                               Style="{StaticResource PileLabel}" />
+                    </Border>
+                    <Border Grid.Row="1"
+                            Grid.Column="2"
+                            BorderBrush="Red"
+                            Style="{StaticResource PileBorder}">
+                        <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Red].Cubes}"
+                               Style="{StaticResource PileLabel}" />
+                    </Border>
+                    <Border Grid.Row="1"
+                            Grid.Column="3"
+                            BorderBrush="Yellow"
+                            Style="{StaticResource PileBorder}">
+                        <Label Content="{Binding Path=Board.Diseases[(default:DiseaseColor)Yellow].Cubes}"
+                               Style="{StaticResource PileLabel}" />
+                    </Border>
+                </Grid>
+                <Button Grid.Column="3"
+                        Command="{Binding DiscardPileCommand}"
+                        CommandParameter="Player"
+                        Content="{Binding LastCardInPlayerDiscardPile, FallbackValue=No cards}" />
+                <Button Grid.Column="4"
+                        Command="{Binding DiscardPileCommand}"
+                        CommandParameter="Infection"
+                        Content="{Binding LastCardInInfectionDiscardPile, FallbackValue=No cards}" />
             </Grid>
-            <view:WorldMap Grid.Row="0" />
+            <Grid DockPanel.Dock="Bottom">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-            <Viewbox Grid.Row="0"
-                     Stretch="Uniform">
-                <Canvas Width="1400"
-                        Height="700">
-                    <Line X1="654"
-                          X2="713"
-                          Y1="420"
-                          Y2="475" />
-                    <Line X1="713"
-                          X2="755"
-                          Y1="475"
-                          Y2="555" />
-                    <Line X1="755"
-                          X2="764"
-                          Y1="555"
-                          Y2="404" />
-                    <Line X1="764"
-                          X2="654"
-                          Y1="404"
-                          Y2="420" />
-                    <Line X1="713"
-                          X2="764"
-                          Y1="475"
-                          Y2="404" />
-                    <Line X1="654"
-                          X2="491"
-                          Y1="420"
-                          Y2="518" />
-                    <Line X1="491"
-                          X2="440"
-                          Y1="518"
-                          Y2="577" />
-                    <Line X1="491"
-                          X2="372"
-                          Y1="518"
-                          Y2="440" />
-                    <Line X1="491"
-                          X2="590"
-                          Y1="518"
-                          Y2="289" />
-                    <Line X1="440"
-                          X2="372"
-                          Y1="577"
-                          Y2="440" />
-                    <Line X1="372"
-                          X2="330"
-                          Y1="440"
-                          Y2="517" />
-                    <Line X1="349"
-                          X2="330"
-                          Y1="596"
-                          Y2="517" />
-                    <Line X1="281"
-                          X2="330"
-                          Y1="375"
-                          Y2="517" />
-                    <Line X1="372"
-                          X2="281"
-                          Y1="440"
-                          Y2="375" />
-                    <Line X1="372"
-                          X2="383"
-                          Y1="440"
-                          Y2="362" />
-                    <Line X1="281"
-                          X2="196"
-                          Y1="375"
-                          Y2="355" />
-                    <Line X1="281"
-                          X2="383"
-                          Y1="375"
-                          Y2="362" />
-                    <Line X1="281"
-                          X2="288"
-                          Y1="375"
-                          Y2="263" />
-                    <Line X1="383"
-                          X2="324"
-                          Y1="362"
-                          Y2="308" />
-                    <Line X1="383"
-                          X2="427"
-                          Y1="362"
-                          Y2="300" />
-                    <Line X1="324"
-                          X2="427"
-                          Y1="308"
-                          Y2="300" />
-                    <Line X1="324"
-                          X2="288"
-                          Y1="308"
-                          Y2="253" />
-                    <Line X1="196"
-                          X2="288"
-                          Y1="355"
-                          Y2="253" />
-                    <Line DataContext="{Binding ElementName=SanFrancisco}"
-                          X1="{Binding Path=(Canvas.Left), Converter={StaticResource MovePointToCenter}, ConverterParameter={StaticResource MoveLength}}"
-                          X2="288"
-                          Y1="283"
-                          Y2="253" />
-                    <Line X1="196"
-                          X2="182"
-                          Y1="355"
-                          Y2="286" />
-                    <Line X1="288"
-                          X2="376"
-                          Y1="253"
-                          Y2="247" />
-                    <Line X1="427"
-                          X2="376"
-                          Y1="300"
-                          Y2="247" />
-                    <Line X1="450"
-                          X2="376"
-                          Y1="250"
-                          Y2="247" />
-                    <Line X1="450"
-                          X2="427"
-                          Y1="250"
-                          Y2="300" />
-                    <Line X1="450"
-                          X2="600"
-                          Y1="250"
-                          Y2="212" />
-                    <Line X1="450"
-                          X2="590"
-                          Y1="250"
-                          Y2="289" />
-                    <Line X1="600"
-                          X2="590"
-                          Y1="212"
-                          Y2="289" />
-                    <Line X1="600"
-                          X2="670"
-                          Y1="212"
-                          Y2="253" />
-                    <Line X1="670"
-                          X2="590"
-                          Y1="253"
-                          Y2="289" />
-                    <Line X1="600"
-                          X2="692"
-                          Y1="212"
-                          Y2="200" />
-                    <Line X1="682"
-                          X2="590"
-                          Y1="332"
-                          Y2="289" />
-                    <Line X1="670"
-                          X2="692"
-                          Y1="253"
-                          Y2="200" />
-                    <Line X1="731"
-                          X2="692"
-                          Y1="243"
-                          Y2="200" />
-                    <Line X1="786"
-                          X2="692"
-                          Y1="178"
-                          Y2="200" />
-                    <Line X1="670"
-                          X2="682"
-                          Y1="253"
-                          Y2="332" />
-                    <Line X1="670"
-                          X2="731"
-                          Y1="253"
-                          Y2="243" />
-                    <Line X1="786"
-                          X2="761"
-                          Y1="178"
-                          Y2="277" />
-                    <Line X1="786"
-                          X2="824"
-                          Y1="178"
-                          Y2="230" />
-                    <Line X1="731"
-                          X2="761"
-                          Y1="243"
-                          Y2="277" />
-                    <Line X1="682"
-                          X2="761"
-                          Y1="332"
-                          Y2="277" />
-                    <Line X1="749"
-                          X2="761"
-                          Y1="343"
-                          Y2="277" />
-                    <Line X1="821"
-                          X2="761"
-                          Y1="305"
-                          Y2="277" />
-                    <Line X1="824"
-                          X2="761"
-                          Y1="230"
-                          Y2="277" />
-                    <Line X1="749"
-                          X2="682"
-                          Y1="343"
-                          Y2="332" />
-                    <Line X1="749"
-                          X2="764"
-                          Y1="343"
-                          Y2="404" />
-                    <Line X1="749"
-                          X2="821"
-                          Y1="343"
-                          Y2="305" />
-                    <Line X1="749"
-                          X2="832"
-                          Y1="343"
-                          Y2="375" />
-                    <Line X1="824"
-                          X2="883"
-                          Y1="230"
-                          Y2="267" />
-                    <Line X1="902"
-                          X2="832"
-                          Y1="333"
-                          Y2="375" />
-                    <Line X1="821"
-                          X2="832"
-                          Y1="305"
-                          Y2="375" />
-                    <Line X1="821"
-                          X2="883"
-                          Y1="305"
-                          Y2="267" />
-                    <Line X1="821"
-                          X2="902"
-                          Y1="305"
-                          Y2="333" />
-                    <Line X1="883"
-                          X2="902"
-                          Y1="267"
-                          Y2="333" />
-                    <Line X1="962"
-                          X2="902"
-                          Y1="304"
-                          Y2="333" />
-                    <Line X1="910"
-                          X2="902"
-                          Y1="396"
-                          Y2="333" />
-                    <Line X1="962"
-                          X2="883"
-                          Y1="304"
-                          Y2="267" />
-                    <Line X1="962"
-                          X2="910"
-                          Y1="304"
-                          Y2="396" />
-                    <Line X1="962"
-                          X2="1019"
-                          Y1="304"
-                          Y2="329" />
-                    <Line X1="962"
-                          X2="981"
-                          Y1="304"
-                          Y2="427" />
-                    <Line X1="981"
-                          X2="910"
-                          Y1="427"
-                          Y2="396" />
-                    <view:MapCityControl Canvas.Left="152"
-                                         Canvas.Top="253"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[San Francisco]}" x:Name="SanFrancisco"/>
-                    <view:MapCityControl Canvas.Left="166"
-                                         Canvas.Top="325"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Los Angeles]}" />
-                    <view:MapCityControl Canvas.Left="251"
-                                         Canvas.Top="345"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Mexico City]}" />
-                    <view:MapCityControl Canvas.Left="258"
-                                         Canvas.Top="223"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[Chicago]}" />
-                    <view:MapCityControl Canvas.Left="294"
-                                         Canvas.Top="278"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[Atlanta]}" />
-                    <view:MapCityControl Canvas.Left="300"
-                                         Canvas.Top="487"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Lima]}" />
-                    <view:MapCityControl Canvas.Left="319"
-                                         Canvas.Top="566"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Santiago]}" />
-                    <view:MapCityControl Canvas.Left="342"
-                                         Canvas.Top="410"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Bogota]}" />
-                    <view:MapCityControl Canvas.Left="346"
-                                         Canvas.Top="217"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[Montreal]}" />
-                    <view:MapCityControl Canvas.Left="353"
-                                         Canvas.Top="332"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Miami]}" />
-                    <view:MapCityControl Canvas.Left="397"
-                                         Canvas.Top="270"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[Washington]}" />
-                    <view:MapCityControl Canvas.Left="410"
-                                         Canvas.Top="547"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Buenos Aires]}" />
-                    <view:MapCityControl Canvas.Left="420"
-                                         Canvas.Top="220"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[New York]}" />
-                    <view:MapCityControl Canvas.Left="461"
-                                         Canvas.Top="488"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Sao Paulo]}" />
-                    <view:MapCityControl Canvas.Left="560"
-                                         Canvas.Top="259"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[Madrid]}" />
-                    <view:MapCityControl Canvas.Left="570"
-                                         Canvas.Top="182"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[London]}" />
-                    <view:MapCityControl Canvas.Left="624"
-                                         Canvas.Top="390"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Lagos]}" />
-                    <view:MapCityControl Canvas.Left="640"
-                                         Canvas.Top="223"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[Paris]}" />
-                    <view:MapCityControl Canvas.Left="652"
-                                         Canvas.Top="302"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Algiers]}" />
-                    <view:MapCityControl Canvas.Left="662"
-                                         Canvas.Top="170"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[Essen]}" />
-                    <view:MapCityControl Canvas.Left="683"
-                                         Canvas.Top="445"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Kinshasa]}" />
-                    <view:MapCityControl Canvas.Left="701"
-                                         Canvas.Top="213"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[Milan]}" />
-                    <view:MapCityControl Canvas.Left="719"
-                                         Canvas.Top="313"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Cairo]}" />
-                    <view:MapCityControl Canvas.Left="725"
-                                         Canvas.Top="525"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Johannesburg]}" />
-                    <view:MapCityControl Canvas.Left="731"
-                                         Canvas.Top="247"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Istanbul]}" />
-                    <view:MapCityControl Canvas.Left="734"
-                                         Canvas.Top="374"
-                                         CityColor="Yellow"
-                                         DataContext="{Binding Board.WorldMap.Cities[Khartoum]}" />
-                    <view:MapCityControl Canvas.Left="756"
-                                         Canvas.Top="148"
-                                         CityColor="Blue"
-                                         DataContext="{Binding Board.WorldMap.Cities[St. Petersburg]}" />
-                    <view:MapCityControl Canvas.Left="791"
-                                         Canvas.Top="275"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Baghdad]}" />
-                    <view:MapCityControl Canvas.Left="794"
-                                         Canvas.Top="200"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Moscow]}" />
-                    <view:MapCityControl Canvas.Left="802"
-                                         Canvas.Top="345"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Riyadh]}" />
-                    <view:MapCityControl Canvas.Left="853"
-                                         Canvas.Top="237"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Tehran]}" />
-                    <view:MapCityControl Canvas.Left="872"
-                                         Canvas.Top="303"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Karachi]}" />
-                    <view:MapCityControl Canvas.Left="880"
-                                         Canvas.Top="366"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Mumbai]}" />
-                    <view:MapCityControl Canvas.Left="932"
-                                         Canvas.Top="274"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Delhi]}" />
-                    <view:MapCityControl Canvas.Left="951"
-                                         Canvas.Top="397"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Chennai]}" />
-                    <view:MapCityControl Canvas.Left="989"
-                                         Canvas.Top="299"
-                                         CityColor="Black"
-                                         DataContext="{Binding Board.WorldMap.Cities[Kolkata]}" />
-                    <view:MapCityControl Canvas.Left="1004"
-                                         Canvas.Top="467"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Jakarta]}" />
-                    <view:MapCityControl Canvas.Left="1013"
-                                         Canvas.Top="364"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Bangkok]}" />
-                    <view:MapCityControl Canvas.Left="1049"
-                                         Canvas.Top="203"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Beijing]}" />
-                    <view:MapCityControl Canvas.Left="1050"
-                                         Canvas.Top="259"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Shanghai]}" />
-                    <view:MapCityControl Canvas.Left="1054"
-                                         Canvas.Top="325"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Hong Kong]}" />
-                    <view:MapCityControl Canvas.Left="1056"
-                                         Canvas.Top="411"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Ho Chi Minh City]}" />
-                    <view:MapCityControl Canvas.Left="1120"
-                                         Canvas.Top="199"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Seoul]}" />
-                    <view:MapCityControl Canvas.Left="1125"
-                                         Canvas.Top="319"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Taipei]}" />
-                    <view:MapCityControl Canvas.Left="1143"
-                                         Canvas.Top="406"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Manila]}" />
-                    <view:MapCityControl Canvas.Left="1188"
-                                         Canvas.Top="233"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Tokyo]}" />
-                    <view:MapCityControl Canvas.Left="1188"
-                                         Canvas.Top="546"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Sydney]}" />
-                    <view:MapCityControl Canvas.Left="1198"
-                                         Canvas.Top="296"
-                                         CityColor="Red"
-                                         DataContext="{Binding Board.WorldMap.Cities[Osaka]}" />
-                </Canvas>
-            </Viewbox>
-            <ItemsControl Grid.Row="1"
-                          HorizontalAlignment="Center"
-                          Background="Black"
-                          ItemsSource="{Binding CurrentCharacter.Player.Cards}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Padding="10"
-                                Background="Black"
-                                BorderBrush="{Binding City.Color, Converter={StaticResource DiseaseToColorConverter}}"
-                                BorderThickness="2"
-                                Command="{Binding DataContext.CardCommand, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:BoardView}}}"
-                                CommandParameter="{Binding}"
-                                Content="{Binding City.Name, Mode=OneWay}"
-                                FontSize="12"
-                                Foreground="White" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel IsItemsHost="True"
-                                                Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
+                <ItemsControl Grid.Row="1"
+                              HorizontalAlignment="Center"
+                              Background="Black"
+                              ItemsSource="{Binding CurrentCharacter.Player.Cards}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Padding="10"
+                                    Background="Black"
+                                    BorderBrush="{Binding City.Color, Converter={StaticResource DiseaseToColorConverter}}"
+                                    BorderThickness="2"
+                                    Command="{Binding DataContext.CardCommand, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:BoardView}}}"
+                                    CommandParameter="{Binding}"
+                                    Content="{Binding City.Name, Mode=OneWay}"
+                                    FontSize="12"
+                                    Foreground="White" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel IsItemsHost="True"
+                                                    Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
 
-        </Grid>
-    </DockPanel>
+            </Grid>
+            <view:WorldMap />
+        </DockPanel>
+        <Border x:Name="InfoBorder"
+                Grid.Row="1"
+                Grid.Column="1"
+                Background="#CC000000"
+                BorderBrush="{StaticResource ActionEnabledBrush}"
+                BorderThickness="2"
+                Visibility="{Binding IsInfoVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ContentControl HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Content="{Binding InfoViewModel}" />
+        </Border>
+    </Grid>
 </UserControl>

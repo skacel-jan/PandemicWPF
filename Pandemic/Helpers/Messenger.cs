@@ -13,5 +13,6 @@ namespace Pandemic
         public static string DiseaseSelected = "DiseaseSelected";
         public static string MultipleCardsSelected = "CardsSelected";
         public static string MoveSelected = "MoveSelected";
+        public static string InstantMove = "InstantMove";
     }
 }

@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
         xmlns:views="clr-namespace:Pandemic.Views"
-        mc:Ignorable="d"
         Title="Pandemic Legacy"
-        Height="1080"
         Width="1920"
+        Height="1080"
+        TextOptions.TextFormattingMode="Display"
         WindowState="Maximized"
-        TextOptions.TextFormattingMode="Display">
+        mc:Ignorable="d">
     <Window.DataContext>
         <viewModels:MainViewModel />
     </Window.DataContext>
@@ -18,6 +18,11 @@
         <DataTemplate DataType="{x:Type viewModels:GameViewModel}">
             <views:BoardView />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type viewModels:MainMenuViewModel}">
+            <views:MainMenuView />
+        </DataTemplate>
+
     </Window.Resources>
     <Viewbox Stretch="Fill">
         <ContentControl Content="{Binding CurrentViewModel}" />

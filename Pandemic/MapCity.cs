@@ -25,6 +25,7 @@ namespace Pandemic
             Diseases = diseases ?? throw new ArgumentNullException("diseases");
 
             CityCommand = new RelayCommand(() => MapCitySelected(), () => IsEnabled);
+            InstantMoveCommand = new RelayCommand(() => InstantMove());
             Characters = new ObservableCollection<Character>();
             Infections = new Dictionary<DiseaseColor, int>(4)
             {
@@ -60,6 +61,8 @@ namespace Pandemic
         }
 
         public ICommand CityCommand { get; set; }
+
+        public ICommand InstantMoveCommand { get; set; }
 
         public IEnumerable<MapCity> ConnectedCities { get; set; }
 
@@ -204,6 +207,11 @@ namespace Pandemic
         private void MapCitySelected()
         {
             MessengerInstance.Send(this, Messenger.CitySelected);
+        }
+
+        private void InstantMove()
+        {
+            MessengerInstance.Send(this, Messenger.InstantMove);
         }
     }
 }

@@ -94,6 +94,7 @@
     <Compile Include="ViewModels\DiseaseTemplateSelector.cs" />
     <Compile Include="ViewModels\EpidemicViewModel.cs" />
     <Compile Include="ViewModels\GameViewModel.cs" />
+    <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
     <Compile Include="ViewModels\MultiCardsSelectionViewModel.cs" />
@@ -119,6 +120,9 @@
     <Compile Include="Views\DiseaseSelection.xaml.cs">
       <DependentUpon>DiseaseSelection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MainMenuView.xaml.cs">
+      <DependentUpon>MainMenuView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MapCityControl.xaml.cs">
       <DependentUpon>MapCityControl.xaml</DependentUpon>
     </Compile>
@@ -128,6 +132,9 @@
     </Compile>
     <Compile Include="Views\WorldMap.xaml.cs">
       <DependentUpon>WorldMap.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WorldMapBackground.xaml.cs">
+      <DependentUpon>WorldMapBackground.xaml</DependentUpon>
     </Compile>
     <Compile Include="WorldMap.cs" />
     <Compile Include="WorldMapFactory.cs" />
@@ -159,6 +166,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\MainMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MapCityControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -168,6 +179,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\WorldMap.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WorldMapBackground.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
