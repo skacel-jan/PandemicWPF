@@ -8,11 +8,12 @@ namespace Pandemic
 {
     public static class Messenger
     {
-        public static string CitySelected = "CitySelected";
-        public static string CardSelected = "CardSelected";
-        public static string DiseaseSelected = "DiseaseSelected";
-        public static string MultipleCardsSelected = "CardsSelected";
-        public static string MoveSelected = "MoveSelected";
-        public static string InstantMove = "InstantMove";
+        internal const string StartNewGame = "StartNewGame";
+        internal const string CitySelected = "CitySelected";
+        internal const string CardSelected = "CardSelected";
+        internal const string DiseaseSelected = "DiseaseSelected";
+        internal const string MultipleCardsSelected = "CardsSelected";
+        internal const string MoveSelected = "MoveSelected";
+        internal const string InstantMove = "InstantMove";
     }
 }

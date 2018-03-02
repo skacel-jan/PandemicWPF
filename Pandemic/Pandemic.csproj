@@ -98,6 +98,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
     <Compile Include="ViewModels\MultiCardsSelectionViewModel.cs" />
+    <Compile Include="ViewModels\NavigateToViewModelNotification.cs" />
     <Compile Include="Views\BoardView.xaml.cs">
       <DependentUpon>BoardView.xaml</DependentUpon>
     </Compile>

@@ -12,14 +12,14 @@ namespace Pandemic.ViewModels
 {
     public class MainMenuViewModel : ViewModelBase
     {
-        public MainViewModel MainViewModel { get; set; }
 
         private ICommand _startGameCommand;
         public ICommand StartGameCommand
         {
             get
             {
-                return _startGameCommand ?? (_startGameCommand = new RelayCommand(() => MainViewModel.SetGameView()));
+                return _startGameCommand ?? (_startGameCommand = new RelayCommand(() => 
+                    MessengerInstance.Send(new NavigateToViewModelMessage( Messenger.StartNewGame))));
             }
         }
 
@@ -30,11 +30,6 @@ namespace Pandemic.ViewModels
             {
                 return _exitCommand ?? (_exitCommand = new RelayCommand(() => Application.Current.Shutdown()));
             }
-        }
-
-        public MainMenuViewModel(MainViewModel mainViewModel)
-        {
-            MainViewModel = mainViewModel;
         }
     }
 }

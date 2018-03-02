@@ -165,7 +165,7 @@ namespace Pandemic.ViewModels
             MessengerInstance.Register<MapCity>(this, Messenger.CitySelected, OnCitySelected);
             MessengerInstance.Register<Card>(this, Messenger.CardSelected, CardSelected);
             MessengerInstance.Register<DiseaseColor>(this, Messenger.DiseaseSelected, TreatDisease);
-            MessengerInstance.Register<MoveType>(this, "MoveSelection", MoveSelected);
+            MessengerInstance.Register<MoveType>(this, Messenger.MoveSelected, MoveSelected);
             MessengerInstance.Register<IList<CityCard>>(this, Messenger.MultipleCardsSelected, DiscoverCure);
             MessengerInstance.Register<MapCity>(this, Messenger.InstantMove, InstantMove);
         }

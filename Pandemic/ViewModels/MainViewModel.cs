@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +21,23 @@ namespace Pandemic.ViewModels
 
         public MainViewModel()
         {
-            SetMainMenuView();
+            MessengerInstance.Register<NavigateToViewModelMessage>(this, NavigateTo);
+            CurrentViewModel = new MainMenuViewModel();
+        }
+
+        private void NavigateTo(NavigateToViewModelMessage message)
+        {
+            switch (message.NavigateTo)
+            {
+                case Messenger.StartNewGame:
+                    SetGameView();
+                    break;
+            }
         }
 
         public void SetGameView()
         {
             CurrentViewModel = new GameViewModel();
-        }
-
-        public void SetMainMenuView()
-        {
-            CurrentViewModel = new MainMenuViewModel(this);            
         }
     }
 }
