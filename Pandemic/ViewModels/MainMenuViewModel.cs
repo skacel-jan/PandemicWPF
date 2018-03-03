@@ -18,8 +18,8 @@ namespace Pandemic.ViewModels
         {
             get
             {
-                return _startGameCommand ?? (_startGameCommand = new RelayCommand(() => 
-                    MessengerInstance.Send(new NavigateToViewModelMessage( Messenger.StartNewGame))));
+                return _startGameCommand ?? (_startGameCommand = new RelayCommand(() =>
+                    MessengerInstance.Send(new NavigateToViewModelMessage(Messenger.StartNewGame))));
             }
         }
 

@@ -10,10 +10,9 @@ namespace Pandemic
     {
         public City City { get; private set; }
 
-        public CityCard(City city)
+        public CityCard(City city) : base(city.Name)
         {
-            this.City = city;
-            Name = city.Name;
+            City = city ?? throw new ArgumentNullException(nameof(city));
         }
 
         public override string ToString()

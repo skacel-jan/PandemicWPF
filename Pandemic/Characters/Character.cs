@@ -1,4 +1,8 @@
 ﻿using GalaSoft.MvvmLight;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Media;
 
 namespace Pandemic
 {
@@ -9,7 +13,6 @@ namespace Pandemic
 
         private MapCity _currentMapCity;
         private bool _isActive;
-        private Player _player;
         public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
         public virtual int CardsForCure { get => STANDARD_CARDS_FOR_CURE; }
 
@@ -30,21 +33,16 @@ namespace Pandemic
             set => Set(ref _isActive, value);
         }
 
-        public Player Player
-        {
-            get { return _player; }
-            set
-            {
-                Set(ref _player, value);
-            }
-        }
-
         public abstract string Role { get; }
+
+        public abstract IEnumerable<string> RoleDescription { get; }
+
+        public abstract Color Color { get; }
 
         public virtual PlayerCard BuildResearhStation()
         {
             CurrentMapCity.HasResearchStation = true;
-            return Player.RemoveCard(CurrentMapCity.City);
+            return RemoveCard(CurrentMapCity.City);
         }
 
         public virtual bool CanBuildResearchStation()
@@ -54,12 +52,12 @@ namespace Pandemic
 
         public virtual bool CanDirectFlight(MapCity toCity)
         {
-            return Player.HasCityCard(toCity.City);
+            return HasCityCard(toCity.City);
         }
 
         public virtual bool CanDiscoverCure(DiseaseColor diseaseColor)
         {
-            return CurrentMapCity.HasResearchStation && Player.ColorCardsCount(diseaseColor) >= CardsForCure;
+            return CurrentMapCity.HasResearchStation && ColorCardsCount(diseaseColor) >= CardsForCure;
         }
 
         public virtual bool CanDriveOrFerry(MapCity toCity)
@@ -85,7 +83,7 @@ namespace Pandemic
         public virtual PlayerCard DirectFlight(MapCity toCity)
         {
             CurrentMapCity = toCity;
-            return Player.RemoveCard(toCity.City);
+            return RemoveCard(toCity.City);
         }
 
         public virtual void DriveOrFerry(MapCity toCity)
@@ -95,21 +93,21 @@ namespace Pandemic
 
         public virtual PlayerCard CharterFlight(MapCity toCity)
         {
-            var card = Player.RemoveCard(CurrentMapCity.City);
+            var card = RemoveCard(CurrentMapCity.City);
             CurrentMapCity = toCity;
             return card;
         }
 
         public virtual void ShareKnowledgeGive(PlayerCard card, Character character)
         {
-            Player.RemoveCard(card);
-            character.Player.AddCard(card);
+            RemoveCard(card);
+            character.AddCard(card);
         }
 
         public virtual void ShareKnowledgeTake(PlayerCard card, Character character)
         {
-            character.Player.RemoveCard(card);
-            Player.AddCard(card);
+            character.RemoveCard(card);
+            AddCard(card);
         }
 
         public virtual void ShuttleFlight(MapCity toCity)
@@ -129,7 +127,61 @@ namespace Pandemic
 
         protected virtual bool HasCardOfCurrentCity()
         {
-            return Player.HasCityCard(CurrentMapCity.City);
+            return HasCityCard(CurrentMapCity.City);
+        }
+
+        public ObservableCollection<PlayerCard> Cards { get; private set; }
+
+        private DiseaseColor _mostCardsColor;
+
+        protected Character()
+        {
+            Cards = new ObservableCollection<PlayerCard>();
+            Cards.CollectionChanged += Cards_CollectionChanged;
+        }
+
+        public DiseaseColor MostCardsColor
+        {
+            get => _mostCardsColor;
+        }
+
+        private void Cards_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (Cards.Count > 0)
+            {
+                _mostCardsColor = Cards.GroupBy(x => x.City.Color).OrderByDescending(gb => gb.Count()).Select(y => y.Key).First();
+            }
+            else
+            {
+                _mostCardsColor = DiseaseColor.Black;
+            }
+        }
+
+        public PlayerCard RemoveCard(PlayerCard card)
+        {
+            this.Cards.Remove(card);
+            return card;
+        }
+
+        public PlayerCard RemoveCard(City city)
+        {
+            var card = Cards.Single(c => c.City == city);
+            return RemoveCard(card);
+        }
+
+        public void AddCard(PlayerCard card)
+        {
+            this.Cards.Add(card);
+        }
+
+        public int ColorCardsCount(DiseaseColor diseaseColor)
+        {
+            return this.Cards.Count(x => x.City.Color == diseaseColor);
+        }
+
+        public bool HasCityCard(City city)
+        {
+            return Cards.Any(card => card.City == city);
         }
     }
 }

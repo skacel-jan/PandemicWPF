@@ -8,9 +8,13 @@ namespace Pandemic
 {
     public class EpidemicCard : Card
     {
+        public EpidemicCard(string name) : base(name)
+        {
+        }
+
         public override string ToString()
         {
-            return "Epidemic";
+            return Name;
         }
     }
 }

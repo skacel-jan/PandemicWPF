@@ -8,6 +8,14 @@ namespace Pandemic.Cards
 {
     public class EventCard : Card
     {
-        public Action Event { get; set; }
+        public EventCard(string name, Action @event, string description) : base(name)
+        {
+            Event = @event ?? throw new ArgumentNullException(nameof(@event));
+            Description = description ?? throw new ArgumentNullException(nameof(description));
+        }
+
+        public Action Event { get;  private set; }
+
+        public string Description { get; private set; }
     }
 }

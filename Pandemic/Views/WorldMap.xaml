@@ -1,19 +1,20 @@
-﻿<UserControl x:Class="Pandemic.Views.WorldMap"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:Converters="clr-namespace:Pandemic.Converters"
-             xmlns:System="clr-namespace:System;assembly=mscorlib"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:helpers="clr-namespace:Pandemic.Helpers"
-             xmlns:local="clr-namespace:Pandemic.Views"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:view="clr-namespace:Pandemic.Views"
-             xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewModels:GameViewModel,
-                                              IsDesignTimeCreatable=True}"
-             d:DesignHeight="700"
-             d:DesignWidth="1400"
-             mc:Ignorable="d">
+﻿<UserControl
+    x:Class="Pandemic.Views.WorldMap"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Converters="clr-namespace:Pandemic.Converters"
+    xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:Pandemic.Helpers"
+    xmlns:local="clr-namespace:Pandemic.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:view="clr-namespace:Pandemic.Views"
+    xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewModels:GameViewModel,
+                                     IsDesignTimeCreatable=True}"
+    d:DesignHeight="700"
+    d:DesignWidth="1400"
+    mc:Ignorable="d">
     <UserControl.Resources>
 
         <System:Double x:Key="MoveLength">30.0</System:Double>
@@ -41,8 +42,7 @@
 
         <Style TargetType="{x:Type Line}">
             <Style.Resources>
-                <BlurEffect x:Key="LineBlur"
-                            Radius="2" />
+                <BlurEffect x:Key="LineBlur" Radius="2" />
             </Style.Resources>
             <Setter Property="Stroke" Value="#FF8BC6C9" />
             <Setter Property="StrokeThickness" Value="2" />
@@ -52,416 +52,527 @@
     </UserControl.Resources>
     <Grid>
         <view:WorldMapBackground Grid.Row="0" />
-        <Viewbox Grid.Row="0"
-                 Stretch="Uniform">
-            <Canvas Width="1400"
-                    Height="700">
-                <Line X1="654"
-                      X2="713"
-                      Y1="420"
-                      Y2="475" />
-                <Line X1="713"
-                      X2="755"
-                      Y1="475"
-                      Y2="555" />
-                <Line X1="755"
-                      X2="764"
-                      Y1="555"
-                      Y2="404" />
-                <Line X1="764"
-                      X2="654"
-                      Y1="404"
-                      Y2="420" />
-                <Line X1="713"
-                      X2="764"
-                      Y1="475"
-                      Y2="404" />
-                <Line X1="654"
-                      X2="491"
-                      Y1="420"
-                      Y2="518" />
-                <Line X1="491"
-                      X2="440"
-                      Y1="518"
-                      Y2="577" />
-                <Line X1="491"
-                      X2="372"
-                      Y1="518"
-                      Y2="440" />
-                <Line X1="491"
-                      X2="590"
-                      Y1="518"
-                      Y2="289" />
-                <Line X1="440"
-                      X2="372"
-                      Y1="577"
-                      Y2="440" />
-                <Line X1="372"
-                      X2="330"
-                      Y1="440"
-                      Y2="517" />
-                <Line X1="349"
-                      X2="330"
-                      Y1="596"
-                      Y2="517" />
-                <Line X1="281"
-                      X2="330"
-                      Y1="375"
-                      Y2="517" />
-                <Line X1="372"
-                      X2="281"
-                      Y1="440"
-                      Y2="375" />
-                <Line X1="372"
-                      X2="383"
-                      Y1="440"
-                      Y2="362" />
-                <Line X1="281"
-                      X2="196"
-                      Y1="375"
-                      Y2="355" />
-                <Line X1="281"
-                      X2="383"
-                      Y1="375"
-                      Y2="362" />
-                <Line X1="281"
-                      X2="288"
-                      Y1="375"
-                      Y2="263" />
-                <Line X1="383"
-                      X2="324"
-                      Y1="362"
-                      Y2="308" />
-                <Line X1="383"
-                      X2="427"
-                      Y1="362"
-                      Y2="300" />
-                <Line X1="324"
-                      X2="427"
-                      Y1="308"
-                      Y2="300" />
-                <Line X1="324"
-                      X2="288"
-                      Y1="308"
-                      Y2="253" />
-                <Line X1="196"
-                      X2="288"
-                      Y1="355"
-                      Y2="253" />
-                <Line X1="{Binding (Canvas.Left), ConverterParameter={StaticResource MoveLength}, Converter={StaticResource MovePointToCenter}, ElementName=SanFrancisco}"
-                      X2="{Binding (Canvas.Left), ConverterParameter={StaticResource MoveLength}, Converter={StaticResource MovePointToCenter}, ElementName=Chicago}"
-                      Y1="{Binding (Canvas.Top), ConverterParameter={StaticResource MoveLength}, Converter={StaticResource MovePointToCenter}, ElementName=SanFrancisco}"
-                      Y2="{Binding (Canvas.Top), ConverterParameter={StaticResource MoveLength}, Converter={StaticResource MovePointToCenter}, ElementName=Chicago}" />
-                <Line X1="196"
-                      X2="182"
-                      Y1="355"
-                      Y2="286" />
-                <Line X1="288"
-                      X2="376"
-                      Y1="253"
-                      Y2="247" />
-                <Line X1="427"
-                      X2="376"
-                      Y1="300"
-                      Y2="247" />
-                <Line X1="450"
-                      X2="376"
-                      Y1="250"
-                      Y2="247" />
-                <Line X1="450"
-                      X2="427"
-                      Y1="250"
-                      Y2="300" />
-                <Line X1="450"
-                      X2="600"
-                      Y1="250"
-                      Y2="212" />
-                <Line X1="450"
-                      X2="590"
-                      Y1="250"
-                      Y2="289" />
-                <Line X1="600"
-                      X2="590"
-                      Y1="212"
-                      Y2="289" />
-                <Line X1="600"
-                      X2="670"
-                      Y1="212"
-                      Y2="253" />
-                <Line X1="670"
-                      X2="590"
-                      Y1="253"
-                      Y2="289" />
-                <Line X1="600"
-                      X2="692"
-                      Y1="212"
-                      Y2="200" />
-                <Line X1="682"
-                      X2="590"
-                      Y1="332"
-                      Y2="289" />
-                <Line X1="670"
-                      X2="692"
-                      Y1="253"
-                      Y2="200" />
-                <Line X1="731"
-                      X2="692"
-                      Y1="243"
-                      Y2="200" />
-                <Line X1="786"
-                      X2="692"
-                      Y1="178"
-                      Y2="200" />
-                <Line X1="670"
-                      X2="682"
-                      Y1="253"
-                      Y2="332" />
-                <Line X1="670"
-                      X2="731"
-                      Y1="253"
-                      Y2="243" />
-                <Line X1="786"
-                      X2="761"
-                      Y1="178"
-                      Y2="277" />
-                <Line X1="786"
-                      X2="824"
-                      Y1="178"
-                      Y2="230" />
-                <Line X1="731"
-                      X2="761"
-                      Y1="243"
-                      Y2="277" />
-                <Line X1="682"
-                      X2="761"
-                      Y1="332"
-                      Y2="277" />
-                <Line X1="749"
-                      X2="761"
-                      Y1="343"
-                      Y2="277" />
-                <Line X1="821"
-                      X2="761"
-                      Y1="305"
-                      Y2="277" />
-                <Line X1="824"
-                      X2="761"
-                      Y1="230"
-                      Y2="277" />
-                <Line X1="749"
-                      X2="682"
-                      Y1="343"
-                      Y2="332" />
-                <Line X1="749"
-                      X2="764"
-                      Y1="343"
-                      Y2="404" />
-                <Line X1="749"
-                      X2="821"
-                      Y1="343"
-                      Y2="305" />
-                <Line X1="749"
-                      X2="832"
-                      Y1="343"
-                      Y2="375" />
-                <Line X1="824"
-                      X2="883"
-                      Y1="230"
-                      Y2="267" />
-                <Line X1="902"
-                      X2="832"
-                      Y1="333"
-                      Y2="375" />
-                <Line X1="821"
-                      X2="832"
-                      Y1="305"
-                      Y2="375" />
-                <Line X1="821"
-                      X2="883"
-                      Y1="305"
-                      Y2="267" />
-                <Line X1="821"
-                      X2="902"
-                      Y1="305"
-                      Y2="333" />
-                <Line X1="883"
-                      X2="902"
-                      Y1="267"
-                      Y2="333" />
-                <Line X1="962"
-                      X2="902"
-                      Y1="304"
-                      Y2="333" />
-                <Line X1="910"
-                      X2="902"
-                      Y1="396"
-                      Y2="333" />
-                <Line X1="962"
-                      X2="883"
-                      Y1="304"
-                      Y2="267" />
-                <Line X1="962"
-                      X2="910"
-                      Y1="304"
-                      Y2="396" />
-                <Line X1="962"
-                      X2="1019"
-                      Y1="304"
-                      Y2="329" />
-                <Line X1="962"
-                      X2="981"
-                      Y1="304"
-                      Y2="427" />
-                <Line X1="981"
-                      X2="910"
-                      Y1="427"
-                      Y2="396" />
-                <view:MapCityControl x:Name="SanFrancisco"
-                                     Canvas.Left="152"
-                                     Canvas.Top="253"
-                                     DataContext="{Binding Board.WorldMap.Cities[San Francisco]}" />
-                <view:MapCityControl Canvas.Left="166"
-                                     Canvas.Top="325"
-                                     DataContext="{Binding Board.WorldMap.Cities[Los Angeles]}" />
-                <view:MapCityControl Canvas.Left="251"
-                                     Canvas.Top="345"
-                                     DataContext="{Binding Board.WorldMap.Cities[Mexico City]}" />
-                <view:MapCityControl x:Name="Chicago"
-                                     Canvas.Left="258"
-                                     Canvas.Top="223"
-                                     DataContext="{Binding Board.WorldMap.Cities[Chicago]}" />
-                <view:MapCityControl Canvas.Left="294"
-                                     Canvas.Top="278"
-                                     DataContext="{Binding Board.WorldMap.Cities[Atlanta]}" />
-                <view:MapCityControl Canvas.Left="300"
-                                     Canvas.Top="487"
-                                     DataContext="{Binding Board.WorldMap.Cities[Lima]}" />
-                <view:MapCityControl Canvas.Left="319"
-                                     Canvas.Top="566"
-                                     DataContext="{Binding Board.WorldMap.Cities[Santiago]}" />
-                <view:MapCityControl Canvas.Left="342"
-                                     Canvas.Top="410"
-                                     DataContext="{Binding Board.WorldMap.Cities[Bogota]}" />
-                <view:MapCityControl Canvas.Left="346"
-                                     Canvas.Top="217"
-                                     DataContext="{Binding Board.WorldMap.Cities[Montreal]}" />
-                <view:MapCityControl Canvas.Left="353"
-                                     Canvas.Top="332"
-                                     DataContext="{Binding Board.WorldMap.Cities[Miami]}" />
-                <view:MapCityControl Canvas.Left="397"
-                                     Canvas.Top="270"
-                                     DataContext="{Binding Board.WorldMap.Cities[Washington]}" />
-                <view:MapCityControl Canvas.Left="410"
-                                     Canvas.Top="547"
-                                     DataContext="{Binding Board.WorldMap.Cities[Buenos Aires]}" />
-                <view:MapCityControl Canvas.Left="420"
-                                     Canvas.Top="220"
-                                     DataContext="{Binding Board.WorldMap.Cities[New York]}" />
-                <view:MapCityControl Canvas.Left="461"
-                                     Canvas.Top="488"
-                                     DataContext="{Binding Board.WorldMap.Cities[Sao Paulo]}" />
-                <view:MapCityControl Canvas.Left="560"
-                                     Canvas.Top="259"
-                                     DataContext="{Binding Board.WorldMap.Cities[Madrid]}" />
-                <view:MapCityControl Canvas.Left="570"
-                                     Canvas.Top="182"
-                                     DataContext="{Binding Board.WorldMap.Cities[London]}" />
-                <view:MapCityControl Canvas.Left="624"
-                                     Canvas.Top="390"
-                                     DataContext="{Binding Board.WorldMap.Cities[Lagos]}" />
-                <view:MapCityControl Canvas.Left="640"
-                                     Canvas.Top="223"
-                                     DataContext="{Binding Board.WorldMap.Cities[Paris]}" />
-                <view:MapCityControl Canvas.Left="652"
-                                     Canvas.Top="302"
-                                     DataContext="{Binding Board.WorldMap.Cities[Algiers]}" />
-                <view:MapCityControl Canvas.Left="662"
-                                     Canvas.Top="170"
-                                     DataContext="{Binding Board.WorldMap.Cities[Essen]}" />
-                <view:MapCityControl Canvas.Left="683"
-                                     Canvas.Top="445"
-                                     DataContext="{Binding Board.WorldMap.Cities[Kinshasa]}" />
-                <view:MapCityControl Canvas.Left="701"
-                                     Canvas.Top="213"
-                                     DataContext="{Binding Board.WorldMap.Cities[Milan]}" />
-                <view:MapCityControl Canvas.Left="719"
-                                     Canvas.Top="313"
-                                     DataContext="{Binding Board.WorldMap.Cities[Cairo]}" />
-                <view:MapCityControl Canvas.Left="725"
-                                     Canvas.Top="525"
-                                     DataContext="{Binding Board.WorldMap.Cities[Johannesburg]}" />
-                <view:MapCityControl Canvas.Left="731"
-                                     Canvas.Top="247"
-                                     DataContext="{Binding Board.WorldMap.Cities[Istanbul]}" />
-                <view:MapCityControl Canvas.Left="734"
-                                     Canvas.Top="374"
-                                     DataContext="{Binding Board.WorldMap.Cities[Khartoum]}" />
-                <view:MapCityControl Canvas.Left="756"
-                                     Canvas.Top="148"
-                                     DataContext="{Binding Board.WorldMap.Cities[St. Petersburg]}" />
-                <view:MapCityControl Canvas.Left="791"
-                                     Canvas.Top="275"
-                                     DataContext="{Binding Board.WorldMap.Cities[Baghdad]}" />
-                <view:MapCityControl Canvas.Left="794"
-                                     Canvas.Top="200"
-                                     DataContext="{Binding Board.WorldMap.Cities[Moscow]}" />
-                <view:MapCityControl Canvas.Left="802"
-                                     Canvas.Top="345"
-                                     DataContext="{Binding Board.WorldMap.Cities[Riyadh]}" />
-                <view:MapCityControl Canvas.Left="853"
-                                     Canvas.Top="237"
-                                     DataContext="{Binding Board.WorldMap.Cities[Tehran]}" />
-                <view:MapCityControl Canvas.Left="872"
-                                     Canvas.Top="303"
-                                     DataContext="{Binding Board.WorldMap.Cities[Karachi]}" />
-                <view:MapCityControl Canvas.Left="880"
-                                     Canvas.Top="366"
-                                     DataContext="{Binding Board.WorldMap.Cities[Mumbai]}" />
-                <view:MapCityControl Canvas.Left="932"
-                                     Canvas.Top="274"
-                                     DataContext="{Binding Board.WorldMap.Cities[Delhi]}" />
-                <view:MapCityControl Canvas.Left="951"
-                                     Canvas.Top="397"
-                                     DataContext="{Binding Board.WorldMap.Cities[Chennai]}" />
-                <view:MapCityControl Canvas.Left="989"
-                                     Canvas.Top="299"
-                                     DataContext="{Binding Board.WorldMap.Cities[Kolkata]}" />
-                <view:MapCityControl Canvas.Left="1004"
-                                     Canvas.Top="467"
-                                     DataContext="{Binding Board.WorldMap.Cities[Jakarta]}" />
-                <view:MapCityControl Canvas.Left="1013"
-                                     Canvas.Top="364"
-                                     DataContext="{Binding Board.WorldMap.Cities[Bangkok]}" />
-                <view:MapCityControl Canvas.Left="1049"
-                                     Canvas.Top="203"
-                                     DataContext="{Binding Board.WorldMap.Cities[Beijing]}" />
-                <view:MapCityControl Canvas.Left="1050"
-                                     Canvas.Top="259"
-                                     DataContext="{Binding Board.WorldMap.Cities[Shanghai]}" />
-                <view:MapCityControl Canvas.Left="1054"
-                                     Canvas.Top="325"
-                                     DataContext="{Binding Board.WorldMap.Cities[Hong Kong]}" />
-                <view:MapCityControl Canvas.Left="1056"
-                                     Canvas.Top="411"
-                                     DataContext="{Binding Board.WorldMap.Cities[Ho Chi Minh City]}" />
-                <view:MapCityControl Canvas.Left="1120"
-                                     Canvas.Top="199"
-                                     DataContext="{Binding Board.WorldMap.Cities[Seoul]}" />
-                <view:MapCityControl Canvas.Left="1125"
-                                     Canvas.Top="319"
-                                     DataContext="{Binding Board.WorldMap.Cities[Taipei]}" />
-                <view:MapCityControl Canvas.Left="1143"
-                                     Canvas.Top="406"
-                                     DataContext="{Binding Board.WorldMap.Cities[Manila]}" />
-                <view:MapCityControl Canvas.Left="1188"
-                                     Canvas.Top="233"
-                                     DataContext="{Binding Board.WorldMap.Cities[Tokyo]}" />
-                <view:MapCityControl Canvas.Left="1188"
-                                     Canvas.Top="546"
-                                     DataContext="{Binding Board.WorldMap.Cities[Sydney]}" />
-                <view:MapCityControl Canvas.Left="1198"
-                                     Canvas.Top="296"
-                                     DataContext="{Binding Board.WorldMap.Cities[Osaka]}" />
+        <Viewbox Grid.Row="0" Stretch="Uniform">
+            <Canvas Width="1400" Height="700">
+                <Line
+                    X1="654"
+                    X2="713"
+                    Y1="420"
+                    Y2="475" />
+                <Line
+                    X1="713"
+                    X2="755"
+                    Y1="475"
+                    Y2="555" />
+                <Line
+                    X1="755"
+                    X2="764"
+                    Y1="555"
+                    Y2="404" />
+                <Line
+                    X1="764"
+                    X2="654"
+                    Y1="404"
+                    Y2="420" />
+                <Line
+                    X1="713"
+                    X2="764"
+                    Y1="475"
+                    Y2="404" />
+                <Line
+                    X1="654"
+                    X2="491"
+                    Y1="420"
+                    Y2="518" />
+                <Line
+                    X1="491"
+                    X2="440"
+                    Y1="518"
+                    Y2="577" />
+                <Line
+                    X1="491"
+                    X2="372"
+                    Y1="518"
+                    Y2="440" />
+                <Line
+                    X1="491"
+                    X2="590"
+                    Y1="518"
+                    Y2="289" />
+                <Line
+                    X1="440"
+                    X2="372"
+                    Y1="577"
+                    Y2="440" />
+                <Line
+                    X1="372"
+                    X2="330"
+                    Y1="440"
+                    Y2="517" />
+                <Line
+                    X1="349"
+                    X2="330"
+                    Y1="596"
+                    Y2="517" />
+                <Line
+                    X1="281"
+                    X2="330"
+                    Y1="375"
+                    Y2="517" />
+                <Line
+                    X1="372"
+                    X2="281"
+                    Y1="440"
+                    Y2="375" />
+                <Line
+                    X1="372"
+                    X2="383"
+                    Y1="440"
+                    Y2="362" />
+                <Line
+                    X1="281"
+                    X2="196"
+                    Y1="375"
+                    Y2="355" />
+                <Line
+                    X1="281"
+                    X2="383"
+                    Y1="375"
+                    Y2="362" />
+                <Line
+                    X1="281"
+                    X2="288"
+                    Y1="375"
+                    Y2="263" />
+                <Line
+                    X1="383"
+                    X2="324"
+                    Y1="362"
+                    Y2="308" />
+                <Line
+                    X1="383"
+                    X2="427"
+                    Y1="362"
+                    Y2="300" />
+                <Line
+                    X1="324"
+                    X2="427"
+                    Y1="308"
+                    Y2="300" />
+                <Line
+                    X1="324"
+                    X2="288"
+                    Y1="308"
+                    Y2="253" />
+                <Line
+                    X1="196"
+                    X2="288"
+                    Y1="355"
+                    Y2="253" />
+                <Line
+                    X1="{Binding (Canvas.Left), ConverterParameter={StaticResource MoveLength}, Converter={StaticResource MovePointToCenter}, ElementName=SanFrancisco}"
+                    X2="{Binding (Canvas.Left), ConverterParameter={StaticResource MoveLength}, Converter={StaticResource MovePointToCenter}, ElementName=Chicago}"
+                    Y1="{Binding (Canvas.Top), ConverterParameter={StaticResource MoveLength}, Converter={StaticResource MovePointToCenter}, ElementName=SanFrancisco}"
+                    Y2="{Binding (Canvas.Top), ConverterParameter={StaticResource MoveLength}, Converter={StaticResource MovePointToCenter}, ElementName=Chicago}" />
+                <Line
+                    X1="196"
+                    X2="182"
+                    Y1="355"
+                    Y2="286" />
+                <Line
+                    X1="288"
+                    X2="376"
+                    Y1="253"
+                    Y2="247" />
+                <Line
+                    X1="427"
+                    X2="376"
+                    Y1="300"
+                    Y2="247" />
+                <Line
+                    X1="450"
+                    X2="376"
+                    Y1="250"
+                    Y2="247" />
+                <Line
+                    X1="450"
+                    X2="427"
+                    Y1="250"
+                    Y2="300" />
+                <Line
+                    X1="450"
+                    X2="600"
+                    Y1="250"
+                    Y2="212" />
+                <Line
+                    X1="450"
+                    X2="590"
+                    Y1="250"
+                    Y2="289" />
+                <Line
+                    X1="600"
+                    X2="590"
+                    Y1="212"
+                    Y2="289" />
+                <Line
+                    X1="600"
+                    X2="670"
+                    Y1="212"
+                    Y2="253" />
+                <Line
+                    X1="670"
+                    X2="590"
+                    Y1="253"
+                    Y2="289" />
+                <Line
+                    X1="600"
+                    X2="692"
+                    Y1="212"
+                    Y2="200" />
+                <Line
+                    X1="682"
+                    X2="590"
+                    Y1="332"
+                    Y2="289" />
+                <Line
+                    X1="670"
+                    X2="692"
+                    Y1="253"
+                    Y2="200" />
+                <Line
+                    X1="731"
+                    X2="692"
+                    Y1="243"
+                    Y2="200" />
+                <Line
+                    X1="786"
+                    X2="692"
+                    Y1="178"
+                    Y2="200" />
+                <Line
+                    X1="670"
+                    X2="682"
+                    Y1="253"
+                    Y2="332" />
+                <Line
+                    X1="670"
+                    X2="731"
+                    Y1="253"
+                    Y2="243" />
+                <Line
+                    X1="786"
+                    X2="761"
+                    Y1="178"
+                    Y2="277" />
+                <Line
+                    X1="786"
+                    X2="824"
+                    Y1="178"
+                    Y2="230" />
+                <Line
+                    X1="731"
+                    X2="761"
+                    Y1="243"
+                    Y2="277" />
+                <Line
+                    X1="682"
+                    X2="761"
+                    Y1="332"
+                    Y2="277" />
+                <Line
+                    X1="749"
+                    X2="761"
+                    Y1="343"
+                    Y2="277" />
+                <Line
+                    X1="821"
+                    X2="761"
+                    Y1="305"
+                    Y2="277" />
+                <Line
+                    X1="824"
+                    X2="761"
+                    Y1="230"
+                    Y2="277" />
+                <Line
+                    X1="749"
+                    X2="682"
+                    Y1="343"
+                    Y2="332" />
+                <Line
+                    X1="749"
+                    X2="764"
+                    Y1="343"
+                    Y2="404" />
+                <Line
+                    X1="749"
+                    X2="821"
+                    Y1="343"
+                    Y2="305" />
+                <Line
+                    X1="749"
+                    X2="832"
+                    Y1="343"
+                    Y2="375" />
+                <Line
+                    X1="824"
+                    X2="883"
+                    Y1="230"
+                    Y2="267" />
+                <Line
+                    X1="902"
+                    X2="832"
+                    Y1="333"
+                    Y2="375" />
+                <Line
+                    X1="821"
+                    X2="832"
+                    Y1="305"
+                    Y2="375" />
+                <Line
+                    X1="821"
+                    X2="883"
+                    Y1="305"
+                    Y2="267" />
+                <Line
+                    X1="821"
+                    X2="902"
+                    Y1="305"
+                    Y2="333" />
+                <Line
+                    X1="883"
+                    X2="902"
+                    Y1="267"
+                    Y2="333" />
+                <Line
+                    X1="962"
+                    X2="902"
+                    Y1="304"
+                    Y2="333" />
+                <Line
+                    X1="910"
+                    X2="902"
+                    Y1="396"
+                    Y2="333" />
+                <Line
+                    X1="962"
+                    X2="883"
+                    Y1="304"
+                    Y2="267" />
+                <Line
+                    X1="962"
+                    X2="910"
+                    Y1="304"
+                    Y2="396" />
+                <Line
+                    X1="962"
+                    X2="1019"
+                    Y1="304"
+                    Y2="329" />
+                <Line
+                    X1="962"
+                    X2="981"
+                    Y1="304"
+                    Y2="427" />
+                <Line
+                    X1="981"
+                    X2="910"
+                    Y1="427"
+                    Y2="396" />
+                <view:MapCityControl
+                    x:Name="SanFrancisco"
+                    Canvas.Left="152"
+                    Canvas.Top="253"
+                    DataContext="{Binding Board.WorldMap.Cities[San Francisco]}" />
+                <view:MapCityControl
+                    Canvas.Left="166"
+                    Canvas.Top="325"
+                    DataContext="{Binding Board.WorldMap.Cities[Los Angeles]}" />
+                <view:MapCityControl
+                    Canvas.Left="251"
+                    Canvas.Top="345"
+                    DataContext="{Binding Board.WorldMap.Cities[Mexico City]}" />
+                <view:MapCityControl
+                    x:Name="Chicago"
+                    Canvas.Left="258"
+                    Canvas.Top="223"
+                    DataContext="{Binding Board.WorldMap.Cities[Chicago]}" />
+                <view:MapCityControl
+                    Canvas.Left="294"
+                    Canvas.Top="278"
+                    DataContext="{Binding Board.WorldMap.Cities[Atlanta]}" />
+                <view:MapCityControl
+                    Canvas.Left="300"
+                    Canvas.Top="487"
+                    DataContext="{Binding Board.WorldMap.Cities[Lima]}" />
+                <view:MapCityControl
+                    Canvas.Left="319"
+                    Canvas.Top="566"
+                    DataContext="{Binding Board.WorldMap.Cities[Santiago]}" />
+                <view:MapCityControl
+                    Canvas.Left="342"
+                    Canvas.Top="410"
+                    DataContext="{Binding Board.WorldMap.Cities[Bogota]}" />
+                <view:MapCityControl
+                    Canvas.Left="346"
+                    Canvas.Top="217"
+                    DataContext="{Binding Board.WorldMap.Cities[Montreal]}" />
+                <view:MapCityControl
+                    Canvas.Left="353"
+                    Canvas.Top="332"
+                    DataContext="{Binding Board.WorldMap.Cities[Miami]}" />
+                <view:MapCityControl
+                    Canvas.Left="397"
+                    Canvas.Top="270"
+                    DataContext="{Binding Board.WorldMap.Cities[Washington]}" />
+                <view:MapCityControl
+                    Canvas.Left="410"
+                    Canvas.Top="547"
+                    DataContext="{Binding Board.WorldMap.Cities[Buenos Aires]}" />
+                <view:MapCityControl
+                    Canvas.Left="420"
+                    Canvas.Top="220"
+                    DataContext="{Binding Board.WorldMap.Cities[New York]}" />
+                <view:MapCityControl
+                    Canvas.Left="461"
+                    Canvas.Top="488"
+                    DataContext="{Binding Board.WorldMap.Cities[Sao Paulo]}" />
+                <view:MapCityControl
+                    Canvas.Left="560"
+                    Canvas.Top="259"
+                    DataContext="{Binding Board.WorldMap.Cities[Madrid]}" />
+                <view:MapCityControl
+                    Canvas.Left="570"
+                    Canvas.Top="182"
+                    DataContext="{Binding Board.WorldMap.Cities[London]}" />
+                <view:MapCityControl
+                    Canvas.Left="624"
+                    Canvas.Top="390"
+                    DataContext="{Binding Board.WorldMap.Cities[Lagos]}" />
+                <view:MapCityControl
+                    Canvas.Left="640"
+                    Canvas.Top="223"
+                    DataContext="{Binding Board.WorldMap.Cities[Paris]}" />
+                <view:MapCityControl
+                    Canvas.Left="652"
+                    Canvas.Top="302"
+                    DataContext="{Binding Board.WorldMap.Cities[Algiers]}" />
+                <view:MapCityControl
+                    Canvas.Left="662"
+                    Canvas.Top="170"
+                    DataContext="{Binding Board.WorldMap.Cities[Essen]}" />
+                <view:MapCityControl
+                    Canvas.Left="683"
+                    Canvas.Top="445"
+                    DataContext="{Binding Board.WorldMap.Cities[Kinshasa]}" />
+                <view:MapCityControl
+                    Canvas.Left="701"
+                    Canvas.Top="213"
+                    DataContext="{Binding Board.WorldMap.Cities[Milan]}" />
+                <view:MapCityControl
+                    Canvas.Left="719"
+                    Canvas.Top="313"
+                    DataContext="{Binding Board.WorldMap.Cities[Cairo]}" />
+                <view:MapCityControl
+                    Canvas.Left="725"
+                    Canvas.Top="525"
+                    DataContext="{Binding Board.WorldMap.Cities[Johannesburg]}" />
+                <view:MapCityControl
+                    Canvas.Left="731"
+                    Canvas.Top="247"
+                    DataContext="{Binding Board.WorldMap.Cities[Istanbul]}" />
+                <view:MapCityControl
+                    Canvas.Left="734"
+                    Canvas.Top="374"
+                    DataContext="{Binding Board.WorldMap.Cities[Khartoum]}" />
+                <view:MapCityControl
+                    Canvas.Left="756"
+                    Canvas.Top="148"
+                    DataContext="{Binding Board.WorldMap.Cities[St. Petersburg]}" />
+                <view:MapCityControl
+                    Canvas.Left="791"
+                    Canvas.Top="275"
+                    DataContext="{Binding Board.WorldMap.Cities[Baghdad]}" />
+                <view:MapCityControl
+                    Canvas.Left="794"
+                    Canvas.Top="200"
+                    DataContext="{Binding Board.WorldMap.Cities[Moscow]}" />
+                <view:MapCityControl
+                    Canvas.Left="802"
+                    Canvas.Top="345"
+                    DataContext="{Binding Board.WorldMap.Cities[Riyadh]}" />
+                <view:MapCityControl
+                    Canvas.Left="853"
+                    Canvas.Top="237"
+                    DataContext="{Binding Board.WorldMap.Cities[Tehran]}" />
+                <view:MapCityControl
+                    Canvas.Left="872"
+                    Canvas.Top="303"
+                    DataContext="{Binding Board.WorldMap.Cities[Karachi]}" />
+                <view:MapCityControl
+                    Canvas.Left="880"
+                    Canvas.Top="366"
+                    DataContext="{Binding Board.WorldMap.Cities[Mumbai]}" />
+                <view:MapCityControl
+                    Canvas.Left="932"
+                    Canvas.Top="274"
+                    DataContext="{Binding Board.WorldMap.Cities[Delhi]}" />
+                <view:MapCityControl
+                    Canvas.Left="951"
+                    Canvas.Top="397"
+                    DataContext="{Binding Board.WorldMap.Cities[Chennai]}" />
+                <view:MapCityControl
+                    Canvas.Left="989"
+                    Canvas.Top="299"
+                    DataContext="{Binding Board.WorldMap.Cities[Kolkata]}" />
+                <view:MapCityControl
+                    Canvas.Left="1004"
+                    Canvas.Top="467"
+                    DataContext="{Binding Board.WorldMap.Cities[Jakarta]}" />
+                <view:MapCityControl
+                    Canvas.Left="1013"
+                    Canvas.Top="364"
+                    DataContext="{Binding Board.WorldMap.Cities[Bangkok]}" />
+                <view:MapCityControl
+                    Canvas.Left="1049"
+                    Canvas.Top="203"
+                    DataContext="{Binding Board.WorldMap.Cities[Beijing]}" />
+                <view:MapCityControl
+                    Canvas.Left="1050"
+                    Canvas.Top="259"
+                    DataContext="{Binding Board.WorldMap.Cities[Shanghai]}" />
+                <view:MapCityControl
+                    Canvas.Left="1054"
+                    Canvas.Top="325"
+                    DataContext="{Binding Board.WorldMap.Cities[Hong Kong]}" />
+                <view:MapCityControl
+                    Canvas.Left="1056"
+                    Canvas.Top="411"
+                    DataContext="{Binding Board.WorldMap.Cities[Ho Chi Minh City]}" />
+                <view:MapCityControl
+                    Canvas.Left="1120"
+                    Canvas.Top="199"
+                    DataContext="{Binding Board.WorldMap.Cities[Seoul]}" />
+                <view:MapCityControl
+                    Canvas.Left="1125"
+                    Canvas.Top="319"
+                    DataContext="{Binding Board.WorldMap.Cities[Taipei]}" />
+                <view:MapCityControl
+                    Canvas.Left="1143"
+                    Canvas.Top="406"
+                    DataContext="{Binding Board.WorldMap.Cities[Manila]}" />
+                <view:MapCityControl
+                    Canvas.Left="1188"
+                    Canvas.Top="233"
+                    DataContext="{Binding Board.WorldMap.Cities[Tokyo]}" />
+                <view:MapCityControl
+                    Canvas.Left="1188"
+                    Canvas.Top="546"
+                    DataContext="{Binding Board.WorldMap.Cities[Sydney]}" />
+                <view:MapCityControl
+                    Canvas.Left="1198"
+                    Canvas.Top="296"
+                    DataContext="{Binding Board.WorldMap.Cities[Osaka]}" />
             </Canvas>
         </Viewbox>
     </Grid>

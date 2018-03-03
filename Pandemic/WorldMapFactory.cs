@@ -45,7 +45,7 @@ namespace Pandemic
             mapCities[Lima].AddConnectedCities(mapCities[Bogota], mapCities[MexicoCity], mapCities[LosAngeles], mapCities[Santiago]);
             mapCities[London].AddConnectedCities(mapCities[Essen], mapCities[Madrid], mapCities[NewYork], mapCities[Paris]);
             mapCities[LosAngeles].AddConnectedCities(mapCities[Chicago], mapCities[MexicoCity], mapCities[SanFrancisco], mapCities[Sydney]);
-            mapCities[Madrid].AddConnectedCities(mapCities[Algiers], mapCities[London], mapCities[NewYork], mapCities[Madrid], mapCities[SaoPaulo]);
+            mapCities[Madrid].AddConnectedCities(mapCities[Algiers], mapCities[London], mapCities[NewYork], mapCities[Paris], mapCities[SaoPaulo]);
             mapCities[Manila].AddConnectedCities(mapCities[HoChiMinhCity], mapCities[HongKong], mapCities[SanFrancisco], mapCities[Sydney], mapCities[Taipei]);
             mapCities[MexicoCity].AddConnectedCities(mapCities[Bogota], mapCities[Chicago], mapCities[Lima], mapCities[LosAngeles], mapCities[Miami]);
             mapCities[Miami].AddConnectedCities(mapCities[Atlanta], mapCities[Bogota], mapCities[MexicoCity], mapCities[Washington]);

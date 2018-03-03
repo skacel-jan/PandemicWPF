@@ -3,12 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Pandemic.Characters
 {
     public class Medic : Character
     {
         public override string Role => "Medic";
+
+        private IEnumerable<string> _roleDescription = new List<string>()
+        {
+            "Remove all cubes of one color when doing Treat Disease",
+            "Automatically remove cubes of cured diseases from a city you are in (and prevent them from being placed there)."
+        };
+
+        public override IEnumerable<string> RoleDescription => _roleDescription;
+
+        public override Color Color => Colors.Orange;
 
         public override void DriveOrFerry(MapCity toCity)
         {

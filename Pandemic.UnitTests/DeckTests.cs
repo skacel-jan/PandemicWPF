@@ -36,7 +36,7 @@ namespace Pandemic.UnitTests
             deck.AddEpidemicCards(5);
             deck.Shuffle();
 
-            foreach (var card in deck)
+            foreach (var card in deck.Cards)
             {
                 System.Diagnostics.Debug.WriteLine(card);
             }

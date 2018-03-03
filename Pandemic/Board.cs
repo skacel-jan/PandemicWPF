@@ -74,7 +74,7 @@ namespace Pandemic
         public void BuildResearchStation(MapCity mapCity, PlayerCard card)
         {
             BuildResearchStation(mapCity);
-            PlayerDiscardPile.Add(card);
+            PlayerDiscardPile.Cards.Add(card);
         }
 
         public void DecreaseCubePile(DiseaseColor color, int cubesCount)
@@ -90,24 +90,24 @@ namespace Pandemic
 
         public InfectionCard DrawInfectionBottomCard()
         {
-            InfectionCard card = InfectionDeck.Last();
-            InfectionDiscardPile.Add(card);
-            InfectionDeck.Remove(card);
+            InfectionCard card = InfectionDeck.Cards.Last();
+            InfectionDiscardPile.Cards.Add(card);
+            InfectionDeck.Cards.Remove(card);
             return card;
         }
 
         public InfectionCard DrawInfectionCard()
         {
-            InfectionCard card = InfectionDeck.First();
-            InfectionDiscardPile.Add(card);
-            InfectionDeck.Remove(card);
+            InfectionCard card = InfectionDeck.Cards.First();
+            InfectionDiscardPile.Cards.Add(card);
+            InfectionDeck.Cards.Remove(card);
             return card;
         }
 
         public Card DrawPlayerCard()
         {
-            Card card = PlayerDeck.FirstOrDefault();
-            PlayerDeck.Remove(card);
+            Card card = PlayerDeck.Cards.FirstOrDefault();
+            PlayerDeck.Cards.Remove(card);
             return card;
         }
 
@@ -143,14 +143,14 @@ namespace Pandemic
 
         internal void ShuffleDiscardPile()
         {
-            var newDeck = new InfectionDeck(InfectionDiscardPile);
+            var newDeck = new InfectionDeck(InfectionDiscardPile.Cards);
             newDeck.Shuffle();
-            foreach (var infectionCard in InfectionDeck)
+            foreach (var infectionCard in InfectionDeck.Cards)
             {
-                newDeck.Add(infectionCard);
+                newDeck.Cards.Add(infectionCard);
             }
             InfectionDeck = newDeck;
-            InfectionDiscardPile.Clear();
+            InfectionDiscardPile.Cards.Clear();
         }
 
         internal void DiscoverCure(DiseaseColor color)

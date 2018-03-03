@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Pandemic.Characters
 {
@@ -10,11 +8,19 @@ namespace Pandemic.Characters
     {
         public override int CardsForCure { get => 4; }
 
+        public override Color Color => Colors.White;
         public override string Role => "Scientist";
+
+        private IEnumerable<string> _roleDescription = new List<string>()
+        {
+            "You need only 4 cards of the same color to do the Discover a Cure action.",
+        };
+
+        public override IEnumerable<string> RoleDescription => _roleDescription;
 
         public override bool CanDiscoverCure(DiseaseColor disease)
         {
-            return CurrentMapCity.HasResearchStation && Player.ColorCardsCount(disease) >= CardsForCure;
+            return CurrentMapCity.HasResearchStation && ColorCardsCount(disease) >= CardsForCure;
         }
     }
 }

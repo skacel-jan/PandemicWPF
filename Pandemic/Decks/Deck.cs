@@ -9,52 +9,45 @@ using System.Threading.Tasks;
 
 namespace Pandemic.Decks
 {
-    public class Deck<T> : ObservableCollection<T> where T : Card
+    public class Deck<T> where T : Card
     {
-        public Deck(IEnumerable<T> cards) : base(cards)
+        public ObservableCollection<T> Cards { get; }
+
+        public Deck()
         {
+            Cards = new ObservableCollection<T>();
+        }
+
+        public Deck(IEnumerable<T> cards)
+        {
+            Cards = new ObservableCollection<T>(cards);
         }
 
         public void Shuffle()
         {
-            int n = this.Count();
+            int n = Cards.Count();
             while (n > 1)
             {
                 n--;
                 int k = ThreadSafeRandom.ThisThreadsRandom.Next(n + 1);
-                T value = this[k];
-                this[k] = this[n];
-                this[n] = value;
+                T value = Cards[k];
+                Cards[k] = Cards[n];
+                Cards[n] = value;
             }
         }
 
         public T Draw()
         {
-            if (this.Count > 0)
+            if (Cards.Count > 0)
             {
-                var card = this[0];
-                this.RemoveAt(0);
+                var card = Cards[0];
+                Cards.RemoveAt(0);
                 return card;
             }
             else
             {
                 return null;
             }
-        }
-
-        public static IList<T> Shuffle(IList<T> cards)
-        {
-            int n = cards.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = ThreadSafeRandom.ThisThreadsRandom.Next(n + 1);
-                T value = cards[k];
-                cards[k] = cards[n];
-                cards[n] = value;
-            }
-
-            return cards;
         }
     }
 }

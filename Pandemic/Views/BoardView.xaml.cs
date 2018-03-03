@@ -24,5 +24,26 @@ namespace Pandemic.Views
         {
             InitializeComponent();
         }
+
+        private void Thumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            FrameworkElement thumb = e.Source as FrameworkElement;
+            var parent = (thumb.Parent as FrameworkElement);
+
+            Thickness m = thumb.Margin;
+            m.Left = thumb.Margin.Left + e.HorizontalChange;
+            m.Top = thumb.Margin.Top + e.VerticalChange;
+
+            if (m.Left > parent.ActualWidth - thumb.ActualWidth || m.Left < -(parent.ActualWidth - thumb.ActualWidth))
+            {
+                m.Left = thumb.Margin.Left;
+            }
+            if (m.Top > parent.ActualHeight - thumb.ActualHeight || m.Top < -(parent.ActualHeight - thumb.ActualHeight))
+            {
+                m.Top = thumb.Margin.Top;
+            }
+
+            thumb.Margin = m;
+        }
     }
 }

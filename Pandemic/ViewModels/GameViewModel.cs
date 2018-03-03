@@ -71,12 +71,12 @@ namespace Pandemic.ViewModels
 
         public Card LastCardInPlayerDiscardPile
         {
-            get => Board.PlayerDiscardPile.LastOrDefault();
+            get => Board.PlayerDiscardPile.Cards.LastOrDefault();
         }
 
         public Card LastCardInInfectionDiscardPile
         {
-            get => Board.InfectionDiscardPile.LastOrDefault();
+            get => Board.InfectionDiscardPile.Cards.LastOrDefault();
         }
 
         private ViewModelBase _infoViewModel;
@@ -141,12 +141,10 @@ namespace Pandemic.ViewModels
                 new Character[] {
                     new Medic()
                     {
-                        Player = new Player() { Pawn = new Pawn(Colors.Brown) },
                         CurrentMapCity = Board.WorldMap.Cities[City.Atlanta]
                     },
                     new Scientist()
                     {
-                        Player = new Player() { Pawn = new Pawn(Colors.Green) },
                         CurrentMapCity = Board.WorldMap.Cities[City.Atlanta]
                     }
                 }
@@ -160,7 +158,8 @@ namespace Pandemic.ViewModels
             {
                 DrawPlayerCards(6 - _characters.Count, character);
             }
-            AddEpidemicCards();
+
+            Board.PlayerDeck.AddEpidemicCards(5);
 
             MessengerInstance.Register<MapCity>(this, Messenger.CitySelected, OnCitySelected);
             MessengerInstance.Register<Card>(this, Messenger.CardSelected, CardSelected);
@@ -180,7 +179,7 @@ namespace Pandemic.ViewModels
                 }
                 else
                 {
-                    InfoViewModel = new CardSelectionViewModel(Board.InfectionDiscardPile);
+                    InfoViewModel = new CardSelectionViewModel(Board.InfectionDiscardPile.Cards);
                 }
             }
             else if (pileType == "Player")
@@ -191,7 +190,7 @@ namespace Pandemic.ViewModels
                 }
                 else
                 {
-                    InfoViewModel = new CardSelectionViewModel(Board.PlayerDiscardPile);
+                    InfoViewModel = new CardSelectionViewModel(Board.PlayerDiscardPile.Cards);
                 }
             }
 
@@ -199,7 +198,7 @@ namespace Pandemic.ViewModels
 
         private void AddToPlayerDiscardPile(Card card)
         {
-            Board.PlayerDiscardPile.Add(card);
+            Board.PlayerDiscardPile.Cards.Add(card);
             RaisePropertyChanged(nameof(LastCardInPlayerDiscardPile));
         }
 
@@ -244,34 +243,6 @@ namespace Pandemic.ViewModels
             }
         }
 
-        private void AddEpidemicCards()
-        {
-            var numberOfDecks = Board.PlayerDeck.Count / 5;
-            var deckIncrement = Board.PlayerDeck.Count % 5;
-
-            List<Card> resultDeck = new List<Card>();
-            foreach (var i in Enumerable.Range(0, 5))
-            {
-                var count = numberOfDecks + (deckIncrement > 0 ? 1 : 0);
-                var cards = Board.PlayerDeck.Take(count).ToList();
-                deckIncrement = deckIncrement == 0 ? 0 : deckIncrement - 1;
-                cards.Add(new EpidemicCard());
-                resultDeck.AddRange(Deck<Card>.Shuffle(cards));
-                foreach (var card in Board.PlayerDeck.Take(count).ToList())
-                {
-                    Board.PlayerDeck.Remove(card);
-                }
-
-            }
-            Board.PlayerDeck.Clear();
-
-            foreach (var card in resultDeck)
-            {
-                Board.PlayerDeck.Add(card);
-            }
-
-        }
-
         private void DrawPlayerCards(int count, Character character)
         {
             foreach (var i in Enumerable.Range(0, 2))
@@ -285,7 +256,7 @@ namespace Pandemic.ViewModels
 
                 if (card is PlayerCard playerCard)
                 {
-                    character.Player.AddCard(playerCard);
+                    character.AddCard(playerCard);
                 }
                 else if (card is EpidemicCard epidemicCard)
                 {
@@ -450,20 +421,20 @@ namespace Pandemic.ViewModels
         private void MoveSelected(MoveType type)
         {
             MoveTypeSelected = type;
-            InfoViewModel = new CardSelectionViewModel(CurrentCharacter.Player.Cards);
+            InfoViewModel = new CardSelectionViewModel(CurrentCharacter.Cards);
         }
 
         private bool CanDiscoverCure()
         {
-            return CurrentCharacter.CanDiscoverCure(CurrentCharacter.Player.MostCardsColor);
+            return CurrentCharacter.CanDiscoverCure(CurrentCharacter.MostCardsColor);
         }
 
         private void DiscoverCure(IList<CityCard> cards)
         {
-            Board.DiscoverCure(CurrentCharacter.Player.MostCardsColor);
+            Board.DiscoverCure(CurrentCharacter.MostCardsColor);
             foreach (var card in cards)
             {
-                CurrentCharacter.Player.RemoveCard(card as PlayerCard);
+                CurrentCharacter.RemoveCard(card as PlayerCard);
                 AddToPlayerDiscardPile(card);
             }
             InfoViewModel = null;
@@ -472,7 +443,7 @@ namespace Pandemic.ViewModels
 
         private void ShowSelecionOfCardsForCure()
         {
-            InfoViewModel = new MultiCardsSelectionViewModel(CurrentCharacter.Player.Cards, CurrentCharacter.CardsForCure, CurrentCharacter.Player.MostCardsColor);
+            InfoViewModel = new MultiCardsSelectionViewModel(CurrentCharacter.Cards, CurrentCharacter.CardsForCure, CurrentCharacter.MostCardsColor);
         }
 
         private bool CanBuildStructure()
@@ -484,7 +455,7 @@ namespace Pandemic.ViewModels
         {
             if (Board.ResearchStationsPile > 0)
             {
-                var card = CurrentCharacter.Player.RemoveCard(CurrentCharacter.CurrentMapCity.City);
+                var card = CurrentCharacter.RemoveCard(CurrentCharacter.CurrentMapCity.City);
                 Board.BuildResearchStation(CurrentCharacter.CurrentMapCity, card);
                 (BuildActionCommand as RelayCommand).RaiseCanExecuteChanged();
                 DoAction();
@@ -519,7 +490,7 @@ namespace Pandemic.ViewModels
                     }
                     else
                     {
-                        InfoViewModel = new CardSelectionViewModel(CurrentCharacter.Player.Cards);
+                        InfoViewModel = new CardSelectionViewModel(CurrentCharacter.Cards);
                     }
                 }
             }

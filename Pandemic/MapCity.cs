@@ -10,22 +10,21 @@ namespace Pandemic
 {
     public class MapCity : ViewModelBase
     {
-        private bool _canMove = true;
         private City _city;
+        private ICommand _cityCommand;
         private bool _hasResearchStation;
 
         private IDictionary<DiseaseColor, int> _infections;
+        private ICommand _instantMoveCommand;
         private bool _isEnabled = true;
 
         private int _population;
 
         public MapCity(City city, IDictionary<DiseaseColor, Disease> diseases)
         {
-            City = city ?? throw new ArgumentNullException("city");
-            Diseases = diseases ?? throw new ArgumentNullException("diseases");
+            City = city ?? throw new ArgumentNullException(nameof(city));
+            Diseases = diseases ?? throw new ArgumentNullException(nameof(diseases));
 
-            CityCommand = new RelayCommand(() => MapCitySelected(), () => IsEnabled);
-            InstantMoveCommand = new RelayCommand(() => InstantMove());
             Characters = new ObservableCollection<Character>();
             Infections = new Dictionary<DiseaseColor, int>(4)
             {
@@ -48,24 +47,18 @@ namespace Pandemic
             get => _infections[DiseaseColor.Blue];
         }
 
-        public bool CanMove
-        {
-            get => _canMove;
-            set => Set(ref _canMove, value);
-        }
-
         public City City
         {
             get => _city;
             set => Set(ref _city, value);
         }
 
-        public ICommand CityCommand { get; set; }
-
-        public ICommand InstantMoveCommand { get; set; }
+        public ICommand CityCommand
+        {
+            get => _cityCommand ?? (_cityCommand = new RelayCommand(() => MapCitySelected(), () => IsEnabled));
+        }
 
         public IEnumerable<MapCity> ConnectedCities { get; set; }
-
         public IDictionary<DiseaseColor, Disease> Diseases { get; private set; }
 
         public bool HasResearchStation
@@ -80,6 +73,11 @@ namespace Pandemic
         {
             get { return _infections; }
             set { _infections = value; }
+        }
+
+        public ICommand InstantMoveCommand
+        {
+            get => _instantMoveCommand ?? (_instantMoveCommand = new RelayCommand(() => InstantMove()));
         }
 
         public bool IsEnabled
@@ -204,14 +202,14 @@ namespace Pandemic
             }
         }
 
-        private void MapCitySelected()
-        {
-            MessengerInstance.Send(this, Messenger.CitySelected);
-        }
-
         private void InstantMove()
         {
             MessengerInstance.Send(this, Messenger.InstantMove);
+        }
+
+        private void MapCitySelected()
+        {
+            MessengerInstance.Send(this, Messenger.CitySelected);
         }
     }
 }
