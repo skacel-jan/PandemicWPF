@@ -120,9 +120,15 @@ namespace Pandemic
             return CurrentMapCity.TreatDisease(diseaseColor);
         }
 
-        internal bool CanTreatDisease()
+        internal int DiseasesToTreat()
         {
-            return CurrentMapCity.BlackInfection > 0 || CurrentMapCity.BlueInfection > 0 || CurrentMapCity.RedInfection > 0 || CurrentMapCity.YellowInfection > 0;
+            int count = 0;
+            foreach (var infection in CurrentMapCity.Infections.Values)
+            {
+                count += infection > 0 ? 1 : 0;
+            }
+
+            return count;
         }
 
         protected virtual bool HasCardOfCurrentCity()

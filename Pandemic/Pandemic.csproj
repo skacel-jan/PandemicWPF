@@ -39,6 +39,9 @@
     <ApplicationIcon>Resources\PandemicIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Appccelerate.StateMachine, Version=4.4.0.0, Culture=neutral, PublicKeyToken=917bca444d1f2b4c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Appccelerate.StateMachine.4.4.0\lib\netstandard1.0\Appccelerate.StateMachine.dll</HintPath>
+    </Reference>
     <Reference Include="CommonServiceLocator, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.2.0.3\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
@@ -75,7 +78,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Board.cs" />
+    <Compile Include="GameLogic\ActionStateMachine.cs" />
+    <Compile Include="GameLogic\Board.cs" />
+    <Compile Include="GameLogic\TurnStateMachine.cs" />
     <Compile Include="Cards\EventCard.cs" />
     <Compile Include="Characters\ContingencyPlanner.cs" />
     <Compile Include="Characters\Dispatcher.cs" />
@@ -84,6 +89,7 @@
     <Compile Include="Characters\Scientist.cs" />
     <Compile Include="Helpers\Converters\MovePointToCenter.cs" />
     <Compile Include="Helpers\Converters\BooleanToZindex.cs" />
+    <Compile Include="Helpers\GenericEventArgs.cs" />
     <Compile Include="Helpers\Messenger.cs" />
     <Compile Include="Helpers\MultiClickBehavior.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -93,7 +99,7 @@
     <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseTemplateSelector.cs" />
     <Compile Include="ViewModels\EpidemicViewModel.cs" />
-    <Compile Include="ViewModels\GameViewModel.cs" />
+    <Compile Include="ViewModels\BoardViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
@@ -105,9 +111,9 @@
     <Compile Include="Cards\CityCard.cs" />
     <Compile Include="Characters\Character.cs" />
     <Compile Include="Characters\Medic.cs" />
-    <Compile Include="MapCity.cs" />
+    <Compile Include="GameLogic\MapCity.cs" />
     <Compile Include="Decks\PlayerDeck.cs" />
-    <Compile Include="Disease.cs" />
+    <Compile Include="GameLogic\Disease.cs" />
     <Compile Include="Cards\EpidemicCard.cs" />
     <Compile Include="Decks\InfectionDeck.cs" />
     <Compile Include="Characters\Generalist.cs" />
@@ -138,8 +144,8 @@
     <Compile Include="Views\WorldMapBackground.xaml.cs">
       <DependentUpon>WorldMapBackground.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WorldMap.cs" />
-    <Compile Include="WorldMapFactory.cs" />
+    <Compile Include="GameLogic\WorldMap.cs" />
+    <Compile Include="GameLogic\WorldMapFactory.cs" />
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -157,7 +163,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Cards\Card.cs" />
-    <Compile Include="City.cs" />
+    <Compile Include="GameLogic\City.cs" />
     <Compile Include="Decks\Deck.cs" />
     <Compile Include="Cards\InfectionCard.cs" />
     <Page Include="Views\CardSelection.xaml">

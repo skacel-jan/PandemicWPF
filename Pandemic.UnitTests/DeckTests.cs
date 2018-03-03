@@ -18,7 +18,7 @@ namespace Pandemic.UnitTests
         [TestMethod]
         public void CreatePlayerDeckTest()
         {
-            var deck = new PlayerDeck(Helper.GetPlayerCards());
+            var deck = new PlayerDeck(Helper.GetCities());
             deck.AddEpidemicCards(5);
             deck.Shuffle();
         }
@@ -32,7 +32,7 @@ namespace Pandemic.UnitTests
         [TestMethod]
         public void DrawTest()
         {
-            var deck = new PlayerDeck(Helper.GetPlayerCards());
+            var deck = new PlayerDeck(Helper.GetCities());
             deck.AddEpidemicCards(5);
             deck.Shuffle();
 

@@ -15,7 +15,7 @@
         <viewModels:MainViewModel />
     </Window.DataContext>
     <Window.Resources>
-        <DataTemplate DataType="{x:Type viewModels:GameViewModel}">
+        <DataTemplate DataType="{x:Type viewModels:BoardViewModel}">
             <views:BoardView />
         </DataTemplate>
 

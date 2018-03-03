@@ -1,17 +1,17 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Ioc;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pandemic.Decks
 {
     public class PlayerDeck : Deck<Card>
     {
-        public PlayerDeck(IEnumerable<City> cities) : this(cities.Select(city => new PlayerCard(city)))
-        { }
+        public PlayerDeck() : base()
+        {
+        }
 
-        public PlayerDeck(IEnumerable<Card> cards) : base(cards)
+        [PreferredConstructor]
+        public PlayerDeck(IEnumerable<City> cities) : base(cities.Select(city => new PlayerCard(city)))
         { }
 
         public void AddEpidemicCards(int epidemicCount)
@@ -35,7 +35,6 @@ namespace Pandemic.Decks
             {
                 Cards.Add(card);
             }
-
         }
     }
 }

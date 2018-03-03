@@ -10,7 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:view="clr-namespace:Pandemic.Views"
     xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
-    d:DataContext="{d:DesignInstance Type=viewModels:GameViewModel,
+    d:DataContext="{d:DesignInstance Type=viewModels:BoardViewModel,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="700"
     d:DesignWidth="1400"

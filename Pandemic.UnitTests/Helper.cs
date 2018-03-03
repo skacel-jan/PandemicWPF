@@ -10,7 +10,7 @@ namespace Pandemic.UnitTests
     {
         public static IEnumerable<City> GetCities()
         {
-            var factory = new WorldMapFactory(Disease.CreateDiseases());
+            var factory = new WorldMapFactory(new DiseaseFactory().GetDiseases());
             return factory.GetCities();
         }
 

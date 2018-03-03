@@ -12,10 +12,11 @@ namespace Pandemic
         private int _outbreaks;
         private int _researchStationPile;
 
-        public Board(WorldMap map, InfectionDeck infectionDeck, PlayerDeck playerDeck, IDictionary<DiseaseColor, Disease> diseases)
+        public Board(WorldMap worldMap, InfectionDeckFactory infectionDeckFactory, PlayerDeck playerDeck, DiseaseFactory diseaseFactory)
         {
-            WorldMap = map;
-            InfectionDeck = infectionDeck;
+            WorldMap = worldMap;
+            InfectionDeckFactory = infectionDeckFactory;
+            InfectionDeck = InfectionDeckFactory.GetInfectionDeck(WorldMap.Cities.Values.Select(x => x.City));
             PlayerDeck = playerDeck;
 
             InfectionRate = 2;
@@ -24,11 +25,13 @@ namespace Pandemic
 
             ResearchStationsPile = 6;
 
-            Diseases = diseases;
+            Diseases = diseaseFactory.GetDiseases();
 
-            InfectionDiscardPile = new InfectionDeck(new List<InfectionCard>());
-            PlayerDiscardPile = new PlayerDeck(new List<PlayerCard>());
+            InfectionDiscardPile = InfectionDeckFactory.GetEmptyInfectionDeck();
+            PlayerDiscardPile = new PlayerDeck();
         }
+
+        public InfectionDeckFactory InfectionDeckFactory { get; }
 
         public InfectionDeck InfectionDeck { get; set; }
         public InfectionDeck InfectionDiscardPile { get; private set; }
@@ -48,7 +51,6 @@ namespace Pandemic
 
         public PlayerDeck PlayerDeck { get; private set; }
         public PlayerDeck PlayerDiscardPile { get; private set; }
-
 
         public int ResearchStationsPile
         {
@@ -143,7 +145,7 @@ namespace Pandemic
 
         internal void ShuffleDiscardPile()
         {
-            var newDeck = new InfectionDeck(InfectionDiscardPile.Cards);
+            var newDeck = InfectionDeckFactory.GetInfectionDeck(InfectionDiscardPile.Cards);
             newDeck.Shuffle();
             foreach (var infectionCard in InfectionDeck.Cards)
             {
