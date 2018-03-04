@@ -492,21 +492,21 @@ namespace Pandemic.ViewModels
             InfoViewModel = new MultiCardsSelectionViewModel(CurrentCharacter.Cards, CurrentCharacter.CardsForCure, CurrentCharacter.MostCardsColor);
         }
 
-        private void TurnStateMachine_ActionDone(object sender, GenericEventArgs<int> e)
+        private void TurnStateMachine_ActionDone(object sender, EventArgs e)
         {
         }
 
-        private void TurnStateMachine_DrawDone(object sender, GenericEventArgs<int> e)
+        private void TurnStateMachine_DrawDone(object sender, EventArgs e)
         {
-            DrawPlayerCards(1, CurrentCharacter);
-            if (e.EventData > 0)
-            {
-                InfoViewModel = new TextViewModel(CurrentCharacter.Cards.Last().Name, ShareActionCommand, "Draw next card");
-            }
-            else
-            {
-                InfoViewModel = new TextViewModel(CurrentCharacter.Cards.Last().Name, new RelayCommand(() => InfoViewModel = null), "Infection phase");
-            }
+            DrawPlayerCards(2, CurrentCharacter);
+            //if (e.EventData > 0)
+            //{
+            //    InfoViewModel = new TextViewModel(CurrentCharacter.Cards.Last().Name, ShareActionCommand, "Draw next card");
+            //}
+            //else
+            //{
+            InfoViewModel = new TextViewModel(CurrentCharacter.Cards.Last().Name, new RelayCommand(() => InfoViewModel = null), "Infection phase");
+            //}
         }
 
         private void TurnStateMachine_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

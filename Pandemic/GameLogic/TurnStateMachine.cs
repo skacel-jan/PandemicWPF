@@ -20,18 +20,16 @@ namespace Pandemic
 
             _passiveStateMachine = new PassiveStateMachine<TurnStates, TurnEvents>();
             _passiveStateMachine.In(TurnStates.ActionPhase)
+                .ExecuteOnExit(() => OnActionPhaseEnded(EventArgs.Empty))
                 .On(TurnEvents.Next)
                     .If(() => Actions > 1).Execute(ExecuteActionEvent)
                     .Otherwise().Goto(TurnStates.DrawingPhase).Execute(ExecuteActionEvent);
 
             _passiveStateMachine.In(TurnStates.DrawingPhase)
-                .ExecuteOnEntry(ExecuteDrawEvent)
-                .On(TurnEvents.Next)
-                    .If(() => Draws > 0).Execute(ExecuteDrawEvent)
-                    .If(() => Draws == 0).Goto(TurnStates.InfectionPhase);
+                .On(TurnEvents.Next).Goto(TurnStates.InfectionPhase).Execute(ExecuteDrawEvent);
 
             _passiveStateMachine.In(TurnStates.InfectionPhase)
-                .ExecuteOnEntry(ExecuteInfectionEvent)
+                .ExecuteOnEntry(EnteredInfectionEvent)
                 .On(TurnEvents.Next)
                     .If(() => Infections > 0).Execute(ExecuteInfectionEvent)
                     .If(() => Infections == 0).Goto(TurnStates.TurnEnd);
@@ -41,11 +39,20 @@ namespace Pandemic
                 .On(TurnEvents.Next).Goto(TurnStates.ActionPhase);
         }
 
-        public event EventHandler<GenericEventArgs<int>> ActionDone;
+        private void EnteredInfectionEvent()
+        {
+            throw new NotImplementedException();
+        }
 
-        public event EventHandler<GenericEventArgs<int>> DrawDone;
+        public event EventHandler ActionDone;
 
-        public event EventHandler<GenericEventArgs<int>> InfectionDone;
+        public event EventHandler ActionPhaseEnded;
+
+        public event EventHandler DrawDone;
+
+        public event EventHandler DrawPhaseEnded;
+
+        public event EventHandler InfectionDone;
 
         public enum TurnEvents
         {
@@ -92,17 +99,22 @@ namespace Pandemic
             _passiveStateMachine.Stop();
         }
 
-        protected void OnActionDone(GenericEventArgs<int> e)
+        protected void OnActionDone(EventArgs e)
         {
             ActionDone?.Invoke(this, e);
         }
 
-        protected void OnDrawDone(GenericEventArgs<int> e)
+        protected void OnDrawDone(EventArgs e)
         {
             DrawDone?.Invoke(this, e);
         }
 
-        protected void OnInfectionDone(GenericEventArgs<int> e)
+        protected void OnActionPhaseEnded(EventArgs e)
+        {
+            ActionPhaseEnded?.Invoke(this, e);
+        }
+
+        protected void OnInfectionDone(EventArgs e)
         {
             InfectionDone?.Invoke(this, e);
         }
@@ -115,8 +127,8 @@ namespace Pandemic
 
         private void ExecuteDrawEvent()
         {
-            Draws--;
             OnDrawDone(new GenericEventArgs<int>(Draws));
+            Draws -= 2;
         }
 
         private void ExecuteInfectionEvent()

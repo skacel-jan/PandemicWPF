@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Pandemic;
+using Pandemic.Characters;
+using Pandemic.UnitTests;
 
 namespace PandemicLegacy.UnitTests
 {
@@ -11,13 +14,17 @@ namespace PandemicLegacy.UnitTests
         [TestMethod]
         public void TurnStateMachineTest()
         {
-            var fsm = new TurnStateMachine(null);
+            var fsm = new TurnStateMachine(new Queue<Character>(
+                new Character[] { new Medic() { CurrentMapCity = Helper.GetWorldMpa().GetCity("Atlanta") } }) );
             fsm.Start();
-            foreach (int i in Enumerable.Range(0, 50))
-            {
-                fsm.DoAction();
-            }
-            ;
+            fsm.DoAction(); // action
+            fsm.DoAction(); // action
+            fsm.DoAction(); // action
+            fsm.DoAction(); // action
+            fsm.DoAction(); // go to drawing phase
+            fsm.DoAction(); // infect city
+            fsm.DoAction(); // infect city
+            fsm.DoAction(); // end turn
         }
     }
 }
