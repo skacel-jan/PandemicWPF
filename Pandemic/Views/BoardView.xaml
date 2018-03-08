@@ -310,7 +310,16 @@
                 </ItemsControl>
 
             </Grid>
-            <view:WorldMap />
+            <ScrollViewer
+                Width="1400"
+                HorizontalAlignment="Left"
+                HorizontalScrollBarVisibility="Visible"
+                VerticalScrollBarVisibility="Hidden">
+                <StackPanel Width="2800" Orientation="Horizontal">
+                    <view:WorldMap Width="1400" />
+                    <view:WorldMap />
+                </StackPanel>
+            </ScrollViewer>
         </DockPanel>
         <Grid>
             <Thumb
@@ -328,7 +337,21 @@
                     </ControlTemplate>
                 </Thumb.Template>
             </Thumb>
-
+            <Thumb
+                Margin="0,550,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                DragDelta="Thumb_DragDelta"
+                Visibility="{Binding IsActionVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Thumb.Template>
+                    <ControlTemplate>
+                        <ContentControl
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Content="{Binding ActionViewModel}" />
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
 
         </Grid>
     </Grid>

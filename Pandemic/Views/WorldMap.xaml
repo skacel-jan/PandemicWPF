@@ -10,11 +10,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:view="clr-namespace:Pandemic.Views"
     xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
-    d:DataContext="{d:DesignInstance Type=viewModels:BoardViewModel,
-                                     IsDesignTimeCreatable=True}"
     d:DesignHeight="700"
     d:DesignWidth="1400"
     mc:Ignorable="d">
+    <!--<UserControl.CacheMode>
+        <BitmapCache
+            EnableClearType="False"
+            RenderAtScale="3"
+            SnapsToDevicePixels="False" />
+    </UserControl.CacheMode>-->
     <UserControl.Resources>
 
         <System:Double x:Key="MoveLength">30.0</System:Double>
@@ -46,7 +50,8 @@
             </Style.Resources>
             <Setter Property="Stroke" Value="#FF8BC6C9" />
             <Setter Property="StrokeThickness" Value="2" />
-            <Setter Property="Effect" Value="{StaticResource LineBlur}" />
+            <!--<Setter Property="Effect" Value="{StaticResource LineBlur}" />-->
+            <!--<Setter Property="Visibility" Value="Collapsed" />-->
         </Style>
 
     </UserControl.Resources>

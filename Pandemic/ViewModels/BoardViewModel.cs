@@ -12,6 +12,8 @@ namespace Pandemic.ViewModels
         private ViewModelBase _infoViewModel;
         private bool _isInfoVisible;
         private bool _isMoveSelected;
+        private bool _isActionVisible;
+        private ViewModelBase _actionViewModel;
 
         public BoardViewModel(Board board, TurnStateMachine turnStateMachine, ActionStateMachine actionStateMachine)
         {
@@ -128,6 +130,22 @@ namespace Pandemic.ViewModels
         {
             get { return _isInfoVisible; }
             set { Set(ref _isInfoVisible, value); }
+        }
+
+        public ViewModelBase ActionViewModel
+        {
+            get { return _actionViewModel; }
+            set
+            {
+                Set(ref _actionViewModel, value);
+                IsActionVisible = value == null ? false : true;
+            }
+        }
+
+        public bool IsActionVisible
+        {
+            get { return _isActionVisible; }
+            set { Set(ref _isActionVisible, value); }
         }
 
         public bool IsMoveSelected
@@ -328,10 +346,13 @@ namespace Pandemic.ViewModels
 
         private void EnableAllCities()
         {
-            foreach (var city in Board.WorldMap.Cities.Values)
+            Task.Run(() =>
             {
-                city.IsEnabled = true;
-            }
+                foreach (var city in Board.WorldMap.Cities.Values)
+                {
+                    city.IsEnabled = true;
+                }
+            });
         }
 
         private void EndOfTurn()
@@ -388,7 +409,7 @@ namespace Pandemic.ViewModels
         private void MoveSelected(MoveType type)
         {
             MoveTypeSelected = type;
-            InfoViewModel = new CardSelectionViewModel(CurrentCharacter.Cards);
+            ActionViewModel = new CardSelectionViewModel(CurrentCharacter.Cards);
         }
 
         private void OnBuildStructure()
@@ -425,11 +446,11 @@ namespace Pandemic.ViewModels
                     SelectedCity = mapCity;
                     if (CurrentCharacter.CanDirectFlight(mapCity) && CurrentCharacter.CanCharterFlight())
                     {
-                        InfoViewModel = new MoveSelectionViewModel(new List<string>() { "Direct flight", "Charter flight" });
+                        ActionViewModel = new MoveSelectionViewModel(new List<string>() { "Direct flight", "Charter flight" });
                     }
                     else
                     {
-                        InfoViewModel = new CardSelectionViewModel(CurrentCharacter.Cards);
+                        ActionViewModel = new CardSelectionViewModel(CurrentCharacter.Cards);
                     }
                 }
             }
@@ -446,6 +467,7 @@ namespace Pandemic.ViewModels
         private void OnCharacterMove()
         {
             RefreshAllCommands();
+
             IsMoveSelected = false;
             MoveTypeSelected = null;
             InfoViewModel = null;

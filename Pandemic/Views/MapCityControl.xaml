@@ -10,6 +10,12 @@
     d:DesignHeight="60"
     d:DesignWidth="60"
     mc:Ignorable="d">
+    <UserControl.CacheMode>
+        <BitmapCache
+            EnableClearType="False"
+            RenderAtScale="3"
+            SnapsToDevicePixels="False" />
+    </UserControl.CacheMode>
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:BooleanToZindex x:Key="BooleanToZIndex" />
