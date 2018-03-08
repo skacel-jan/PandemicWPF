@@ -37,6 +37,10 @@ namespace Pandemic.ViewModels
             TurnStateMachine = turnStateMachine;
             TurnStateMachine.ActionDone += TurnStateMachine_ActionDone;
             TurnStateMachine.DrawDone += TurnStateMachine_DrawDone;
+            TurnStateMachine.InfectionDone += TurnStateMachine_InfectionDone;
+            TurnStateMachine.ActionPhaseEnded += TurnStateMachine_ActionPhaseEnded;
+            TurnStateMachine.DrawingPhaseEnded += TurnStateMachine_DrawingPhaseEnded;
+            TurnStateMachine.InfectionPhaseEnded += TurnStateMachine_InfectionPhaseEnded;
             TurnStateMachine.PropertyChanged += TurnStateMachine_PropertyChanged;
             TurnStateMachine.Start();
 
@@ -57,6 +61,31 @@ namespace Pandemic.ViewModels
             MessengerInstance.Register<MoveType>(this, Messenger.MoveSelected, MoveSelected);
             MessengerInstance.Register<IList<CityCard>>(this, Messenger.MultipleCardsSelected, DiscoverCure);
             MessengerInstance.Register<MapCity>(this, Messenger.InstantMove, InstantMove);
+        }
+
+        private void TurnStateMachine_InfectionDone(object sender, GenericEventArgs<int> e)
+        {
+            InfectionCard infectionCard = DrawInfectionCard();
+            InfoViewModel = new TextViewModel(string.Format("Infected city: {0}", infectionCard.ToString()),
+             new RelayCommand(() => TurnStateMachine.DoAction()), "Next infected city");
+        }
+
+        private void TurnStateMachine_InfectionPhaseEnded(object sender, EventArgs e)
+        {
+            var textViewModel = InfoViewModel as TextViewModel;
+            textViewModel.CommandText = "Next player";
+        }
+
+        private void TurnStateMachine_DrawingPhaseEnded(object sender, EventArgs e)
+        {
+            InfoViewModel = new TextViewModel(string.Format("Drawn cards: {0} and {1}", CurrentCharacter.Cards[CurrentCharacter.Cards.Count - 1].Name,
+                                                                                        CurrentCharacter.Cards[CurrentCharacter.Cards.Count - 2].Name),
+                new RelayCommand(() => TurnStateMachine.DoAction()), "Go to Infection phase");
+        }
+
+        private void TurnStateMachine_ActionPhaseEnded(object sender, EventArgs e)
+        {
+            InfoViewModel = new TextViewModel("Action phase has ended.", new RelayCommand(() => TurnStateMachine.DoAction()), "Continue to drawing phase");
         }
 
         public ActionStateMachine ActionStateMachine { get; }
@@ -256,7 +285,7 @@ namespace Pandemic.ViewModels
             }
         }
 
-        private void DrawInfectionCard()
+        private InfectionCard DrawInfectionCard()
         {
             InfectionCard card = Board.DrawInfectionCard();
             if (Board.CheckCubesPile(card.City.Color))
@@ -271,6 +300,8 @@ namespace Pandemic.ViewModels
                     DoOutbreak(card.City, card.City.Color);
                 }
             }
+
+            return card;
         }
 
         private void DrawPlayerCards(int count, Character character)
@@ -494,6 +525,7 @@ namespace Pandemic.ViewModels
 
         private void TurnStateMachine_ActionDone(object sender, EventArgs e)
         {
+            RaisePropertyChanged(nameof(InfoText));
         }
 
         private void TurnStateMachine_DrawDone(object sender, EventArgs e)
@@ -505,7 +537,6 @@ namespace Pandemic.ViewModels
             //}
             //else
             //{
-            InfoViewModel = new TextViewModel(CurrentCharacter.Cards.Last().Name, new RelayCommand(() => InfoViewModel = null), "Infection phase");
             //}
         }
 
@@ -514,6 +545,9 @@ namespace Pandemic.ViewModels
             if (e.PropertyName == nameof(TurnStateMachine.CurrentCharacter))
             {
                 ActionStateMachine.CurrentCharacter = TurnStateMachine.CurrentCharacter;
+                InfoViewModel = null;
+                RaisePropertyChanged(nameof(CurrentCharacter));
+                RaisePropertyChanged(nameof(InfoText));
             }
         }
     }
