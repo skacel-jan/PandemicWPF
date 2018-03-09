@@ -92,6 +92,7 @@
     <Compile Include="Helpers\GenericEventArgs.cs" />
     <Compile Include="Helpers\Messenger.cs" />
     <Compile Include="Helpers\MultiClickBehavior.cs" />
+    <Compile Include="Helpers\TouchScrolling.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
