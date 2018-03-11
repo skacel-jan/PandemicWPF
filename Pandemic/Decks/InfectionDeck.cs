@@ -21,18 +21,18 @@ namespace Pandemic.Decks
         }
     }
 
-    public class InfectionDeckFactory
+    public class InfectionDeckFactory : IInfectionDeckFactory
     {
-        public InfectionDeck GetInfectionDeck(IEnumerable<City> cities)
+        public IDeck<InfectionCard> GetInfectionDeck(IEnumerable<City> cities)
         {
             return new InfectionDeck(cities);
         }
-        public InfectionDeck GetInfectionDeck(IEnumerable<InfectionCard> cards)
+        public IDeck<InfectionCard> GetInfectionDeck(IEnumerable<InfectionCard> cards)
         {
             return new InfectionDeck(cards);
         }
 
-        public InfectionDeck GetEmptyInfectionDeck()
+        public IDeck<InfectionCard> GetEmptyInfectionDeck()
         {
             return new InfectionDeck();
         }

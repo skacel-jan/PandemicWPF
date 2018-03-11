@@ -1,25 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pandemic
 {
-    public class City : IEquatable<City>
+    public class City : IEquatable<City>, IComparable<City>
     {
-        public string Name { get; private set; }
-        public DiseaseColor Color { get; private set; }
-
         public City(string name, DiseaseColor color)
         {
             Name = name;
             Color = color;
         }
 
-        public override string ToString()
+        public DiseaseColor Color { get; private set; }
+        public string Name { get; private set; }
+
+        public static bool operator !=(City c1, City c2)
         {
-            return string.Format("{0} - {1}", this.Name, this.Color);
+            return !c1.Equals(c2);
+        }
+
+        public static bool operator ==(City c1, City c2)
+        {
+            return c1.Equals(c2);
+        }
+
+        public int CompareTo(City other)
+        {
+            int result = Color.CompareTo(other.Color);
+            if (result == 0)
+            {
+                result = Name.CompareTo(other.Name);
+            }
+            return result;
         }
 
         public override bool Equals(object other)
@@ -31,25 +42,22 @@ namespace Pandemic
                 return false;
         }
 
-        public override int GetHashCode()
-        {
-            return this.Name.GetHashCode() * 17 ^ this.Color.GetHashCode();
-        }
-
         public bool Equals(City other)
         {
-            return this.Name == other.Name && this.Color == other.Color;
+            return Name == other.Name && Color == other.Color;
         }
 
-        public static bool operator ==(City c1, City c2)
+        public override int GetHashCode()
         {
-            return c1.Equals(c2);
-        }
-        public static bool operator !=(City c1, City c2)
-        {
-            return !c1.Equals(c2);
+            return Name.GetHashCode() * 17 ^ Color.GetHashCode();
         }
 
+        public override string ToString()
+        {
+            return string.Format("{0} - {1}", Name, Color);
+        }
+
+        #region Cities strings
 
         public const string Algiers = "Algiers";
         public const string Atlanta = "Atlanta";
@@ -59,12 +67,12 @@ namespace Pandemic
         public const string Bogota = "Bogota";
         public const string BuenosAires = "Buenos Aires";
         public const string Cairo = "Cairo";
-        public const string Chennai = "Chennai";
-        public const string Chicago = "Chicago";
         public const string Delhi = "Delhi";
         public const string Essen = "Essen";
         public const string HoChiMinhCity = "Ho Chi Minh City";
         public const string HongKong = "Hong Kong";
+        public const string Chennai = "Chennai";
+        public const string Chicago = "Chicago";
         public const string Istanbul = "Istanbul";
         public const string Jakarta = "Jakarta";
         public const string Johannesburg = "Johannesburg";
@@ -99,5 +107,7 @@ namespace Pandemic
         public const string Tehran = "Tehran";
         public const string Tokyo = "Tokyo";
         public const string Washington = "Washington";
+
+        #endregion Cities strings
     }
 }

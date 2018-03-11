@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,10 +14,8 @@ namespace Pandemic
         private City _city;
         private ICommand _cityCommand;
         private bool _hasResearchStation;
-
-        private IDictionary<DiseaseColor, int> _infections;
         private ICommand _instantMoveCommand;
-        private bool _isEnabled = true;
+        private bool _isMoveEnabled = false;
 
         private int _population;
 
@@ -39,12 +38,12 @@ namespace Pandemic
 
         public int BlackInfection
         {
-            get => _infections[DiseaseColor.Black];
+            get => Infections[DiseaseColor.Black];
         }
 
         public int BlueInfection
         {
-            get => _infections[DiseaseColor.Blue];
+            get => Infections[DiseaseColor.Blue];
         }
 
         public City City
@@ -55,7 +54,7 @@ namespace Pandemic
 
         public ICommand CityCommand
         {
-            get => _cityCommand ?? (_cityCommand = new RelayCommand(() => MapCitySelected(), () => IsEnabled));
+            get => _cityCommand ?? (_cityCommand = new RelayCommand(() => MapCitySelected()));
         }
 
         public IEnumerable<MapCity> ConnectedCities { get; set; }
@@ -69,21 +68,17 @@ namespace Pandemic
 
         public ObservableCollection<Character> Characters { get; }
 
-        public IDictionary<DiseaseColor, int> Infections
-        {
-            get { return _infections; }
-            set { _infections = value; }
-        }
+        public IDictionary<DiseaseColor, int> Infections { get; set; }
 
         public ICommand InstantMoveCommand
         {
             get => _instantMoveCommand ?? (_instantMoveCommand = new RelayCommand(() => InstantMove()));
         }
 
-        public bool IsEnabled
+        public bool IsMoveEnabled
         {
-            get => _isEnabled;
-            set => Set(ref _isEnabled, value);
+            get => _isMoveEnabled;
+            set => Set(ref _isMoveEnabled, value);
         }
 
         public int Population
@@ -94,12 +89,12 @@ namespace Pandemic
 
         public int RedInfection
         {
-            get => _infections[DiseaseColor.Red];
+            get => Infections[DiseaseColor.Red];
         }
 
         public int YellowInfection
         {
-            get => _infections[DiseaseColor.Yellow];
+            get => Infections[DiseaseColor.Yellow];
         }
 
         public void AddConnectedCities(params MapCity[] cities)
@@ -116,9 +111,9 @@ namespace Pandemic
 
             int oldInfections = Infections[color];
             var newInfection = CoerceInfection(oldInfections + value);
-            if (_infections[color] != newInfection)
+            if (Infections[color] != newInfection)
             {
-                _infections[color] = newInfection;
+                Infections[color] = newInfection;
 
                 switch (color)
                 {
@@ -204,12 +199,12 @@ namespace Pandemic
 
         private void InstantMove()
         {
-            MessengerInstance.Send(this, Messenger.InstantMove);
+            MessengerInstance.Send(new GenericMessage<MapCity>(this), Messenger.InstantMove);
         }
 
         private void MapCitySelected()
         {
-            MessengerInstance.Send(this, Messenger.CitySelected);
+            MessengerInstance.Send(new GenericMessage<MapCity>(this), Messenger.CitySelected);
         }
     }
 }

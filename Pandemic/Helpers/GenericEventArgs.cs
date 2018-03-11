@@ -12,7 +12,7 @@ namespace Pandemic
 
         public GenericEventArgs(T eventData)
         {
-            this.EventData = eventData;
+            EventData = eventData;
         }
     }
 }

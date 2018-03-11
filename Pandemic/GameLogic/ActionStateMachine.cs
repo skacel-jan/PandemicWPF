@@ -91,7 +91,7 @@ namespace Pandemic
         #endregion "Action types"
     }
 
-    public class TreatDiseaseEventArgs
+    public class TreatDiseaseEventArgs : EventArgs
     {
         public TreatDiseaseEventArgs(int cubesCount, DiseaseColor diseaseColor)
         {

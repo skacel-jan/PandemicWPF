@@ -11,8 +11,12 @@ namespace Pandemic.Characters
     {
         public override string Role => "Contingency player";
 
-        public override IEnumerable<string> RoleDescription => throw new NotImplementedException();
+        public override IEnumerable<string> RoleDescription => new List<string>()
+        {
+            "As an action, take any discarded Event card and store it on this card.",
+            "When you play the stored Event card, remove it from the game."
+        };
 
-        public override Color Color => throw new NotImplementedException();
+        public override Color Color => Colors.LightSkyBlue;
     }
 }

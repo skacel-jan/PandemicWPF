@@ -11,8 +11,11 @@ namespace Pandemic.Characters
     {
         public override string Role => "Quarantine specialist";
 
-        public override IEnumerable<string> RoleDescription => throw new NotImplementedException();
+        public override IEnumerable<string> RoleDescription => new List<string>()
+        {
+            "Prevent diseaae cube placements (and outbreaks) in the city you are in and cities connected to it."
+        };
 
-        public override Color Color => throw new NotImplementedException();
+        public override Color Color => Colors.DarkGreen;
     }
 }

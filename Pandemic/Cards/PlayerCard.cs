@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pandemic
 {
-    public class PlayerCard : CityCard
+    public class PlayerCard : CityCard, IComparable
     {
         public PlayerCard(City city) : base(city)
         {
@@ -15,6 +15,7 @@ namespace Pandemic
         public override string ToString()
         {
             return string.Format("{0}: {1}", "Player", base.ToString());
+            
         }
     }
 }

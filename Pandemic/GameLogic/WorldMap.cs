@@ -12,7 +12,7 @@ namespace Pandemic
 
         public WorldMap(IDictionary<string, MapCity> cities)
         {
-            this.Cities = cities;
+            Cities = cities;
         }
 
         public MapCity GetCity(string city)

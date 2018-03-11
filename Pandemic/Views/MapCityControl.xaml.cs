@@ -113,6 +113,15 @@ namespace Pandemic.Views
         public static readonly DependencyProperty CharactersProperty =
             DependencyProperty.Register(nameof(Characters), typeof(ObservableCollection<Character>), typeof(MapCityControl), new PropertyMetadata(null));
 
+        public bool IsBorderVisible
+        {
+            get { return (bool)GetValue(IsBorderVisibleProperty); }
+            set { SetValue(IsBorderVisibleProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsBorderVisibleProperty =
+            DependencyProperty.Register(nameof(IsBorderVisible), typeof(bool), typeof(MapCityControl), new PropertyMetadata(null));
+
         public MapCityControl()
         {
             InitializeComponent();

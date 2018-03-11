@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Pandemic.Decks
 {
-    public class Deck<T> where T : Card
+    public class Deck<T> : IDeck<T> where T : Card
     {
         public ObservableCollection<T> Cards { get; }
 

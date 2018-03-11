@@ -6,6 +6,7 @@ namespace Pandemic.ViewModels
 {
     public class TextViewModel : ViewModelBase
     {
+        private ICommand _backCommand;
         private string _commandText;
         private ICommand _continueCommand;
         private string _text;
@@ -19,6 +20,14 @@ namespace Pandemic.ViewModels
         {
             ContinueCommand = continueCommand ?? throw new ArgumentNullException(nameof(continueCommand));
             CommandText = commandText ?? throw new ArgumentNullException(nameof(commandText));
+        }
+
+        public bool BackButtonVisible => false;
+
+        public ICommand BackCommand
+        {
+            get => _backCommand;
+            set => Set(ref _backCommand, value);
         }
 
         public bool ButtonVisible => !string.IsNullOrEmpty(CommandText);

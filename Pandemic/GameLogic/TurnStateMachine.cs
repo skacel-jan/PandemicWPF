@@ -11,32 +11,29 @@ namespace Pandemic
         private Character _currentCharacter;
         private PassiveStateMachine<TurnStates, TurnEvents> _passiveStateMachine;
 
-        private int turns;
-
         public TurnStateMachine(Queue<Character> _characters)
         {
             Characters = _characters;
-            ExecuteStartTurnEvent();
 
             _passiveStateMachine = new PassiveStateMachine<TurnStates, TurnEvents>();
             _passiveStateMachine.In(TurnStates.ActionPhase)
+                .ExecuteOnEntry(ExecuteStartTurnEvent)
                 .ExecuteOnExit(() => OnActionPhaseEnded(EventArgs.Empty))
                 .On(TurnEvents.Next)
                     .If(() => Actions == 0).Goto(TurnStates.DrawingPhase)
                     .Otherwise().Execute(ExecuteActionEvent);
 
             _passiveStateMachine.In(TurnStates.DrawingPhase)
-                .ExecuteOnExit(() => OnDrawingPhaseEnded(EventArgs.Empty))
-                .On(TurnEvents.Next).Goto(TurnStates.InfectionPhase).Execute(ExecuteDrawEvent);
+                .ExecuteOnExit(ExecuteDrawEvent)
+                .On(TurnEvents.Next).Goto(TurnStates.InfectionPhase).Execute(() => OnDrawingPhaseEnded(EventArgs.Empty));
 
             _passiveStateMachine.In(TurnStates.InfectionPhase)
+                .ExecuteOnExit(() => OnInfectionPhaseEnded(EventArgs.Empty))
                 .On(TurnEvents.Next)
                     .If(() => Infections == 0).Goto(TurnStates.TurnEnd)
                     .Otherwise().Execute(ExecuteInfectionEvent);
 
             _passiveStateMachine.In(TurnStates.TurnEnd)
-                .ExecuteOnEntry(() => OnInfectionPhaseEnded(EventArgs.Empty))
-                .ExecuteOnExit(ExecuteStartTurnEvent)
                 .On(TurnEvents.Next).Goto(TurnStates.ActionPhase);
         }
 
@@ -44,13 +41,17 @@ namespace Pandemic
 
         public event EventHandler ActionPhaseEnded;
 
+        public event EventHandler Discarding;
+
+        public event EventHandler<GenericEventArgs<int>> DoInfection;
+
         public event EventHandler DrawDone;
 
         public event EventHandler DrawingPhaseEnded;
 
-        public event EventHandler<GenericEventArgs<int>> InfectionDone;
-
         public event EventHandler InfectionPhaseEnded;
+
+        public event EventHandler TurnStarted;
 
         public enum TurnEvents
         {
@@ -62,7 +63,9 @@ namespace Pandemic
             ActionPhase,
             DrawingPhase,
             InfectionPhase,
-            TurnEnd
+            TurnEnd,
+            GameWon,
+            GameLost
         }
 
         public int Actions
@@ -81,7 +84,8 @@ namespace Pandemic
 
         public Queue<Character> Characters { get; set; }
 
-        public int Infections { get; set; }
+        public int Infections { get; private set; }
+        public int InfectionsRate { get; set; }
 
         public void DoAction()
         {
@@ -121,12 +125,17 @@ namespace Pandemic
 
         protected void OnInfectionDone(GenericEventArgs<int> e)
         {
-            InfectionDone?.Invoke(this, e);
+            DoInfection?.Invoke(this, e);
         }
 
         protected void OnInfectionPhaseEnded(EventArgs e)
         {
             InfectionPhaseEnded?.Invoke(this, e);
+        }
+
+        protected void OnTurnStarted(EventArgs e)
+        {
+            TurnStarted?.Invoke(this, e);
         }
 
         private void ExecuteActionEvent()
@@ -137,6 +146,11 @@ namespace Pandemic
             {
                 _passiveStateMachine.Fire(TurnEvents.Next);
             }
+        }
+
+        private void ExecuteDiscardEvent()
+        {
+            Discarding?.Invoke(this, EventArgs.Empty);
         }
 
         private void ExecuteDrawEvent()
@@ -172,7 +186,7 @@ namespace Pandemic
 
             Draws = 2;
             Infections = 2;
-            turns++;
+            OnTurnStarted(EventArgs.Empty);
         }
     }
 }

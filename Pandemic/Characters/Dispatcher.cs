@@ -11,8 +11,12 @@ namespace Pandemic.Characters
     {
         public override string Role => "Disptacher";
 
-        public override IEnumerable<string> RoleDescription => throw new NotImplementedException();
+        public override IEnumerable<string> RoleDescription => new List<string>()
+        {
+            "Move another player´s pawn as if it were yours.",
+            "As an action, move any pawn to a city with another pawn."
+        };
 
-        public override Color Color => throw new NotImplementedException();
+        public override Color Color => Colors.Pink;
     }
 }

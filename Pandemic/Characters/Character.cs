@@ -10,11 +10,13 @@ namespace Pandemic
     {
         private const int STANDARD_ACTIONS_COUNT = 4;
         private const int STANDARD_CARDS_FOR_CURE = 5;
+        private const int STANDARD_CARDS_LIMIT = 7;
 
         private MapCity _currentMapCity;
         private bool _isActive;
         public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
         public virtual int CardsForCure { get => STANDARD_CARDS_FOR_CURE; }
+        public virtual int CardsLimit { get => STANDARD_CARDS_LIMIT; }
 
         public MapCity CurrentMapCity
         {
@@ -165,29 +167,34 @@ namespace Pandemic
 
         public PlayerCard RemoveCard(PlayerCard card)
         {
-            this.Cards.Remove(card);
+            Cards.Remove(card);
             return card;
         }
 
         public PlayerCard RemoveCard(City city)
         {
             var card = Cards.Single(c => c.City == city);
-            return RemoveCard(card);
+            return RemoveCard(card as PlayerCard);
         }
 
         public void AddCard(PlayerCard card)
         {
-            this.Cards.Add(card);
+            Cards.Add(card);
         }
 
         public int ColorCardsCount(DiseaseColor diseaseColor)
         {
-            return this.Cards.Count(x => x.City.Color == diseaseColor);
+            return Cards.Count(x => x.City.Color == diseaseColor);
         }
 
         public bool HasCityCard(City city)
         {
             return Cards.Any(card => card.City == city);
+        }
+
+        public bool HasMoreCardsThenLimit
+        {
+            get => Cards.Count > CardsLimit;
         }
     }
 }

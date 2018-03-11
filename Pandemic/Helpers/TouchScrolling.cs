@@ -137,7 +137,6 @@ namespace Pandemic
             }
 
             var newOffset = capture.HorizontalOffset - dx;
-            System.Diagnostics.Debug.WriteLine(newOffset);
             if (newOffset < 0)
             {
                 target.ScrollToRightEnd();

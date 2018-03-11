@@ -34,7 +34,7 @@ namespace Pandemic.ViewModels
             SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<DiseaseFactory>().GetDiseases());
             SimpleIoc.Default.Register<WorldMapFactory>();
             SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<WorldMapFactory>().GetWorldMap());
-            SimpleIoc.Default.Register<InfectionDeckFactory>();
+            SimpleIoc.Default.Register<IInfectionDeckFactory, InfectionDeckFactory>();
             SimpleIoc.Default.Register<IEnumerable<City>>(() => SimpleIoc.Default.GetInstance<WorldMapFactory>().GetCities());
             SimpleIoc.Default.Register<PlayerDeck>();
             SimpleIoc.Default.Register<TurnStateMachine>();

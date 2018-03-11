@@ -1,6 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
 using Pandemic.Decks;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,11 +7,12 @@ namespace Pandemic
 {
     public class Board : ObservableObject
     {
+        private IDictionary<DiseaseColor, Disease> _diseases;
         private int _infectionRate;
         private int _outbreaks;
         private int _researchStationPile;
 
-        public Board(WorldMap worldMap, InfectionDeckFactory infectionDeckFactory, PlayerDeck playerDeck, DiseaseFactory diseaseFactory)
+        public Board(WorldMap worldMap, IInfectionDeckFactory infectionDeckFactory, PlayerDeck playerDeck, DiseaseFactory diseaseFactory)
         {
             WorldMap = worldMap;
             InfectionDeckFactory = infectionDeckFactory;
@@ -31,10 +31,15 @@ namespace Pandemic
             PlayerDiscardPile = new PlayerDeck();
         }
 
-        public InfectionDeckFactory InfectionDeckFactory { get; }
+        public IDictionary<DiseaseColor, Disease> Diseases
+        {
+            get => _diseases;
+            set => Set(ref _diseases, value);
+        }
 
-        public InfectionDeck InfectionDeck { get; set; }
-        public InfectionDeck InfectionDiscardPile { get; private set; }
+        public IDeck<InfectionCard> InfectionDeck { get; set; }
+        public IInfectionDeckFactory InfectionDeckFactory { get; }
+        public IDeck<InfectionCard> InfectionDiscardPile { get; private set; }
         public int InfectionPosition { get; private set; }
 
         public int InfectionRate
@@ -60,13 +65,6 @@ namespace Pandemic
 
         public WorldMap WorldMap { get; private set; }
 
-        private IDictionary<DiseaseColor, Disease> _diseases;
-        public IDictionary<DiseaseColor, Disease> Diseases
-        {
-            get => _diseases;
-            set => Set(ref _diseases, value);
-        }
-
         public void BuildResearchStation(MapCity mapCity)
         {
             mapCity.HasResearchStation = true;
@@ -88,6 +86,11 @@ namespace Pandemic
         {
             mapCity.HasResearchStation = false;
             ResearchStationsPile++;
+        }
+
+        public void DiscoverCure(DiseaseColor color)
+        {
+            Diseases[color].IsCured = true;
         }
 
         public InfectionCard DrawInfectionBottomCard()
@@ -125,13 +128,19 @@ namespace Pandemic
 
         public bool RaiseInfection(City city, DiseaseColor color)
         {
-            int addedInfections = WorldMap.GetCity(city.Name).ChangeInfection(color, 1);
-            if (addedInfections > 0)
+            if (!Diseases[color].IsEradicated)
             {
-                DecreaseCubePile(color, addedInfections);
+                int addedInfections = WorldMap.GetCity(city.Name).ChangeInfection(color, 1);
+                if (addedInfections > 0)
+                {
+                    DecreaseCubePile(color, addedInfections);
+                }
+                return addedInfections == 0;
             }
-
-            return addedInfections == 0;
+            else
+            {
+                return false;
+            }
         }
 
         public void RaiseInfectionPosition()
@@ -143,7 +152,7 @@ namespace Pandemic
             }
         }
 
-        internal void ShuffleDiscardPile()
+        public void ShuffleDiscardPile()
         {
             var newDeck = InfectionDeckFactory.GetInfectionDeck(InfectionDiscardPile.Cards);
             newDeck.Shuffle();
@@ -153,11 +162,6 @@ namespace Pandemic
             }
             InfectionDeck = newDeck;
             InfectionDiscardPile.Cards.Clear();
-        }
-
-        internal void DiscoverCure(DiseaseColor color)
-        {
-            Diseases[color].IsCured = true;
         }
     }
 }
