@@ -35,6 +35,7 @@ namespace Pandemic.ViewModels
             SimpleIoc.Default.Register<WorldMapFactory>();
             SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<WorldMapFactory>().GetWorldMap());
             SimpleIoc.Default.Register<IInfectionDeckFactory, InfectionDeckFactory>();
+            SimpleIoc.Default.Register<IGameData, GameData>();
             SimpleIoc.Default.Register<IEnumerable<City>>(() => SimpleIoc.Default.GetInstance<WorldMapFactory>().GetCities());
             SimpleIoc.Default.Register<PlayerDeck>();
             SimpleIoc.Default.Register<TurnStateMachine>();
@@ -67,7 +68,7 @@ namespace Pandemic.ViewModels
         {
             switch (message.NavigateTo)
             {
-                case Messenger.StartNewGame:
+                case MessageTokens.StartNewGame:
                     SetGameView();
                     break;
             }

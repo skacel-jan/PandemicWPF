@@ -13,9 +13,14 @@ namespace Pandemic.Characters
 
         public override IEnumerable<string> RoleDescription => new List<string>()
         {
-            "Prevent diseaae cube placements (and outbreaks) in the city you are in and cities connected to it."
+            "Prevent disease cube placements (and outbreaks) in the city you are in and cities connected to it."
         };
 
         public override Color Color => Colors.DarkGreen;
+
+        public override bool CanRaiseInfection(MapCity city, DiseaseColor color)
+        {
+            return !((CurrentMapCity == city) || (CurrentMapCity.ConnectedCities.Contains(city)));
+        }
     }
 }

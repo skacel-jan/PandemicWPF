@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pandemic.Decks
 {
-    public class Deck<T> : IDeck<T> where T : Card
+    public class Deck<T> : IDeck<T>, IShuffle<T>, IDraw<T> where T : Card
     {
-        public ObservableCollection<T> Cards { get; }
-
         public Deck()
         {
             Cards = new ObservableCollection<T>();
@@ -23,18 +16,7 @@ namespace Pandemic.Decks
             Cards = new ObservableCollection<T>(cards);
         }
 
-        public void Shuffle()
-        {
-            int n = Cards.Count();
-            while (n > 1)
-            {
-                n--;
-                int k = ThreadSafeRandom.ThisThreadsRandom.Next(n + 1);
-                T value = Cards[k];
-                Cards[k] = Cards[n];
-                Cards[n] = value;
-            }
-        }
+        public ObservableCollection<T> Cards { get; }
 
         public T Draw()
         {
@@ -47,6 +29,19 @@ namespace Pandemic.Decks
             else
             {
                 return null;
+            }
+        }
+
+        public void Shuffle()
+        {
+            int n = Cards.Count();
+            while (n > 1)
+            {
+                n--;
+                int k = ThreadSafeRandom.ThisThreadsRandom.Next(n + 1);
+                T value = Cards[k];
+                Cards[k] = Cards[n];
+                Cards[n] = value;
             }
         }
     }

@@ -14,9 +14,20 @@ namespace Pandemic
 
         private MapCity _currentMapCity;
         private bool _isActive;
+        private DiseaseColor _mostCardsColor;
+        private int _mostCardsColorCount;
+        protected Character()
+        {
+            Cards = new ObservableCollection<PlayerCard>();
+            Cards.CollectionChanged += Cards_CollectionChanged;
+        }
+
         public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
+        public ObservableCollection<PlayerCard> Cards { get; private set; }
         public virtual int CardsForCure { get => STANDARD_CARDS_FOR_CURE; }
         public virtual int CardsLimit { get => STANDARD_CARDS_LIMIT; }
+
+        public abstract Color Color { get; }
 
         public MapCity CurrentMapCity
         {
@@ -29,17 +40,34 @@ namespace Pandemic
             }
         }
 
+        public bool HasMoreCardsThenLimit
+        {
+            get => Cards.Count > CardsLimit;
+        }
+
         public bool IsActive
         {
             get => _isActive;
             set => Set(ref _isActive, value);
         }
 
+        public DiseaseColor MostCardsColor
+        {
+            get => _mostCardsColor;
+        }
+
+        public int MostCardsColorCount
+        {
+            get => _mostCardsColorCount;
+        }
+
         public abstract string Role { get; }
 
         public abstract IEnumerable<string> RoleDescription { get; }
-
-        public abstract Color Color { get; }
+        public void AddCard(PlayerCard card)
+        {
+            Cards.Add(card);
+        }
 
         public virtual PlayerCard BuildResearhStation()
         {
@@ -72,6 +100,11 @@ namespace Pandemic
             return HasCardOfCurrentCity();
         }
 
+        public virtual bool CanRaiseInfection(MapCity city, DiseaseColor color)
+        {
+            return true;
+        }
+
         public virtual bool CanShareKnowledge(PlayerCard card, Character character)
         {
             return CurrentMapCity == character.CurrentMapCity && CurrentMapCity.City == card.City;
@@ -80,6 +113,11 @@ namespace Pandemic
         public virtual bool CanShuttleFlight(MapCity toCity)
         {
             return CurrentMapCity.HasResearchStation && toCity.HasResearchStation;
+        }
+
+        public int ColorCardsCount(DiseaseColor diseaseColor)
+        {
+            return Cards.Count(x => x.City.Color == diseaseColor);
         }
 
         public virtual PlayerCard DirectFlight(MapCity toCity)
@@ -93,11 +131,28 @@ namespace Pandemic
             CurrentMapCity = toCity;
         }
 
+        public bool HasCityCard(City city)
+        {
+            return Cards.Any(card => card.City == city);
+        }
+
         public virtual PlayerCard CharterFlight(MapCity toCity)
         {
             var card = RemoveCard(CurrentMapCity.City);
             CurrentMapCity = toCity;
             return card;
+        }
+
+        public PlayerCard RemoveCard(PlayerCard card)
+        {
+            Cards.Remove(card);
+            return card;
+        }
+
+        public PlayerCard RemoveCard(City city)
+        {
+            var card = Cards.Single(c => c.City == city);
+            return RemoveCard(card as PlayerCard);
         }
 
         public virtual void ShareKnowledgeGive(PlayerCard card, Character character)
@@ -137,64 +192,17 @@ namespace Pandemic
         {
             return HasCityCard(CurrentMapCity.City);
         }
-
-        public ObservableCollection<PlayerCard> Cards { get; private set; }
-
-        private DiseaseColor _mostCardsColor;
-
-        protected Character()
-        {
-            Cards = new ObservableCollection<PlayerCard>();
-            Cards.CollectionChanged += Cards_CollectionChanged;
-        }
-
-        public DiseaseColor MostCardsColor
-        {
-            get => _mostCardsColor;
-        }
-
         private void Cards_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (Cards.Count > 0)
             {
                 _mostCardsColor = Cards.GroupBy(x => x.City.Color).OrderByDescending(gb => gb.Count()).Select(y => y.Key).First();
+                _mostCardsColorCount = ColorCardsCount(_mostCardsColor);
             }
             else
             {
                 _mostCardsColor = DiseaseColor.Black;
             }
-        }
-
-        public PlayerCard RemoveCard(PlayerCard card)
-        {
-            Cards.Remove(card);
-            return card;
-        }
-
-        public PlayerCard RemoveCard(City city)
-        {
-            var card = Cards.Single(c => c.City == city);
-            return RemoveCard(card as PlayerCard);
-        }
-
-        public void AddCard(PlayerCard card)
-        {
-            Cards.Add(card);
-        }
-
-        public int ColorCardsCount(DiseaseColor diseaseColor)
-        {
-            return Cards.Count(x => x.City.Color == diseaseColor);
-        }
-
-        public bool HasCityCard(City city)
-        {
-            return Cards.Any(card => card.City == city);
-        }
-
-        public bool HasMoreCardsThenLimit
-        {
-            get => Cards.Count > CardsLimit;
         }
     }
 }

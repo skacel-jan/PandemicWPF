@@ -7,7 +7,7 @@ using GalaSoft.MvvmLight.Messaging;
 
 namespace Pandemic
 {
-    public static class Messenger
+    public static class MessageTokens
     {
         public const string StartNewGame = "StartNewGame";
         public const string CitySelected = "CitySelected";

@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Ioc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,11 +7,6 @@ namespace Pandemic.Decks
 {
     public class PlayerDeck : Deck<Card>
     {
-        public PlayerDeck() : base()
-        {
-        }
-
-        [PreferredConstructor]
         public PlayerDeck(IEnumerable<City> cities) : base(cities.Select(city => new PlayerCard(city)))
         { }
 

@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Messaging;
 using Pandemic.Decks;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,90 +8,45 @@ namespace Pandemic
 {
     public class Board : ObservableObject
     {
-        private IDictionary<DiseaseColor, Disease> _diseases;
-        private int _infectionRate;
-        private int _outbreaks;
-        private int _researchStationPile;
-
-        public Board(WorldMap worldMap, IInfectionDeckFactory infectionDeckFactory, PlayerDeck playerDeck, DiseaseFactory diseaseFactory)
+        public Board(WorldMap worldMap, IInfectionDeckFactory infectionDeckFactory, PlayerDeck playerDeck, IGameData gameData)
         {
             WorldMap = worldMap;
             InfectionDeckFactory = infectionDeckFactory;
             InfectionDeck = InfectionDeckFactory.GetInfectionDeck(WorldMap.Cities.Values.Select(x => x.City));
             PlayerDeck = playerDeck;
 
-            InfectionRate = 2;
-            InfectionPosition = 0;
-            Outbreaks = 0;
+            //PlayerDeck = new PlayerDeck(playerDeck.Cards.Take(11).Select(x => (x as PlayerCard).City));
 
-            ResearchStationsPile = 6;
-
-            Diseases = diseaseFactory.GetDiseases();
+            GameData = gameData;
 
             InfectionDiscardPile = InfectionDeckFactory.GetEmptyInfectionDeck();
-            PlayerDiscardPile = new PlayerDeck();
+            PlayerDiscardPile = new PlayerDeck(new List<City>());
         }
 
-        public IDictionary<DiseaseColor, Disease> Diseases
-        {
-            get => _diseases;
-            set => Set(ref _diseases, value);
-        }
-
-        public IDeck<InfectionCard> InfectionDeck { get; set; }
+        public IGameData GameData { get; }
+        public Deck<InfectionCard> InfectionDeck { get; set; }
         public IInfectionDeckFactory InfectionDeckFactory { get; }
-        public IDeck<InfectionCard> InfectionDiscardPile { get; private set; }
-        public int InfectionPosition { get; private set; }
-
-        public int InfectionRate
-        {
-            get => _infectionRate;
-            private set => Set(ref _infectionRate, value);
-        }
-
-        public int Outbreaks
-        {
-            get => _outbreaks;
-            set => Set(ref _outbreaks, value);
-        }
+        public Deck<InfectionCard> InfectionDiscardPile { get; private set; }
 
         public PlayerDeck PlayerDeck { get; private set; }
         public PlayerDeck PlayerDiscardPile { get; private set; }
-
-        public int ResearchStationsPile
-        {
-            get => _researchStationPile;
-            private set => Set(ref _researchStationPile, value);
-        }
 
         public WorldMap WorldMap { get; private set; }
 
         public void BuildResearchStation(MapCity mapCity)
         {
             mapCity.HasResearchStation = true;
-            ResearchStationsPile--;
-        }
-
-        public void BuildResearchStation(MapCity mapCity, PlayerCard card)
-        {
-            BuildResearchStation(mapCity);
-            PlayerDiscardPile.Cards.Add(card);
+            GameData.ResearchStationsPile--;
         }
 
         public void DecreaseCubePile(DiseaseColor color, int cubesCount)
         {
-            Diseases[color].Cubes -= cubesCount;
-        }
-
-        public void DestroyResearchStation(MapCity mapCity)
-        {
-            mapCity.HasResearchStation = false;
-            ResearchStationsPile++;
+            GameData.Diseases[color].Cubes -= cubesCount;
         }
 
         public void DiscoverCure(DiseaseColor color)
         {
-            Diseases[color].IsCured = true;
+            GameData.Diseases[color].IsCured = true;
         }
 
         public InfectionCard DrawInfectionBottomCard()
@@ -118,17 +74,17 @@ namespace Pandemic
 
         public bool CheckCubesPile(DiseaseColor color)
         {
-            return Diseases[color].Cubes <= 0;
+            return GameData.Diseases[color].Cubes <= 0;
         }
 
         public void IncreaseCubePile(DiseaseColor color, int cubesCount)
         {
-            Diseases[color].Cubes += cubesCount;
+            GameData.Diseases[color].Cubes += cubesCount;
         }
 
         public bool RaiseInfection(City city, DiseaseColor color)
-        {
-            if (!Diseases[color].IsEradicated)
+        {           
+            if (!GameData.Diseases[color].IsEradicated)
             {
                 int addedInfections = WorldMap.GetCity(city.Name).ChangeInfection(color, 1);
                 if (addedInfections > 0)
@@ -145,10 +101,10 @@ namespace Pandemic
 
         public void RaiseInfectionPosition()
         {
-            InfectionPosition++;
-            if (InfectionPosition == 3 || InfectionPosition == 5)
+            GameData.InfectionPosition++;
+            if (GameData.InfectionPosition == 3 || GameData.InfectionPosition == 5)
             {
-                InfectionRate++;
+                GameData.InfectionRate++;
             }
         }
 

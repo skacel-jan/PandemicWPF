@@ -32,7 +32,7 @@ namespace Pandemic.ViewModels
             {
                 type = MoveType.Charter;
             }
-            MessengerInstance.Send(type, Messenger.MoveSelected);
+            MessengerInstance.Send(type, MessageTokens.MoveSelected);
         }
     }
 

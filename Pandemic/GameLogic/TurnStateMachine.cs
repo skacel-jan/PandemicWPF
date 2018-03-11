@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight;
 using System;
 using System.Collections.Generic;
+using static Pandemic.TurnStateMachine;
 
 namespace Pandemic
 {
@@ -16,25 +17,35 @@ namespace Pandemic
             Characters = _characters;
 
             _passiveStateMachine = new PassiveStateMachine<TurnStates, TurnEvents>();
-            _passiveStateMachine.In(TurnStates.ActionPhase)
+
+            _passiveStateMachine.In(TurnStates.StartOfTurn)
                 .ExecuteOnEntry(ExecuteStartTurnEvent)
+                .On(TurnEvents.Next).Goto(TurnStates.ActionPhase);
+
+            _passiveStateMachine.In(TurnStates.ActionPhase)
                 .ExecuteOnExit(() => OnActionPhaseEnded(EventArgs.Empty))
                 .On(TurnEvents.Next)
                     .If(() => Actions == 0).Goto(TurnStates.DrawingPhase)
                     .Otherwise().Execute(ExecuteActionEvent);
 
-            _passiveStateMachine.In(TurnStates.DrawingPhase)
-                .ExecuteOnExit(ExecuteDrawEvent)
-                .On(TurnEvents.Next).Goto(TurnStates.InfectionPhase).Execute(() => OnDrawingPhaseEnded(EventArgs.Empty));
+            _passiveStateMachine.In(TurnStates.DrawingPhase)                
+                .On(TurnEvents.Next)
+                    .If(() => Draws == 0).Goto(TurnStates.InfectionPhase)
+                        .Execute(() => OnDrawingPhaseEnded(EventArgs.Empty))
+                    .Otherwise().Execute(ExecuteDrawEvent)
+                .On(TurnEvents.GameOver).Goto(TurnStates.GameLost);
 
             _passiveStateMachine.In(TurnStates.InfectionPhase)
                 .ExecuteOnExit(() => OnInfectionPhaseEnded(EventArgs.Empty))
                 .On(TurnEvents.Next)
-                    .If(() => Infections == 0).Goto(TurnStates.TurnEnd)
+                    .If(() => Infections == 0).Goto(TurnStates.EndOfTurn)
                     .Otherwise().Execute(ExecuteInfectionEvent);
 
-            _passiveStateMachine.In(TurnStates.TurnEnd)
-                .On(TurnEvents.Next).Goto(TurnStates.ActionPhase);
+            _passiveStateMachine.In(TurnStates.EndOfTurn)
+                .On(TurnEvents.Next).Goto(TurnStates.StartOfTurn);
+
+            _passiveStateMachine.In(TurnStates.GameLost)                
+                .ExecuteOnEntry(() => GameLost?.Invoke(this, new GenericEventArgs<string>("Game over: No more cards")));
         }
 
         public event EventHandler ActionDone;
@@ -53,17 +64,21 @@ namespace Pandemic
 
         public event EventHandler TurnStarted;
 
+        public event EventHandler<GenericEventArgs<string>> GameLost;
+
         public enum TurnEvents
         {
-            Next
+            Next,
+            GameOver
         }
 
         public enum TurnStates
         {
+            StartOfTurn,
             ActionPhase,
             DrawingPhase,
             InfectionPhase,
-            TurnEnd,
+            EndOfTurn,
             GameWon,
             GameLost
         }
@@ -85,7 +100,7 @@ namespace Pandemic
         public Queue<Character> Characters { get; set; }
 
         public int Infections { get; private set; }
-        public int InfectionsRate { get; set; }
+        public int InfectionRate { get; set; }
 
         public void DoAction()
         {
@@ -94,7 +109,7 @@ namespace Pandemic
 
         public void Start()
         {
-            _passiveStateMachine.Initialize(TurnStates.ActionPhase);
+            _passiveStateMachine.Initialize(TurnStates.StartOfTurn);
             _passiveStateMachine.Start();
         }
 
@@ -156,7 +171,8 @@ namespace Pandemic
         private void ExecuteDrawEvent()
         {
             OnDrawDone(new GenericEventArgs<int>(Draws));
-            Draws -= 2;
+            Draws -= 1;
+            _passiveStateMachine.Fire(TurnEvents.Next);
         }
 
         private void ExecuteInfectionEvent()
@@ -187,6 +203,12 @@ namespace Pandemic
             Draws = 2;
             Infections = 2;
             OnTurnStarted(EventArgs.Empty);
+            _passiveStateMachine.Fire(TurnEvents.Next);
+        }
+
+        public void GameOver()
+        {
+            _passiveStateMachine.Fire(TurnEvents.GameOver);
         }
     }
 }

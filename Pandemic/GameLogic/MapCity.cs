@@ -199,12 +199,12 @@ namespace Pandemic
 
         private void InstantMove()
         {
-            MessengerInstance.Send(new GenericMessage<MapCity>(this), Messenger.InstantMove);
+            MessengerInstance.Send(new GenericMessage<MapCity>(this), MessageTokens.InstantMove);
         }
 
         private void MapCitySelected()
         {
-            MessengerInstance.Send(new GenericMessage<MapCity>(this), Messenger.CitySelected);
+            MessengerInstance.Send(new GenericMessage<MapCity>(this), MessageTokens.CitySelected);
         }
     }
 }

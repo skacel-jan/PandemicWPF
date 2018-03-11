@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,11 @@ namespace Pandemic.Characters
             "Remove all cubes of one color when doing Treat Disease",
             "Automatically remove cubes of cured diseases from a city you are in (and prevent them from being placed there)."
         };
+
+        public Medic()
+        {
+            Messenger.Default.Register(this, (GenericMessage<DiseaseColor> m) => SpecialTreatDisease());
+        }        
 
         public override IEnumerable<string> RoleDescription => _roleDescription;
 
@@ -55,6 +61,11 @@ namespace Pandemic.Characters
         protected virtual void SpecialTreatDisease()
         {
             CurrentMapCity.RemoveCuredInfections();
+        }
+
+        public override bool CanRaiseInfection(MapCity city, DiseaseColor color)
+        {
+            return !city.Diseases[color].IsCured;
         }
     }
 }
