@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Pandemic.ViewModels
 
         protected void OnDiseaseSelected(DiseaseColor color)
         {
-            MessengerInstance.Send(color, MessageTokens.DiseaseSelected);
+            MessengerInstance.Send(new GenericMessage<DiseaseColor>(color), MessageTokens.DiseaseSelected);
         }
     }
 }

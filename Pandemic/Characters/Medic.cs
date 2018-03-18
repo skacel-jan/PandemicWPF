@@ -18,11 +18,6 @@ namespace Pandemic.Characters
             "Automatically remove cubes of cured diseases from a city you are in (and prevent them from being placed there)."
         };
 
-        public Medic()
-        {
-            Messenger.Default.Register(this, (GenericMessage<DiseaseColor> m) => SpecialTreatDisease());
-        }        
-
         public override IEnumerable<string> RoleDescription => _roleDescription;
 
         public override Color Color => Colors.Orange;
@@ -66,6 +61,13 @@ namespace Pandemic.Characters
         public override bool CanRaiseInfection(MapCity city, DiseaseColor color)
         {
             return !city.Diseases[color].IsCured;
+        }
+
+        public override void RegisterSpecialActions(SpecialActions actions)
+        {
+            base.RegisterSpecialActions(actions);
+
+            actions.DiseaseCuredActions.Add((color) => SpecialTreatDisease());
         }
     }
 }

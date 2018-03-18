@@ -262,12 +262,6 @@
             </Style>
         </Border.Style>
         <Grid x:Name="MainGrid" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MapCityControl}}}">
-            <Grid.CacheMode>
-                <BitmapCache
-                    EnableClearType="False"
-                    RenderAtScale="2"
-                    SnapsToDevicePixels="False" />
-            </Grid.CacheMode>
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*" />
                 <RowDefinition Height="3*" />

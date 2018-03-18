@@ -100,7 +100,8 @@
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\CardSelectionViewModel.cs" />
+    <Compile Include="ViewModels\CharacterSelectionViewModel.cs" />
+    <Compile Include="ViewModels\ShareTypeSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseTemplateSelector.cs" />
     <Compile Include="ViewModels\EpidemicViewModel.cs" />
@@ -108,7 +109,7 @@
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
-    <Compile Include="ViewModels\MultiCardsSelectionViewModel.cs" />
+    <Compile Include="ViewModels\CardsSelectionViewModel.cs" />
     <Compile Include="ViewModels\NavigateToViewModelNotification.cs" />
     <Compile Include="Views\BoardView.xaml.cs">
       <DependentUpon>BoardView.xaml</DependentUpon>
@@ -124,8 +125,14 @@
     <Compile Include="Characters\Generalist.cs" />
     <Compile Include="Helpers\ThreadSafeRandom.cs" />
     <Compile Include="Helpers\Converters\DiseaseToColorConverter.cs" />
+    <Compile Include="Views\CharacterSelection.xaml.cs">
+      <DependentUpon>CharacterSelection.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CardSelection.xaml.cs">
       <DependentUpon>CardSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ShareTypeSelection.xaml.cs">
+      <DependentUpon>ShareTypeSelection.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DiseaseSelection.xaml.cs">
       <DependentUpon>DiseaseSelection.xaml</DependentUpon>
@@ -171,9 +178,17 @@
     <Compile Include="GameLogic\City.cs" />
     <Compile Include="Decks\Deck.cs" />
     <Compile Include="Cards\InfectionCard.cs" />
+    <Page Include="Views\CharacterSelection.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\CardSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ShareTypeSelection.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DiseaseSelection.xaml">
       <SubType>Designer</SubType>
@@ -222,6 +237,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

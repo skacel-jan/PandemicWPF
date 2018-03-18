@@ -44,5 +44,18 @@ namespace Pandemic.Decks
                 Cards[n] = value;
             }
         }
+
+        public void AddCard(T card)
+        {
+            Cards.Add(card);
+        }
+
+        public void AddCards(IEnumerable<T> cards)
+        {
+            foreach (var card in cards)
+            {
+                AddCard(card);
+            }
+        }
     }
 }

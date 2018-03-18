@@ -10,6 +10,7 @@ namespace Pandemic
         int InfectionRate { get; set; }
         int Outbreaks { get; set; }
         int ResearchStationsPile { get; set; }
+        IEnumerable<Character> Characters { get; }
     }
 
     public class GameData : ObservableObject, IGameData
@@ -19,15 +20,16 @@ namespace Pandemic
         private int _outbreaks;
         private int _researchStationPile;
 
-        public GameData(DiseaseFactory diseaseFactory)
+        public GameData(DiseaseFactory diseaseFactory, IEnumerable<Character> characters)
         {
+            Characters = characters;
             Diseases = diseaseFactory.GetDiseases();
 
             InfectionRate = 2;
             InfectionPosition = 0;
             Outbreaks = 0;
 
-            ResearchStationsPile = 6;
+            ResearchStationsPile = 2;
         }
 
         public IDictionary<DiseaseColor, Disease> Diseases
@@ -55,5 +57,7 @@ namespace Pandemic
             get => _researchStationPile;
             set => Set(ref _researchStationPile, value);
         }
+
+        public IEnumerable<Character> Characters { get; }
     }
 }

@@ -38,11 +38,12 @@ namespace Pandemic.ViewModels
             SimpleIoc.Default.Register<IGameData, GameData>();
             SimpleIoc.Default.Register<IEnumerable<City>>(() => SimpleIoc.Default.GetInstance<WorldMapFactory>().GetCities());
             SimpleIoc.Default.Register<PlayerDeck>();
+            SimpleIoc.Default.Register<SpecialActions>();
             SimpleIoc.Default.Register<TurnStateMachine>();
             SimpleIoc.Default.Register<ActionStateMachine>();
-            SimpleIoc.Default.Register(() =>
+            SimpleIoc.Default.Register<IEnumerable<Character>>(() =>
             {
-                return new Queue<Character>(
+                return new List<Character>(
                     new Character[]
                     {
                         new Medic()
@@ -55,6 +56,7 @@ namespace Pandemic.ViewModels
                         }
                     });
             });
+            SimpleIoc.Default.Register(() => new Queue<Character>(SimpleIoc.Default.GetInstance<IEnumerable<Character>>()));
 
             SimpleIoc.Default.Register<Board>();
 

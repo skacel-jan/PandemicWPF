@@ -11,7 +11,7 @@
     <UserControl.CacheMode>
         <BitmapCache
             EnableClearType="False"
-            RenderAtScale="3"
+            RenderAtScale="2"
             SnapsToDevicePixels="False" />
     </UserControl.CacheMode>
     <Grid>

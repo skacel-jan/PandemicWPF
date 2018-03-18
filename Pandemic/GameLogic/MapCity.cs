@@ -32,6 +32,8 @@ namespace Pandemic
                 {DiseaseColor.Red, 0 },
                 {DiseaseColor.Yellow, 0 }
             };
+
+            _diseasesToTreat = new List<DiseaseColor>();
         }
 
         public double Area { get; private set; }
@@ -115,6 +117,8 @@ namespace Pandemic
             {
                 Infections[color] = newInfection;
 
+                ChangeDiseasesToTreat(color);
+
                 switch (color)
                 {
                     case DiseaseColor.Black:
@@ -136,6 +140,18 @@ namespace Pandemic
             }
 
             return Math.Abs(oldInfections - Infections[color]);
+        }
+
+        private void ChangeDiseasesToTreat(DiseaseColor color)
+        {
+            if (Infections[color] > 0 && !DiseasesToTreat.Contains(color))
+            {
+                DiseasesToTreat.Add(color);
+            }
+            else if (Infections[color] == 0 && DiseasesToTreat.Contains(color))
+            {
+                DiseasesToTreat.Remove(color);
+            }
         }
 
         public void CharactersChanged()
@@ -206,5 +222,9 @@ namespace Pandemic
         {
             MessengerInstance.Send(new GenericMessage<MapCity>(this), MessageTokens.CitySelected);
         }
+
+        private IList<DiseaseColor> _diseasesToTreat;
+        public IList<DiseaseColor> DiseasesToTreat => _diseasesToTreat;
+
     }
 }

@@ -8,18 +8,28 @@
     xmlns:helpers="clr-namespace:Pandemic.Helpers"
     xmlns:local="clr-namespace:Pandemic.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:view="clr-namespace:Pandemic.Views"
-    xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
     d:DesignHeight="700"
     d:DesignWidth="1400"
     mc:Ignorable="d">
+    <UserControl.CacheMode>
+        <BitmapCache
+            EnableClearType="False"
+            RenderAtScale="1"
+            SnapsToDevicePixels="False" />
+    </UserControl.CacheMode>
     <UserControl.Resources>
 
         <System:Double x:Key="MoveLength">30.0</System:Double>
 
         <Converters:MovePointToCenter x:Key="MovePointToCenter" />
 
-        <Style TargetType="{x:Type view:MapCityControl}">
+        <BitmapCache
+            x:Key="cacheMode"
+            EnableClearType="False"
+            RenderAtScale="1"
+            SnapsToDevicePixels="False" />
+
+        <Style TargetType="{x:Type local:MapCityControl}">
             <Setter Property="Height" Value="60" />
             <Setter Property="Width" Value="60" />
             <Setter Property="helpers:MultiClickBehavior.SingleClickCommand" Value="{Binding CityCommand}" />
@@ -36,13 +46,8 @@
             <Setter Property="IsBorderVisible" Value="{Binding IsMoveEnabled}" />
             <Setter Property="Visibility" Value="Visible" />
             <Setter Property="CityColor" Value="{Binding City.Color}" />
+            <!--<Setter Property="CacheMode" Value="{StaticResource cacheMode}" />-->
         </Style>
-
-        <BitmapCache
-            x:Key="cacheMode"
-            EnableClearType="False"
-            RenderAtScale="1"
-            SnapsToDevicePixels="False" />
 
         <Style TargetType="{x:Type Line}">
             <Style.Resources>
@@ -57,7 +62,7 @@
 
     </UserControl.Resources>
     <Grid>
-        <view:WorldMapBackground Grid.Row="0" />
+        <local:WorldMapBackground Grid.Row="0" />
         <Viewbox Grid.Row="0" Stretch="Uniform">
             <Canvas Width="1400" Height="700">
                 <Line
@@ -385,197 +390,197 @@
                     X2="910"
                     Y1="427"
                     Y2="396" />
-                <view:MapCityControl
+                <local:MapCityControl
                     x:Name="SanFrancisco"
                     Canvas.Left="152"
                     Canvas.Top="253"
                     DataContext="{Binding Board.WorldMap.Cities[San Francisco]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="166"
                     Canvas.Top="325"
                     DataContext="{Binding Board.WorldMap.Cities[Los Angeles]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="251"
                     Canvas.Top="345"
                     DataContext="{Binding Board.WorldMap.Cities[Mexico City]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     x:Name="Chicago"
                     Canvas.Left="258"
                     Canvas.Top="223"
                     DataContext="{Binding Board.WorldMap.Cities[Chicago]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="294"
                     Canvas.Top="278"
                     DataContext="{Binding Board.WorldMap.Cities[Atlanta]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="300"
                     Canvas.Top="487"
                     DataContext="{Binding Board.WorldMap.Cities[Lima]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="319"
                     Canvas.Top="566"
                     DataContext="{Binding Board.WorldMap.Cities[Santiago]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="342"
                     Canvas.Top="410"
                     DataContext="{Binding Board.WorldMap.Cities[Bogota]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="346"
                     Canvas.Top="217"
                     DataContext="{Binding Board.WorldMap.Cities[Montreal]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="353"
                     Canvas.Top="332"
                     DataContext="{Binding Board.WorldMap.Cities[Miami]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="397"
                     Canvas.Top="270"
                     DataContext="{Binding Board.WorldMap.Cities[Washington]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="410"
                     Canvas.Top="547"
                     DataContext="{Binding Board.WorldMap.Cities[Buenos Aires]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="420"
                     Canvas.Top="220"
                     DataContext="{Binding Board.WorldMap.Cities[New York]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="461"
                     Canvas.Top="488"
                     DataContext="{Binding Board.WorldMap.Cities[Sao Paulo]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="560"
                     Canvas.Top="259"
                     DataContext="{Binding Board.WorldMap.Cities[Madrid]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="570"
                     Canvas.Top="182"
                     DataContext="{Binding Board.WorldMap.Cities[London]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="624"
                     Canvas.Top="390"
                     DataContext="{Binding Board.WorldMap.Cities[Lagos]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="640"
                     Canvas.Top="223"
                     DataContext="{Binding Board.WorldMap.Cities[Paris]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="652"
                     Canvas.Top="302"
                     DataContext="{Binding Board.WorldMap.Cities[Algiers]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="662"
                     Canvas.Top="170"
                     DataContext="{Binding Board.WorldMap.Cities[Essen]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="683"
                     Canvas.Top="445"
                     DataContext="{Binding Board.WorldMap.Cities[Kinshasa]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="701"
                     Canvas.Top="213"
                     DataContext="{Binding Board.WorldMap.Cities[Milan]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="719"
                     Canvas.Top="313"
                     DataContext="{Binding Board.WorldMap.Cities[Cairo]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="725"
                     Canvas.Top="525"
                     DataContext="{Binding Board.WorldMap.Cities[Johannesburg]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="731"
                     Canvas.Top="247"
                     DataContext="{Binding Board.WorldMap.Cities[Istanbul]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="734"
                     Canvas.Top="374"
                     DataContext="{Binding Board.WorldMap.Cities[Khartoum]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="756"
                     Canvas.Top="148"
                     DataContext="{Binding Board.WorldMap.Cities[St. Petersburg]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="791"
                     Canvas.Top="275"
                     DataContext="{Binding Board.WorldMap.Cities[Baghdad]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="794"
                     Canvas.Top="200"
                     DataContext="{Binding Board.WorldMap.Cities[Moscow]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="802"
                     Canvas.Top="345"
                     DataContext="{Binding Board.WorldMap.Cities[Riyadh]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="853"
                     Canvas.Top="237"
                     DataContext="{Binding Board.WorldMap.Cities[Tehran]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="872"
                     Canvas.Top="303"
                     DataContext="{Binding Board.WorldMap.Cities[Karachi]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="880"
                     Canvas.Top="366"
                     DataContext="{Binding Board.WorldMap.Cities[Mumbai]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="932"
                     Canvas.Top="274"
                     DataContext="{Binding Board.WorldMap.Cities[Delhi]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="951"
                     Canvas.Top="397"
                     DataContext="{Binding Board.WorldMap.Cities[Chennai]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="989"
                     Canvas.Top="299"
                     DataContext="{Binding Board.WorldMap.Cities[Kolkata]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1004"
                     Canvas.Top="467"
                     DataContext="{Binding Board.WorldMap.Cities[Jakarta]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1013"
                     Canvas.Top="364"
                     DataContext="{Binding Board.WorldMap.Cities[Bangkok]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1049"
                     Canvas.Top="203"
                     DataContext="{Binding Board.WorldMap.Cities[Beijing]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1050"
                     Canvas.Top="259"
                     DataContext="{Binding Board.WorldMap.Cities[Shanghai]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1054"
                     Canvas.Top="325"
                     DataContext="{Binding Board.WorldMap.Cities[Hong Kong]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1056"
                     Canvas.Top="411"
                     DataContext="{Binding Board.WorldMap.Cities[Ho Chi Minh City]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1120"
                     Canvas.Top="199"
                     DataContext="{Binding Board.WorldMap.Cities[Seoul]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1125"
                     Canvas.Top="319"
                     DataContext="{Binding Board.WorldMap.Cities[Taipei]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1143"
                     Canvas.Top="406"
                     DataContext="{Binding Board.WorldMap.Cities[Manila]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1188"
                     Canvas.Top="233"
                     DataContext="{Binding Board.WorldMap.Cities[Tokyo]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1188"
                     Canvas.Top="546"
                     DataContext="{Binding Board.WorldMap.Cities[Sydney]}" />
-                <view:MapCityControl
+                <local:MapCityControl
                     Canvas.Left="1198"
                     Canvas.Top="296"
                     DataContext="{Binding Board.WorldMap.Cities[Osaka]}" />

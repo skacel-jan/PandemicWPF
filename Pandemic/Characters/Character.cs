@@ -16,6 +16,7 @@ namespace Pandemic
         private bool _isActive;
         private DiseaseColor _mostCardsColor;
         private int _mostCardsColorCount;
+
         protected Character()
         {
             Cards = new ObservableCollection<PlayerCard>();
@@ -64,6 +65,7 @@ namespace Pandemic
         public abstract string Role { get; }
 
         public abstract IEnumerable<string> RoleDescription { get; }
+
         public void AddCard(PlayerCard card)
         {
             Cards.Add(card);
@@ -83,6 +85,11 @@ namespace Pandemic
         public virtual bool CanDirectFlight(MapCity toCity)
         {
             return HasCityCard(toCity.City);
+        }
+
+        public virtual bool CanDiscoverCure()
+        {
+            return CanDiscoverCure(MostCardsColor);
         }
 
         public virtual bool CanDiscoverCure(DiseaseColor diseaseColor)
@@ -105,14 +112,19 @@ namespace Pandemic
             return true;
         }
 
-        public virtual bool CanShareKnowledge(PlayerCard card, Character character)
+        public virtual bool CanShareKnowledge()
         {
-            return CurrentMapCity == character.CurrentMapCity && CurrentMapCity.City == card.City;
+            return (CurrentMapCity.Characters.Count() > 1 && CurrentMapCity.Characters.Any(c => c.HasCityCard(CurrentMapCity.City)));
         }
 
         public virtual bool CanShuttleFlight(MapCity toCity)
         {
             return CurrentMapCity.HasResearchStation && toCity.HasResearchStation;
+        }
+
+        public bool CanTreatDisease()
+        {
+            return CurrentMapCity.DiseasesToTreat.Count > 0;
         }
 
         public int ColorCardsCount(DiseaseColor diseaseColor)
@@ -142,6 +154,9 @@ namespace Pandemic
             CurrentMapCity = toCity;
             return card;
         }
+
+        public virtual void RegisterSpecialActions(SpecialActions actions)
+        { }
 
         public PlayerCard RemoveCard(PlayerCard card)
         {
@@ -177,21 +192,11 @@ namespace Pandemic
             return CurrentMapCity.TreatDisease(diseaseColor);
         }
 
-        internal int DiseasesToTreat()
-        {
-            int count = 0;
-            foreach (var infection in CurrentMapCity.Infections.Values)
-            {
-                count += infection > 0 ? 1 : 0;
-            }
-
-            return count;
-        }
-
         protected virtual bool HasCardOfCurrentCity()
         {
             return HasCityCard(CurrentMapCity.City);
         }
+
         private void Cards_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (Cards.Count > 0)

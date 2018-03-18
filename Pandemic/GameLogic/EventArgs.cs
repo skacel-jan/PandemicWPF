@@ -5,26 +5,26 @@ namespace Pandemic
 {
     public class CardsSelectingEventArgs : EventArgs
     {
-        public CardsSelectingEventArgs(int cardsCount, string text)
+        public CardsSelectingEventArgs(IEnumerable<Card> cards, string text, Action<Card> selectionDelegate)
         {
-            CardsCount = cardsCount;
+            Cards = cards;
             Text = text;
+            SelectionDelegate = selectionDelegate;
         }
 
+        public IEnumerable<Card> Cards { get; }
+        public Action<Card> SelectionDelegate { get; }
         public string Text { get; }
-        public int CardsCount { get; }
     }
 
-    public class CureDiscoveredEventArgs : EventArgs
+    public class InfectionEventArgs
     {
-        public CureDiscoveredEventArgs(DiseaseColor color, IEnumerable<CityCard> cards)
+        public InfectionEventArgs(City city)
         {
-            Color = color;
-            Cards = cards ?? throw new ArgumentNullException(nameof(cards));
+            City = city;
         }
 
-        public IEnumerable<CityCard> Cards { get; }
-        public DiseaseColor Color { get; }
+        public City City { get; }
     }
 
     public class InfoTextEventArgs : EventArgs
@@ -37,25 +37,13 @@ namespace Pandemic
         public string InfoText { get; }
     }
 
-    public class StructureBuiltEventArgs : EventArgs
+    public class OutbreakEventArgs
     {
-        public StructureBuiltEventArgs(PlayerCard card)
+        public OutbreakEventArgs(City city)
         {
-            Card = card;
+            City = city;
         }
 
-        public PlayerCard Card { get; }
-    }
-
-    public class TreatDiseaseEventArgs : EventArgs
-    {
-        public TreatDiseaseEventArgs(int cubesCount, DiseaseColor diseaseColor)
-        {
-            CubesCount = cubesCount;
-            DiseaseColor = diseaseColor;
-        }
-
-        public int CubesCount { get; }
-        public DiseaseColor DiseaseColor { get; }
+        public City City { get; }
     }
 }

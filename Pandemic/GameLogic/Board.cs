@@ -1,5 +1,4 @@
 ﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Messaging;
 using Pandemic.Decks;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +14,12 @@ namespace Pandemic
             InfectionDeck = InfectionDeckFactory.GetInfectionDeck(WorldMap.Cities.Values.Select(x => x.City));
             PlayerDeck = playerDeck;
 
-            //PlayerDeck = new PlayerDeck(playerDeck.Cards.Take(11).Select(x => (x as PlayerCard).City));
-
             GameData = gameData;
 
             InfectionDiscardPile = InfectionDeckFactory.GetEmptyInfectionDeck();
             PlayerDiscardPile = new PlayerDeck(new List<City>());
+
+            InitialInfection();
         }
 
         public IGameData GameData { get; }
@@ -83,7 +82,7 @@ namespace Pandemic
         }
 
         public bool RaiseInfection(City city, DiseaseColor color)
-        {           
+        {
             if (!GameData.Diseases[color].IsEradicated)
             {
                 int addedInfections = WorldMap.GetCity(city.Name).ChangeInfection(color, 1);
@@ -108,16 +107,26 @@ namespace Pandemic
             }
         }
 
-        public void ShuffleDiscardPile()
+        public void ShuffleInfectionDiscardPileBack()
         {
             var newDeck = InfectionDeckFactory.GetInfectionDeck(InfectionDiscardPile.Cards);
             newDeck.Shuffle();
-            foreach (var infectionCard in InfectionDeck.Cards)
-            {
-                newDeck.Cards.Add(infectionCard);
-            }
+            newDeck.AddCards(InfectionDeck.Cards);
             InfectionDeck = newDeck;
             InfectionDiscardPile.Cards.Clear();
+        }
+
+        private void InitialInfection()
+        {
+            for (int i = 3; i > 0; i--)
+            {
+                foreach (var x in Enumerable.Range(0, 3))
+                {
+                    var infectionCard = DrawInfectionCard();
+                    int changeInfections = WorldMap.GetCity(infectionCard.City.Name).ChangeInfection(infectionCard.City.Color, i);
+                    DecreaseCubePile(infectionCard.City.Color, changeInfections);
+                }
+            }
         }
     }
 }

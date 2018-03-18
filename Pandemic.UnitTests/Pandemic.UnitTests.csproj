@@ -68,7 +68,6 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DeckTests.cs" />
-    <Compile Include="TurnStateMachineTests.cs" />
     <Compile Include="WorldMapTests.cs" />
   </ItemGroup>
   <ItemGroup>
