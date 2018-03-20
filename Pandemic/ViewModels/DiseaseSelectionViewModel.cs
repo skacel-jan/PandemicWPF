@@ -15,16 +15,18 @@ namespace Pandemic.ViewModels
         public ICommand DiseaseSelectedCommand { get; private set; }
 
         public IEnumerable<DiseaseColor> Diseases { get; private set; }
+        public Action<DiseaseColor> Action { get; }
 
-        public DiseaseSelectionViewModel(IEnumerable<DiseaseColor> diseases)
+        public DiseaseSelectionViewModel(IEnumerable<DiseaseColor> diseases, Action<DiseaseColor> action)
         {
             Diseases = diseases;
+            Action = action;
             DiseaseSelectedCommand = new RelayCommand<DiseaseColor>(color => OnDiseaseSelected(color));
         }
 
         protected void OnDiseaseSelected(DiseaseColor color)
         {
-            MessengerInstance.Send(new GenericMessage<DiseaseColor>(color), MessageTokens.DiseaseSelected);
+            Action?.Invoke(color);
         }
     }
 }

@@ -21,11 +21,6 @@ namespace Pandemic.ViewModels
         {
             Board = board ?? throw new ArgumentNullException(nameof(board));
 
-            Board.InfectionDeck.Shuffle();
-            Board.PlayerDeck.Shuffle();
-
-            Board.BuildResearchStation(Board.WorldMap.GetCity(City.Atlanta));
-
             ActionStateMachine = actionStateMachine;
             ActionStateMachine.CitySelecting += ActionStateMachine_CitySelecting;
             ActionStateMachine.CardsSelecting += ActionStateMachine_CardsSelecting;
@@ -55,15 +50,7 @@ namespace Pandemic.ViewModels
 
             MessengerInstance.Register<GenericMessage<MapCity>>(this, MessageTokens.CitySelected, CitySelected);
             MessengerInstance.Register<GenericMessage<Card>>(this, MessageTokens.MoveAction, CardSelected);
-            MessengerInstance.Register(this, MessageTokens.ShareCard,
-                (GenericMessage<Card> message) => ActionStateMachine.DoAction(_actionEvent, message.Content));
-            MessengerInstance.Register<GenericMessage<DiseaseColor>>(this, MessageTokens.DiseaseSelected, DiseaseSelected);
-            MessengerInstance.Register<GenericMessage<string>>(this, MessageTokens.ShareTypeSelected, ShareTypeSelected);
-            MessengerInstance.Register<GenericMessage<Character>>(this, CharacterSelected);
-            MessengerInstance.Register<MoveType>(this, MoveSelected);
-            MessengerInstance.Register<GenericMessage<IList<CityCard>>>(this, CardsSelected);
             MessengerInstance.Register<GenericMessage<MapCity>>(this, MessageTokens.InstantMove, InstantMove);
-            MessengerInstance.Register<GenericMessage<Card>>(this, MessageTokens.DiscardAction, DiscardCard);
 
             ActionStateMachine.Start();
             TurnStateMachine.Start();
@@ -121,12 +108,6 @@ namespace Pandemic.ViewModels
             set { Set(ref _isActionVisible, value); }
         }
 
-        public bool IsDiscardingSelected
-        {
-            get => _isDiscardingSelected;
-            set => Set(ref _isDiscardingSelected, value);
-        }
-
         public bool IsInfoVisible
         {
             get { return _isInfoVisible; }
@@ -174,7 +155,8 @@ namespace Pandemic.ViewModels
 
         private void ActionStateMachine_DiseaseSelecting(object sender, EventArgs e)
         {
-            ActionViewModel = new DiseaseSelectionViewModel(new List<DiseaseColor>(CurrentCharacter.CurrentMapCity.DiseasesToTreat));
+            ActionViewModel = new DiseaseSelectionViewModel(new List<DiseaseColor>(CurrentCharacter.CurrentMapCity.DiseasesToTreat), 
+                (disease) => ActionStateMachine.DoAction(_actionEvent, disease));
         }
 
         private void ActionStateMachine_CharacterSelecting(object sender, EventArgs e)
@@ -291,11 +273,6 @@ namespace Pandemic.ViewModels
                         CurrentCharacter.Cards[CurrentCharacter.Cards.Count - 2].Name),
                     new RelayCommand(() => TurnStateMachine.DoAction()), "Go to Infection phase");
             }
-        }
-
-        private void DiseaseSelected(GenericMessage<DiseaseColor> message)
-        {
-            ActionStateMachine.DoAction(_actionEvent, message.Content);
         }
 
         private void FinishDoingAction()
@@ -473,8 +450,6 @@ namespace Pandemic.ViewModels
                 InfoViewModel = new TextViewModel(string.Format("Drawn cards: {0} and {1}.{2}Player has more cards then his hand limit. Card has to be discarded.",
                     CurrentCharacter.Cards[CurrentCharacter.Cards.Count - 1].Name,
                     CurrentCharacter.Cards[CurrentCharacter.Cards.Count - 2].Name, Environment.NewLine));
-
-                IsDiscardingSelected = true;
                 //ActionViewModel = new CardSelectionViewModel(CurrentCharacter.Cards, MessageTokens.DiscardAction);
             }
             else
