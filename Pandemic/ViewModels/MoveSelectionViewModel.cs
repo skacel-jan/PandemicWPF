@@ -13,33 +13,13 @@ namespace Pandemic.ViewModels
     {
         public ICommand MoveSelectedCommand { get; private set; }
 
-        public IEnumerable<string> Moves { get; private set; }
+        public IDictionary<string, string> Moves { get; private set; }
 
-        public MoveSelectionViewModel(IEnumerable<string> moves)
+        public MoveSelectionViewModel(IDictionary<string, string> moves, Action<string> action)
         {
             Moves = moves;
-            MoveSelectedCommand = new RelayCommand<string>(move => OnMoveSelected(move));
+            MoveSelectedCommand = new RelayCommand<string>(action);
         }
-
-        protected void OnMoveSelected(string move)
-        {
-            MoveType type;
-            if (move == "Direct flight")
-            {
-                type = MoveType.Direct;
-            }
-            else
-            {
-                type = MoveType.Charter;
-            }
-            MessengerInstance.Send(type, MessageTokens.MoveSelected);
-        }
-    }
-
-    public enum MoveType
-    {
-        Direct,
-        Charter
     }
 }
 

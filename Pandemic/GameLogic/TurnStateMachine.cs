@@ -9,7 +9,7 @@ namespace Pandemic
     public class TurnStateMachine : ObservableObject
     {
         private int _actions;
-        private PassiveStateMachine<TurnStates, TurnEvents> _passiveStateMachine;
+        private PassiveStateMachine<TurnStates, TurnEvents> _phaseStateMachine;
 
         public TurnStateMachine(Queue<Character> _characters, Board board)
         {
@@ -23,35 +23,35 @@ namespace Pandemic
 
             Board.PlayerDeck.AddEpidemicCards(5);
 
-            _passiveStateMachine = new PassiveStateMachine<TurnStates, TurnEvents>();
+            _phaseStateMachine = new PassiveStateMachine<TurnStates, TurnEvents>();
 
-            _passiveStateMachine.In(TurnStates.StartOfTurn)
+            _phaseStateMachine.In(TurnStates.StartOfTurn)
                 .ExecuteOnEntry(ExecuteStartTurnEvent)
                 .On(TurnEvents.Next).Goto(TurnStates.ActionPhase);
 
-            _passiveStateMachine.In(TurnStates.ActionPhase)
+            _phaseStateMachine.In(TurnStates.ActionPhase)
                 .ExecuteOnExit(() => OnActionPhaseEnded(EventArgs.Empty))
                 .On(TurnEvents.Next)
                     .If(() => Actions == 0).Goto(TurnStates.DrawingPhase)
                     .Otherwise().Execute(ExecuteActionEvent);
 
-            _passiveStateMachine.In(TurnStates.DrawingPhase)                
+            _phaseStateMachine.In(TurnStates.DrawingPhase)                
                 .On(TurnEvents.Next)
                     .If(() => Draws == 0).Goto(TurnStates.InfectionPhase)
                         .Execute(() => OnDrawingPhaseEnded(EventArgs.Empty))
                     .Otherwise().Execute(ExecuteDrawEvent)
                 .On(TurnEvents.GameOver).Goto(TurnStates.GameLost);
 
-            _passiveStateMachine.In(TurnStates.InfectionPhase)
+            _phaseStateMachine.In(TurnStates.InfectionPhase)
                 .ExecuteOnExit(() => OnInfectionPhaseEnded(EventArgs.Empty))
                 .On(TurnEvents.Next)
                     .If(() => Infections == 0).Goto(TurnStates.EndOfTurn)
                     .Otherwise().Execute(ExecuteInfectionEvent);
 
-            _passiveStateMachine.In(TurnStates.EndOfTurn)
+            _phaseStateMachine.In(TurnStates.EndOfTurn)
                 .On(TurnEvents.Next).Goto(TurnStates.StartOfTurn);
 
-            _passiveStateMachine.In(TurnStates.GameLost)                
+            _phaseStateMachine.In(TurnStates.GameLost)                
                 .ExecuteOnEntry(() => GameLost?.Invoke(this, new GenericEventArgs<string>("Game over: No more cards")));
         }
 
@@ -109,18 +109,18 @@ namespace Pandemic
 
         public void DoAction()
         {
-            _passiveStateMachine.Fire(TurnEvents.Next);
+            _phaseStateMachine.Fire(TurnEvents.Next);
         }
 
         public void Start()
         {
-            _passiveStateMachine.Initialize(TurnStates.StartOfTurn);
-            _passiveStateMachine.Start();
+            _phaseStateMachine.Initialize(TurnStates.StartOfTurn);
+            _phaseStateMachine.Start();
         }
 
         public void Stop()
         {
-            _passiveStateMachine.Stop();
+            _phaseStateMachine.Stop();
         }
 
         protected void OnActionDone(EventArgs e)
@@ -164,7 +164,7 @@ namespace Pandemic
             OnActionDone(new GenericEventArgs<int>(Actions));
             if (Actions == 0)
             {
-                _passiveStateMachine.Fire(TurnEvents.Next);
+                _phaseStateMachine.Fire(TurnEvents.Next);
             }
         }
 
@@ -181,7 +181,7 @@ namespace Pandemic
             }
 
             Draws -= 1;
-            _passiveStateMachine.Fire(TurnEvents.Next);
+            _phaseStateMachine.Fire(TurnEvents.Next);
         }
 
         private void ExecuteInfectionEvent()
@@ -206,7 +206,7 @@ namespace Pandemic
 
             if (Infections == 0)
             {
-                _passiveStateMachine.Fire(TurnEvents.Next);
+                _phaseStateMachine.Fire(TurnEvents.Next);
             }
 
             OnInfectionDone(new InfectionEventArgs(card.City));
@@ -231,7 +231,7 @@ namespace Pandemic
             Draws = 2;
             Infections = Board.GameData.InfectionRate;
             OnTurnStarted(EventArgs.Empty);
-            _passiveStateMachine.Fire(TurnEvents.Next);
+            _phaseStateMachine.Fire(TurnEvents.Next);
         }
 
         private bool DrawPlayerCards(int count, Character character)
@@ -334,7 +334,7 @@ namespace Pandemic
 
         public void GameOver()
         {
-            _passiveStateMachine.Fire(TurnEvents.GameOver);
+            _phaseStateMachine.Fire(TurnEvents.GameOver);
         }
     }
 

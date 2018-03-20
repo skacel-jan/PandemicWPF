@@ -46,4 +46,27 @@ namespace Pandemic
 
         public City City { get; }
     }
+
+    public class ShareTypeEventArgs
+    {
+        public ShareTypeEventArgs(Action<ShareType> selectionDelegate)
+        {
+            SelectionDelegate = selectionDelegate;
+        }
+        public Action<ShareType> SelectionDelegate { get; }
+    }
+
+
+
+    public class MoveTypeEventArgs
+    {
+        public MoveTypeEventArgs(IDictionary<string, string> moves, Action<string> selectionDelegate)
+        {
+            Moves = moves;
+            SelectionDelegate = selectionDelegate;
+        }
+
+        public IDictionary<string, string> Moves { get; }
+        public Action<string> SelectionDelegate { get; }
+    }
 }

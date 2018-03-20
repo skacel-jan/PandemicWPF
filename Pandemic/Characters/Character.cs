@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -182,6 +183,23 @@ namespace Pandemic
             AddCard(card);
         }
 
+        public virtual IDictionary<string, string> GetPossibleMoveTypes(MapCity destinationCity)
+        {
+            var result = new Dictionary<string, string>();
+
+            if (CanCharterFlight())
+            {
+                result.Add(ActionStateMachine.CharterFlight, "Charter flight");
+            }
+
+            if (CanDirectFlight(destinationCity))
+            {
+                result.Add(ActionStateMachine.DirectFlight, "Direct flight");
+            }
+
+            return result;
+        }
+
         public virtual void ShuttleFlight(MapCity toCity)
         {
             CurrentMapCity = toCity;
@@ -208,6 +226,26 @@ namespace Pandemic
             {
                 _mostCardsColor = DiseaseColor.Black;
             }
+        }
+
+        public virtual IEnumerable<MapCity> GetPossibleDestinationCities(IEnumerable<MapCity> cities)
+        {
+            bool canCharterFlight = CanCharterFlight();            
+
+            foreach (var city in cities)
+            {
+                if (canCharterFlight)
+                {
+                    yield return city;
+                }
+                else if (city != CurrentMapCity)
+                {
+                    if (CanDriveOrFerry(city) || CanShuttleFlight(city) || CanDirectFlight(city))
+                    {
+                        yield return city;
+                    }
+                }
+            }           
         }
     }
 }

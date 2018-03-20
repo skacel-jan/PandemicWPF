@@ -23,7 +23,7 @@ namespace Pandemic.ViewModels
 
         protected void OnCardSelected(Card card)
         {
-            CardSelectedDelegate(card);
+            CardSelectedDelegate?.Invoke(card);
         }
     }
 }
