@@ -19,6 +19,11 @@ namespace Pandemic
             InfectionDiscardPile = InfectionDeckFactory.GetEmptyInfectionDeck();
             PlayerDiscardPile = new PlayerDeck(new List<City>());
 
+            //InfectionDeck.Shuffle();
+            //PlayerDeck.Shuffle();
+
+            BuildResearchStation(WorldMap.GetCity(City.Atlanta));
+
             InitialInfection();
         }
 
