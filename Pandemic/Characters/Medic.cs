@@ -22,30 +22,15 @@ namespace Pandemic.Characters
 
         public override Color Color => Colors.Orange;
 
-        public override void DriveOrFerry(MapCity toCity)
+        public override bool Move(string moveType, MapCity city)
         {
-            base.DriveOrFerry(toCity);
-            SpecialTreatDisease();
-        }
+            bool result = base.Move(moveType, city);
+            if (result)
+            {
+                SpecialTreatDisease();
+            }            
 
-        public override PlayerCard CharterFlight(MapCity toCity)
-        {
-            PlayerCard card = base.CharterFlight(toCity);
-            SpecialTreatDisease();
-            return card;
-        }
-
-        public override void ShuttleFlight(MapCity toCity)
-        {
-            base.ShuttleFlight(toCity);
-            SpecialTreatDisease();
-        }
-
-        public override PlayerCard DirectFlight(MapCity toCity)
-        {
-            PlayerCard card = base.DirectFlight(toCity);
-            SpecialTreatDisease();
-            return card;
+            return result;
         }
 
         public override int TreatDisease(DiseaseColor diseaseColor)

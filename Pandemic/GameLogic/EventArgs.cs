@@ -3,6 +3,16 @@ using System.Collections.Generic;
 
 namespace Pandemic
 {
+    public class CardDiscardedEventArgs
+    {
+        public CardDiscardedEventArgs(PlayerCard card)
+        {
+            Card = card;
+        }
+
+        public PlayerCard Card { get; }
+    }
+
     public class CardsSelectingEventArgs : EventArgs
     {
         public CardsSelectingEventArgs(IEnumerable<Card> cards, string text, Action<Card> selectionDelegate)
@@ -37,6 +47,18 @@ namespace Pandemic
         public string InfoText { get; }
     }
 
+    public class MoveTypeEventArgs
+    {
+        public MoveTypeEventArgs(IEnumerable<IMoveAction> moves, Action<string> selectionDelegate)
+        {
+            Moves = moves;
+            SelectionDelegate = selectionDelegate;
+        }
+
+        public IEnumerable<IMoveAction> Moves { get; }
+        public Action<string> SelectionDelegate { get; }
+    }
+
     public class OutbreakEventArgs
     {
         public OutbreakEventArgs(City city)
@@ -53,20 +75,7 @@ namespace Pandemic
         {
             SelectionDelegate = selectionDelegate;
         }
+
         public Action<ShareType> SelectionDelegate { get; }
-    }
-
-
-
-    public class MoveTypeEventArgs
-    {
-        public MoveTypeEventArgs(IDictionary<string, string> moves, Action<string> selectionDelegate)
-        {
-            Moves = moves;
-            SelectionDelegate = selectionDelegate;
-        }
-
-        public IDictionary<string, string> Moves { get; }
-        public Action<string> SelectionDelegate { get; }
     }
 }

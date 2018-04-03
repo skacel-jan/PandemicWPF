@@ -276,14 +276,12 @@
                 </Grid>
                 <Button
                     Grid.Column="3"
-                    Command="{Binding DiscardPileCommand}"
-                    CommandParameter="Player"
-                    Content="{Binding LastCardInPlayerDiscardPile, FallbackValue=No cards}" />
+                    Command="{Binding PlayerDiscardPileCommand}"
+                    Content="{Binding Path=Board.PlayerDiscardPile.LastCard, FallbackValue=No cards}" />
                 <Button
                     Grid.Column="4"
-                    Command="{Binding DiscardPileCommand}"
-                    CommandParameter="Infection"
-                    Content="{Binding LastCardInInfectionDiscardPile, FallbackValue=No cards}" />
+                    Command="{Binding InfectionDiscardPileCommand}"
+                    Content="{Binding Path=Board.InfectionDiscardPile.LastCard, FallbackValue=No cards}" />
             </Grid>
             <Grid DockPanel.Dock="Bottom">
                 <Grid.RowDefinitions>

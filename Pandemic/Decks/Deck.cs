@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using GalaSoft.MvvmLight;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Pandemic.Decks
 {
-    public class Deck<T> : IDeck<T>, IShuffle<T>, IDraw<T> where T : Card
+    public class Deck<T> : ObservableObject, IDeck<T>, IShuffle<T>, IDraw<T> where T : Card
     {
         public Deck()
         {
@@ -17,6 +18,22 @@ namespace Pandemic.Decks
         }
 
         public ObservableCollection<T> Cards { get; }
+
+        public T LastCard { get => Cards.LastOrDefault(); }
+
+        public void AddCard(T card)
+        {
+            Cards.Add(card);
+            RaisePropertyChanged(nameof(LastCard));
+        }
+
+        public void AddCards(IEnumerable<T> cards)
+        {
+            foreach (var card in cards)
+            {
+                AddCard(card);
+            }
+        }
 
         public T Draw()
         {
@@ -43,19 +60,7 @@ namespace Pandemic.Decks
                 Cards[k] = Cards[n];
                 Cards[n] = value;
             }
-        }
-
-        public void AddCard(T card)
-        {
-            Cards.Add(card);
-        }
-
-        public void AddCards(IEnumerable<T> cards)
-        {
-            foreach (var card in cards)
-            {
-                AddCard(card);
-            }
+            RaisePropertyChanged(nameof(LastCard));
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Pandemic
             GameData = gameData;
 
             InfectionDiscardPile = InfectionDeckFactory.GetEmptyInfectionDeck();
-            PlayerDiscardPile = new PlayerDeck(new List<City>());
+            PlayerDiscardPile = new Deck<Card>();
 
             //InfectionDeck.Shuffle();
             //PlayerDeck.Shuffle();
@@ -33,7 +33,7 @@ namespace Pandemic
         public Deck<InfectionCard> InfectionDiscardPile { get; private set; }
 
         public PlayerDeck PlayerDeck { get; private set; }
-        public PlayerDeck PlayerDiscardPile { get; private set; }
+        public IDeck<Card> PlayerDiscardPile { get; private set; }
 
         public WorldMap WorldMap { get; private set; }
 

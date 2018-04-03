@@ -20,5 +20,21 @@ namespace Pandemic.Characters
         public override IEnumerable<string> RoleDescription => _roleDescription;
 
         public override Color Color => Colors.Green;
+
+        public OperationsExpert() : base()
+        {
+            MoveActions.Add(ActionTypes.OperationsExpertSpecialMove, new OperationsExpertSpecialMove(this));
+        }
+
+        public override bool CanBuildResearchStation()
+        {
+            return !CurrentMapCity.HasResearchStation;
+        }
+
+        public override PlayerCard BuildResearhStation()
+        {
+            CurrentMapCity.HasResearchStation = true;
+            return null;
+        }
     }
 }

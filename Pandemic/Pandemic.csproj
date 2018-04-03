@@ -25,6 +25,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,6 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\PandemicIcon.ico</ApplicationIcon>
@@ -81,9 +83,16 @@
     <Compile Include="Decks\IDeck.cs" />
     <Compile Include="Decks\IInfectionDeckFactory.cs" />
     <Compile Include="GameLogic\ActionStateMachine.cs" />
+    <Compile Include="GameLogic\ActionTypes.cs" />
     <Compile Include="GameLogic\Board.cs" />
     <Compile Include="GameLogic\IGameData.cs" />
     <Compile Include="GameLogic\EventArgs.cs" />
+    <Compile Include="GameLogic\Moves\CharterFlight.cs" />
+    <Compile Include="GameLogic\Moves\DirectFlight.cs" />
+    <Compile Include="GameLogic\Moves\IMoveAction.cs" />
+    <Compile Include="GameLogic\Moves\DriveOrFerry.cs" />
+    <Compile Include="GameLogic\Moves\OperationsExpertSpecialMove.cs" />
+    <Compile Include="GameLogic\Moves\ShuttleFlight.cs" />
     <Compile Include="GameLogic\TurnStateMachine.cs" />
     <Compile Include="Cards\EventCard.cs" />
     <Compile Include="Characters\ContingencyPlanner.cs" />

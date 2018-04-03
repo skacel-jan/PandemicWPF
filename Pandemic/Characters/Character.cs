@@ -22,7 +22,17 @@ namespace Pandemic
         {
             Cards = new ObservableCollection<PlayerCard>();
             Cards.CollectionChanged += Cards_CollectionChanged;
+
+            MoveActions = new Dictionary<string, IMoveAction>()
+            {
+                {ActionTypes.DriveOrFerry, new DriveOrFerry(this) },
+                {ActionTypes.DirectFlight, new DirectFlight(this) },
+                {ActionTypes.ShuttleFlight, new ShuttleFlight(this) },
+                {ActionTypes.CharterFlight, new CharterFlight(this) }
+            };
         }
+
+        public event EventHandler<CardDiscardedEventArgs> CardDiscarded;
 
         public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
         public ObservableCollection<PlayerCard> Cards { get; private set; }
@@ -63,9 +73,12 @@ namespace Pandemic
             get => _mostCardsColorCount;
         }
 
+        public IDictionary<string, IMoveAction> MoveActions { get; }
         public abstract string Role { get; }
 
         public abstract IEnumerable<string> RoleDescription { get; }
+
+        public PlayerCard SelectedCard { get; set; }
 
         public void AddCard(PlayerCard card)
         {
@@ -83,11 +96,6 @@ namespace Pandemic
             return HasCardOfCurrentCity() && !CurrentMapCity.HasResearchStation;
         }
 
-        public virtual bool CanDirectFlight(MapCity toCity)
-        {
-            return HasCityCard(toCity.City);
-        }
-
         public virtual bool CanDiscoverCure()
         {
             return CanDiscoverCure(MostCardsColor);
@@ -98,14 +106,17 @@ namespace Pandemic
             return CurrentMapCity.HasResearchStation && ColorCardsCount(diseaseColor) >= CardsForCure;
         }
 
-        public virtual bool CanDriveOrFerry(MapCity toCity)
+        public virtual bool CanMove(MapCity destinationCity)
         {
-            return CurrentMapCity.IsCityConnected(toCity);
-        }
+            foreach (var action in MoveActions.Values)
+            {
+                if (action.CanMove(destinationCity))
+                {
+                    return true;
+                }
+            }
 
-        public virtual bool CanCharterFlight()
-        {
-            return HasCardOfCurrentCity();
+            return false;
         }
 
         public virtual bool CanRaiseInfection(MapCity city, DiseaseColor color)
@@ -118,11 +129,6 @@ namespace Pandemic
             return (CurrentMapCity.Characters.Count() > 1 && CurrentMapCity.Characters.Any(c => c.HasCityCard(CurrentMapCity.City)));
         }
 
-        public virtual bool CanShuttleFlight(MapCity toCity)
-        {
-            return CurrentMapCity.HasResearchStation && toCity.HasResearchStation;
-        }
-
         public bool CanTreatDisease()
         {
             return CurrentMapCity.DiseasesToTreat.Count > 0;
@@ -133,15 +139,29 @@ namespace Pandemic
             return Cards.Count(x => x.City.Color == diseaseColor);
         }
 
-        public virtual PlayerCard DirectFlight(MapCity toCity)
+        public virtual IEnumerable<MapCity> GetPossibleDestinationCities(IEnumerable<MapCity> cities)
         {
-            CurrentMapCity = toCity;
-            return RemoveCard(toCity.City);
+            var canCharterFlight = HasCityCard(CurrentMapCity.City);
+
+            foreach (var city in cities)
+            {
+                if (canCharterFlight)
+                {
+                    yield return city;
+                }
+                else if (city != CurrentMapCity)
+                {
+                    if (CanMove(city))
+                    {
+                        yield return city;
+                    }
+                }
+            }
         }
 
-        public virtual void DriveOrFerry(MapCity toCity)
+        public virtual IEnumerable<IMoveAction> GetPossibleMoveTypes(MapCity destinationCity)
         {
-            CurrentMapCity = toCity;
+            return MoveActions.Values.Where(x => x.CanMove(destinationCity)).OrderBy(x => x.IsCardNeeded);
         }
 
         public bool HasCityCard(City city)
@@ -149,11 +169,9 @@ namespace Pandemic
             return Cards.Any(card => card.City == city);
         }
 
-        public virtual PlayerCard CharterFlight(MapCity toCity)
+        public virtual bool Move(string moveType, MapCity city)
         {
-            var card = RemoveCard(CurrentMapCity.City);
-            CurrentMapCity = toCity;
-            return card;
+            return MoveActions.ContainsKey(moveType) && MoveActions[moveType].Move(city);
         }
 
         public virtual void RegisterSpecialActions(SpecialActions actions)
@@ -162,6 +180,7 @@ namespace Pandemic
         public PlayerCard RemoveCard(PlayerCard card)
         {
             Cards.Remove(card);
+            OnCardDiscarded(new CardDiscardedEventArgs(card));
             return card;
         }
 
@@ -181,28 +200,6 @@ namespace Pandemic
         {
             character.RemoveCard(card);
             AddCard(card);
-        }
-
-        public virtual IDictionary<string, string> GetPossibleMoveTypes(MapCity destinationCity)
-        {
-            var result = new Dictionary<string, string>();
-
-            if (CanCharterFlight())
-            {
-                result.Add(ActionStateMachine.CharterFlight, "Charter flight");
-            }
-
-            if (CanDirectFlight(destinationCity))
-            {
-                result.Add(ActionStateMachine.DirectFlight, "Direct flight");
-            }
-
-            return result;
-        }
-
-        public virtual void ShuttleFlight(MapCity toCity)
-        {
-            CurrentMapCity = toCity;
         }
 
         public virtual int TreatDisease(DiseaseColor diseaseColor)
@@ -228,24 +225,9 @@ namespace Pandemic
             }
         }
 
-        public virtual IEnumerable<MapCity> GetPossibleDestinationCities(IEnumerable<MapCity> cities)
+        private void OnCardDiscarded(CardDiscardedEventArgs e)
         {
-            bool canCharterFlight = CanCharterFlight();            
-
-            foreach (var city in cities)
-            {
-                if (canCharterFlight)
-                {
-                    yield return city;
-                }
-                else if (city != CurrentMapCity)
-                {
-                    if (CanDriveOrFerry(city) || CanShuttleFlight(city) || CanDirectFlight(city))
-                    {
-                        yield return city;
-                    }
-                }
-            }           
+            CardDiscarded?.Invoke(this, e);
         }
     }
 }

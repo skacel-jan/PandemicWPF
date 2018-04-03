@@ -13,9 +13,9 @@ namespace Pandemic.ViewModels
     {
         public ICommand MoveSelectedCommand { get; private set; }
 
-        public IDictionary<string, string> Moves { get; private set; }
+        public IEnumerable<IMoveAction> Moves { get; private set; }
 
-        public MoveSelectionViewModel(IDictionary<string, string> moves, Action<string> action)
+        public MoveSelectionViewModel(IEnumerable<IMoveAction> moves, Action<string> action)
         {
             Moves = moves;
             MoveSelectedCommand = new RelayCommand<string>(action);

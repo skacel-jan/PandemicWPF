@@ -73,6 +73,8 @@ namespace Pandemic
 
         public event EventHandler<GenericEventArgs<string>> GameLost;
 
+        public event EventHandler<OutbreakEventArgs> Outbreak;
+
         public enum TurnEvents
         {
             Next,
@@ -267,7 +269,6 @@ namespace Pandemic
                 bool isOutbreak = Board.RaiseInfection(card.City, card.City.Color);
                 if (isOutbreak)
                 {
-                    Board.GameData.Outbreaks++;
                     DoOutbreak(card.City, card.City.Color);
                 }
             }
@@ -315,16 +316,17 @@ namespace Pandemic
                         if (isOutbreak && !alreadyOutbreakedCities.Contains(connectedCity.City) && !citiesToOutbreak.Contains(connectedCity.City))
                         {
                             citiesToOutbreak.Enqueue(connectedCity.City);
-                            Board.GameData.Outbreaks++;
+                            OnOutbreak(new OutbreakEventArgs(connectedCity.City));
                         }
                     }
                 }
             }
         }
 
-        private void OnOutbreak(OutbreakEventArgs outbreakEventArgs)
+        private void OnOutbreak(OutbreakEventArgs e)
         {
-            //InfoViewModel = new TextViewModel(string.Format("Outbreak in city {0}", city.Name));
+            Board.GameData.Outbreaks++;
+            Outbreak?.Invoke(this, e);
         }
 
         protected void OnEpidemic(EventArgs empty)

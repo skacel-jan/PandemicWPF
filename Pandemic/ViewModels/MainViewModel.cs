@@ -18,8 +18,8 @@ namespace Pandemic.ViewModels
 
         public ViewModelBase CurrentViewModel
         {
-            get { return _currentViewModel; }
-            set { Set(ref _currentViewModel, value); }
+            get => _currentViewModel;
+            set => Set(ref _currentViewModel, value);
         }
 
         public MainViewModel()
@@ -35,6 +35,7 @@ namespace Pandemic.ViewModels
             SimpleIoc.Default.Register<WorldMapFactory>();
             SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<WorldMapFactory>().GetWorldMap());
             SimpleIoc.Default.Register<IInfectionDeckFactory, InfectionDeckFactory>();
+            SimpleIoc.Default.Register<IEventCardFactory, EventCardFactory>();
             SimpleIoc.Default.Register<IGameData, GameData>();
             SimpleIoc.Default.Register<IEnumerable<City>>(() => SimpleIoc.Default.GetInstance<WorldMapFactory>().GetCities());
             SimpleIoc.Default.Register<PlayerDeck>();
@@ -50,7 +51,7 @@ namespace Pandemic.ViewModels
                         {
                             CurrentMapCity = SimpleIoc.Default.GetInstance<WorldMapFactory>().GetWorldMap().Cities[City.Atlanta]
                         },
-                        new Scientist()
+                        new OperationsExpert()
                         {
                             CurrentMapCity = SimpleIoc.Default.GetInstance<WorldMapFactory>().GetWorldMap().Cities[City.Atlanta]
                         }
