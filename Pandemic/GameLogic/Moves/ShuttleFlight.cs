@@ -13,7 +13,7 @@
             Character = character;
         }
 
-        public bool CanMove(MapCity city)
+        public bool IsPossible(MapCity city)
         {
             return Character.CurrentMapCity.HasResearchStation && city.HasResearchStation;
         }

@@ -9,8 +9,8 @@ namespace Pandemic.UnitTests
         [TestMethod]
         public void GenerateMapTest()
         {
-            var factory = new WorldMapFactory(new DiseaseFactory().GetDiseases());
-            var map = factory.GetWorldMap();
+            //var factory = new WorldMapFactory(new DiseaseFactory().GetDiseases());
+            //var map = factory.GetWorldMap();
         }
     }
 }

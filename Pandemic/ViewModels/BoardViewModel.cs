@@ -40,8 +40,25 @@ namespace Pandemic.ViewModels
 
             MoveActionCommand = new RelayCommand(OnMoveAction);
             TreatActionCommand = new RelayCommand(() => DoAction(ActionTypes.Treat), () => CurrentCharacter.CanTreatDisease());
-            ShareActionCommand = new RelayCommand(() => DoAction(ActionTypes.Share), () => CurrentCharacter.CanShareKnowledge());
-            BuildActionCommand = new RelayCommand(() => DoAction(ActionTypes.Build), () => CurrentCharacter.CanBuildResearchStation());
+            ShareActionCommand = new RelayCommand(() => DoAction(ActionTypes.Share), () =>
+            {
+                if (CurrentCharacter.CurrentMapCity.Characters.Count() < 2)
+                {
+                    return false;
+                }
+                else
+                {
+                    bool canShare = false;
+                    foreach (var character in CurrentCharacter.CurrentMapCity.Characters)
+                    {
+                        canShare = canShare || character.ShareKnowledgeBehaviour.IsPossible();
+                    }
+                    return canShare;
+                }
+                
+            });
+            BuildActionCommand = new RelayCommand(() => DoAction(ActionTypes.Build), 
+                () => CurrentCharacter.BuildBehaviour.CanBuild(CurrentCharacter.CurrentMapCity));
             DiscoverCureActionCommand = new RelayCommand(() => DoAction(ActionTypes.Discover), () => CurrentCharacter.CanDiscoverCure());
 
             CancelCommand = new RelayCommand(Cancel);
@@ -64,7 +81,7 @@ namespace Pandemic.ViewModels
             }
             else
             {
-                InfoViewModel = new CardsSelectionViewModel(Board.InfectionDiscardPile.Cards, null);
+                InfoViewModel = new CardsViewModel(Board.InfectionDiscardPile.Cards);
             }
         }
 
@@ -76,7 +93,7 @@ namespace Pandemic.ViewModels
             }
             else
             {
-                InfoViewModel = new CardsSelectionViewModel(Board.PlayerDiscardPile.Cards, null);
+                InfoViewModel = new CardsViewModel(Board.PlayerDiscardPile.Cards);
             }
         }
 
@@ -107,7 +124,7 @@ namespace Pandemic.ViewModels
 
         public Character CurrentCharacter
         {
-            get { return TurnStateMachine.CurrentCharacter; }
+            get { return TurnStateMachine.Characters.Current; }
         }
 
         public RelayCommand PlayerDiscardPileCommand { get; set; }
@@ -176,14 +193,14 @@ namespace Pandemic.ViewModels
                 (disease) => ActionStateMachine.DoAction(_actionEvent, disease));
         }
 
-        private void ActionStateMachine_CharacterSelecting(object sender, EventArgs e)
+        private void ActionStateMachine_CharacterSelecting(object sender, CharacterSelectingEventArgs e)
         {
-            ActionViewModel = new CharacterSelectionViewModel(TurnStateMachine.Characters.Where(x => x != CurrentCharacter));
+            ActionViewModel = new CharacterSelectionViewModel(e.Characters, e.SelectionDelegate);
         }
 
         private void ActionStateMachine_ShareTypeSelecting(object sender, ShareTypeEventArgs e)
         {
-            ActionViewModel = new ShareTypeSelectionViewModel(e.SelectionDelegate);
+            ActionViewModel = new ShareTypeSelectionViewModel(e.ShareTypes, e.SelectionDelegate);
         }
 
         private void Cancel()
@@ -222,7 +239,7 @@ namespace Pandemic.ViewModels
 
         private void InstantMove(GenericMessage<MapCity> mapCityMessage)
         {
-            ActionStateMachine.DoAction(ActionTypes.DriveOrFerry, mapCityMessage.Content);
+            DoAction(ActionTypes.DriveOrFerry, mapCityMessage.Content);
         }
 
         private void DoAction(string actionString)
@@ -231,6 +248,15 @@ namespace Pandemic.ViewModels
             {
                 _actionEvent = actionString;
                 ActionStateMachine.DoAction(_actionEvent);
+            }
+        }
+
+        private void DoAction(string actionString, object parameter)
+        {
+            if (TurnStateMachine.Actions > 0)
+            {
+                _actionEvent = actionString;
+                ActionStateMachine.DoAction(actionString, parameter);
             }
         }
 
@@ -320,7 +346,7 @@ namespace Pandemic.ViewModels
 
         private void TurnStateMachine_TurnStarted(object sender, EventArgs e)
         {
-            ActionStateMachine.CurrentCharacter = TurnStateMachine.CurrentCharacter;
+            ActionStateMachine.CurrentCharacter = TurnStateMachine.Characters.Current;
             InfoViewModel = null;
             ActionViewModel = null;
             RaisePropertyChanged(nameof(InfoText));

@@ -8,22 +8,20 @@ using System.Windows.Input;
 
 namespace Pandemic.ViewModels
 {
-    public class CardsSelectionViewModel : ViewModelBase
+    public class CardsSelectionViewModel : SelectionViewModel<Card>
     {
-        public CardsSelectionViewModel(IEnumerable<Card> cards, Action<Card> cardSelectedDelegate)
+        public CardsSelectionViewModel(IEnumerable<Card> items, Action<Card> callbackAction) : base(items, callbackAction)
         {
-            Cards = cards;
-            CardSelectedDelegate = cardSelectedDelegate;
-            CardSelectedCommand = new RelayCommand<Card>(card => OnCardSelected(card));
+        }
+    }
+
+    public class CardsViewModel : ViewModelBase
+    {
+        public CardsViewModel(IEnumerable<Card> cards)
+        {
+            Items = cards;
         }
 
-        public IEnumerable<Card> Cards { get; private set; }
-        public ICommand CardSelectedCommand { get; private set; }
-        public Action<Card> CardSelectedDelegate { get; }
-
-        protected void OnCardSelected(Card card)
-        {
-            CardSelectedDelegate?.Invoke(card);
-        }
+        public IEnumerable<Card> Items { get; private set; }
     }
 }

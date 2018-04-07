@@ -11,7 +11,7 @@ namespace Pandemic
         private int _actions;
         private PassiveStateMachine<TurnStates, TurnEvents> _phaseStateMachine;
 
-        public TurnStateMachine(Queue<Character> _characters, Board board)
+        public TurnStateMachine(CircularCollection<Character> _characters, Board board)
         {
             Characters = _characters;
             Board = board;
@@ -35,7 +35,7 @@ namespace Pandemic
                     .If(() => Actions == 0).Goto(TurnStates.DrawingPhase)
                     .Otherwise().Execute(ExecuteActionEvent);
 
-            _phaseStateMachine.In(TurnStates.DrawingPhase)                
+            _phaseStateMachine.In(TurnStates.DrawingPhase)
                 .On(TurnEvents.Next)
                     .If(() => Draws == 0).Goto(TurnStates.InfectionPhase)
                         .Execute(() => OnDrawingPhaseEnded(EventArgs.Empty))
@@ -49,9 +49,10 @@ namespace Pandemic
                     .Otherwise().Execute(ExecuteInfectionEvent);
 
             _phaseStateMachine.In(TurnStates.EndOfTurn)
+                .ExecuteOnExit(ExecuteEndOfTurn)
                 .On(TurnEvents.Next).Goto(TurnStates.StartOfTurn);
 
-            _phaseStateMachine.In(TurnStates.GameLost)                
+            _phaseStateMachine.In(TurnStates.GameLost)
                 .ExecuteOnEntry(() => GameLost?.Invoke(this, new GenericEventArgs<string>("Game over: No more cards")));
         }
 
@@ -61,19 +62,19 @@ namespace Pandemic
 
         public event EventHandler Discarding;
 
-        public event EventHandler<InfectionEventArgs> InfectionDone;
-
         public event EventHandler DrawDone;
 
         public event EventHandler DrawingPhaseEnded;
 
-        public event EventHandler InfectionPhaseEnded;
-
-        public event EventHandler TurnStarted;
-
         public event EventHandler<GenericEventArgs<string>> GameLost;
 
+        public event EventHandler<InfectionEventArgs> InfectionDone;
+
+        public event EventHandler InfectionPhaseEnded;
+
         public event EventHandler<OutbreakEventArgs> Outbreak;
+
+        public event EventHandler TurnStarted;
 
         public enum TurnEvents
         {
@@ -98,20 +99,34 @@ namespace Pandemic
             set => Set(ref _actions, value);
         }
 
-        public Character CurrentCharacter
-        {
-            get => Characters.Peek();
-        }
+        public Board Board { get; }
 
         public int Draws { get; private set; }
 
-        public Queue<Character> Characters { get; set; }
-        public Board Board { get; }
+        public CircularCollection<Character> Characters { get; set; }
+
         public int Infections { get; private set; }
+
+        public bool CanRaiseInfection(MapCity city, DiseaseColor color)
+        {
+            bool result = true;
+
+            foreach (var character in Characters)
+            {
+                result = result && !character.CanPreventInfection(city, color);
+            }
+
+            return result;
+        }
 
         public void DoAction()
         {
             _phaseStateMachine.Fire(TurnEvents.Next);
+        }
+
+        public void GameOver()
+        {
+            _phaseStateMachine.Fire(TurnEvents.GameOver);
         }
 
         public void Start()
@@ -145,6 +160,11 @@ namespace Pandemic
             DrawingPhaseEnded?.Invoke(this, e);
         }
 
+        protected void OnEpidemic(EventArgs empty)
+        {
+            //ActionViewModel = new TextViewModel("Epidemic");
+        }
+
         protected void OnInfectionDone(InfectionEventArgs e)
         {
             InfectionDone?.Invoke(this, e);
@@ -158,6 +178,81 @@ namespace Pandemic
         protected void OnTurnStarted(EventArgs e)
         {
             TurnStarted?.Invoke(this, e);
+        }
+
+        private void DoEpidemicActions()
+        {
+            Board.RaiseInfectionPosition();
+            InfectionCard card = Board.DrawInfectionBottomCard();
+            if (CanRaiseInfection(Board.WorldMap.Cities[card.City.Name], card.City.Color))
+            {
+                bool isOutbreak = Board.RaiseInfection(card.City, card.City.Color);
+                if (isOutbreak)
+                {
+                    DoOutbreak(card.City, card.City.Color);
+                }
+            }
+
+            Board.ShuffleInfectionDiscardPileBack();
+
+            OnEpidemic(EventArgs.Empty);
+        }
+
+        private void DoOutbreak(City city, DiseaseColor diseaseColor)
+        {
+            var citiesToOutbreak = new Queue<City>(1);
+            var alreadyOutbreakedCities = new List<City>();
+            citiesToOutbreak.Enqueue(city);
+
+            OnOutbreak(new OutbreakEventArgs(city));
+
+            while (citiesToOutbreak.Count > 0)
+            {
+                var outbreakCity = citiesToOutbreak.Dequeue();
+                alreadyOutbreakedCities.Add(outbreakCity);
+
+                foreach (var connectedCity in Board.WorldMap.Cities[outbreakCity.Name].ConnectedCities)
+                {
+                    if (CanRaiseInfection(connectedCity, diseaseColor))
+                    {
+                        bool isOutbreak = Board.RaiseInfection(connectedCity.City, diseaseColor);
+                        if (Board.CheckCubesPile(city.Color))
+                        {
+                            GameOver();
+                        }
+
+                        if (isOutbreak && !alreadyOutbreakedCities.Contains(connectedCity.City) && !citiesToOutbreak.Contains(connectedCity.City))
+                        {
+                            citiesToOutbreak.Enqueue(connectedCity.City);
+                            OnOutbreak(new OutbreakEventArgs(connectedCity.City));
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool DrawPlayerCards(int count, Character character)
+        {
+            bool isGameOver = false;
+            foreach (var i in Enumerable.Range(0, count))
+            {
+                Card card = Board.DrawPlayerCard();
+
+                if (card == null)
+                {
+                    isGameOver = true;
+                }
+
+                if (card is PlayerCard playerCard)
+                {
+                    character.AddCard(playerCard);
+                }
+                else if (card is EpidemicCard epidemicCard)
+                {
+                    DoEpidemicActions();
+                }
+            }
+            return isGameOver;
         }
 
         private void ExecuteActionEvent()
@@ -177,13 +272,20 @@ namespace Pandemic
 
         private void ExecuteDrawEvent()
         {
-            if (DrawPlayerCards(1, CurrentCharacter))
+            if (DrawPlayerCards(1, Characters.Current))
             {
                 GameOver();
             }
 
             Draws -= 1;
             _phaseStateMachine.Fire(TurnEvents.Next);
+        }
+
+        private void ExecuteEndOfTurn()
+        {
+            Characters.Current.IsActive = false;
+
+            Characters.Next();
         }
 
         private void ExecuteInfectionEvent()
@@ -216,111 +318,13 @@ namespace Pandemic
 
         private void ExecuteStartTurnEvent()
         {
-            if (CurrentCharacter != null)
-            {
-                CurrentCharacter.IsActive = false;
-                CurrentCharacter.CurrentMapCity.CharactersChanged();
-            }
-
-            var character = Characters.Dequeue();
-            Actions = CurrentCharacter.ActionsCount;
-            Characters.Enqueue(character);
-            RaisePropertyChanged(nameof(CurrentCharacter));
-
-            CurrentCharacter.IsActive = true;
-            CurrentCharacter.CurrentMapCity.CharactersChanged();
-
+            Characters.Current.IsActive = true;
+            Actions = Characters.Current.ActionsCount;
             Draws = 2;
             Infections = Board.GameData.InfectionRate;
+
             OnTurnStarted(EventArgs.Empty);
             _phaseStateMachine.Fire(TurnEvents.Next);
-        }
-
-        private bool DrawPlayerCards(int count, Character character)
-        {
-            bool isGameOver = false;
-            foreach (var i in Enumerable.Range(0, count))
-            {
-                Card card = Board.DrawPlayerCard();
-
-                if (card == null)
-                {
-                    isGameOver = true;
-                }
-
-                if (card is PlayerCard playerCard)
-                {
-                    character.AddCard(playerCard);
-                }
-                else if (card is EpidemicCard epidemicCard)
-                {
-                    DoEpidemicActions();
-                }
-            }
-            return isGameOver;
-        }
-
-        private void DoEpidemicActions()
-        {           
-            Board.RaiseInfectionPosition();
-            InfectionCard card = Board.DrawInfectionBottomCard();
-            if (CanRaiseInfection(Board.WorldMap.Cities[card.City.Name], card.City.Color))
-            {
-                bool isOutbreak = Board.RaiseInfection(card.City, card.City.Color);
-                if (isOutbreak)
-                {
-                    DoOutbreak(card.City, card.City.Color);
-                }
-            }
-
-            Board.ShuffleInfectionDiscardPileBack();
-
-            OnEpidemic(EventArgs.Empty);
-        }
-
-        public bool CanRaiseInfection(MapCity city, DiseaseColor color)
-        {
-            bool result = true;
-
-            foreach (var character in Characters)
-            {
-                result = result && character.CanRaiseInfection(city, color);
-            }
-
-            return result;
-        }
-
-        private void DoOutbreak(City city, DiseaseColor diseaseColor)
-        {
-            var citiesToOutbreak = new Queue<City>(1);
-            var alreadyOutbreakedCities = new List<City>();
-            citiesToOutbreak.Enqueue(city);
-
-            OnOutbreak(new OutbreakEventArgs(city));            
-
-            while (citiesToOutbreak.Count > 0)
-            {
-                var outbreakCity = citiesToOutbreak.Dequeue();
-                alreadyOutbreakedCities.Add(outbreakCity);
-
-                foreach (var connectedCity in Board.WorldMap.Cities[outbreakCity.Name].ConnectedCities)
-                {
-                    if (CanRaiseInfection(connectedCity, diseaseColor))
-                    {
-                        bool isOutbreak = Board.RaiseInfection(connectedCity.City, diseaseColor);
-                        if (Board.CheckCubesPile(city.Color))
-                        {
-                            GameOver();
-                        }
-
-                        if (isOutbreak && !alreadyOutbreakedCities.Contains(connectedCity.City) && !citiesToOutbreak.Contains(connectedCity.City))
-                        {
-                            citiesToOutbreak.Enqueue(connectedCity.City);
-                            OnOutbreak(new OutbreakEventArgs(connectedCity.City));
-                        }
-                    }
-                }
-            }
         }
 
         private void OnOutbreak(OutbreakEventArgs e)
@@ -328,17 +332,5 @@ namespace Pandemic
             Board.GameData.Outbreaks++;
             Outbreak?.Invoke(this, e);
         }
-
-        protected void OnEpidemic(EventArgs empty)
-        {
-            //ActionViewModel = new TextViewModel("Epidemic");
-        }
-
-        public void GameOver()
-        {
-            _phaseStateMachine.Fire(TurnEvents.GameOver);
-        }
     }
-
-
 }

@@ -9,7 +9,7 @@ namespace Pandemic.Characters
 {
     public class Dispatcher : Character
     {
-        public override string Role => "Disptacher";
+        public override string Role => "Dispatcher";
 
         public override IEnumerable<string> RoleDescription => new List<string>()
         {

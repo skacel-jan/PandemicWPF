@@ -23,18 +23,7 @@ namespace Pandemic.Characters
 
         public OperationsExpert() : base()
         {
-            MoveActions.Add(ActionTypes.OperationsExpertSpecialMove, new OperationsExpertSpecialMove(this));
-        }
-
-        public override bool CanBuildResearchStation()
-        {
-            return !CurrentMapCity.HasResearchStation;
-        }
-
-        public override PlayerCard BuildResearhStation()
-        {
-            CurrentMapCity.HasResearchStation = true;
-            return null;
+            MoveFactory = new OperationsExpertMoveStrategy(this);
         }
     }
 }

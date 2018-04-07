@@ -43,9 +43,9 @@ namespace Pandemic.Characters
             CurrentMapCity.RemoveCuredInfections();
         }
 
-        public override bool CanRaiseInfection(MapCity city, DiseaseColor color)
+        public override bool CanPreventInfection(MapCity city, DiseaseColor color)
         {
-            return !city.Diseases[color].IsCured;
+            return city.Diseases[color].IsCured;
         }
 
         public override void RegisterSpecialActions(SpecialActions actions)

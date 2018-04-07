@@ -55,6 +55,10 @@
             </view:CardSelection>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type viewModels:CardsViewModel}">
+            <view:CardSelection />
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type viewModels:MoveSelectionViewModel}">
             <view:MoveSelection />
         </DataTemplate>
@@ -326,13 +330,12 @@
             </Grid>
             <ScrollViewer
                 Width="1400"
-                HorizontalAlignment="Left"
                 default:TouchScrolling.IsEnabled="True"
                 HorizontalScrollBarVisibility="Hidden"
                 VerticalScrollBarVisibility="Hidden">
                 <StackPanel Width="2800" Orientation="Horizontal">
-                    <view:WorldMap Width="1400" Margin="0,-120,0,0" />
-                    <view:WorldMap Width="1400" Margin="0,-120,0,0" />
+                    <view:WorldMap Width="1400" Margin="0,-60,0,0" />
+                    <view:WorldMap Width="1400" Margin="0,-60,0,0" />
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>

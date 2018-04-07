@@ -80,6 +80,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Characters\CharacterFactory.cs" />
+    <Compile Include="Characters\Researcher.cs" />
+    <Compile Include="GameLogic\Actions\BuildBehaviour.cs" />
+    <Compile Include="GameLogic\Actions\ShareKnowledge.cs" />
+    <Compile Include="GameLogic\Moves\MoveFactory.cs" />
+    <Compile Include="Helpers\CircularCollection.cs" />
     <Compile Include="Decks\IDeck.cs" />
     <Compile Include="Decks\IInfectionDeckFactory.cs" />
     <Compile Include="GameLogic\ActionStateMachine.cs" />
@@ -87,6 +93,7 @@
     <Compile Include="GameLogic\Board.cs" />
     <Compile Include="GameLogic\IGameData.cs" />
     <Compile Include="GameLogic\EventArgs.cs" />
+    <Compile Include="GameLogic\IWorldMapFactory.cs" />
     <Compile Include="GameLogic\Moves\CharterFlight.cs" />
     <Compile Include="GameLogic\Moves\DirectFlight.cs" />
     <Compile Include="GameLogic\Moves\IMoveAction.cs" />
@@ -110,16 +117,16 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\CharacterSelectionViewModel.cs" />
+    <Compile Include="ViewModels\SelectionViewModel.cs" />
     <Compile Include="ViewModels\ShareTypeSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseTemplateSelector.cs" />
-    <Compile Include="ViewModels\EpidemicViewModel.cs" />
     <Compile Include="ViewModels\BoardViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
     <Compile Include="ViewModels\CardsSelectionViewModel.cs" />
-    <Compile Include="ViewModels\NavigateToViewModelNotification.cs" />
+    <Compile Include="ViewModels\NavigateToViewModelMessage.cs" />
     <Compile Include="Views\BoardView.xaml.cs">
       <DependentUpon>BoardView.xaml</DependentUpon>
     </Compile>
@@ -166,7 +173,7 @@
       <DependentUpon>WorldMapBackground.xaml</DependentUpon>
     </Compile>
     <Compile Include="GameLogic\WorldMap.cs" />
-    <Compile Include="GameLogic\WorldMapFactory.cs" />
+    <Compile Include="GameLogic\XmlWorldMapFactory.cs" />
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -253,6 +260,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Configuration\CitiesConfigurationSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -268,6 +278,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\DataSources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Configuration\CitiesConfiguration.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

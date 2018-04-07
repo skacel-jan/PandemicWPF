@@ -9,7 +9,7 @@ namespace Pandemic.UnitTests
         [TestMethod]
         public void CreateCitiesTest()
         {
-            var cities = Helper.GetCities();
+            //var cities = Helper.GetCities();
         }
     }
 }

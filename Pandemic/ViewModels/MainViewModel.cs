@@ -32,32 +32,28 @@ namespace Pandemic.ViewModels
 
             SimpleIoc.Default.Register<DiseaseFactory>();
             SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<DiseaseFactory>().GetDiseases());
-            SimpleIoc.Default.Register<WorldMapFactory>();
-            SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<WorldMapFactory>().GetWorldMap());
+            SimpleIoc.Default.Register<IWorldMapFactory, XmlWorldMapFactory>();
+            SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<IWorldMapFactory>().WorldMap);
             SimpleIoc.Default.Register<IInfectionDeckFactory, InfectionDeckFactory>();
             SimpleIoc.Default.Register<IEventCardFactory, EventCardFactory>();
             SimpleIoc.Default.Register<IGameData, GameData>();
-            SimpleIoc.Default.Register<IEnumerable<City>>(() => SimpleIoc.Default.GetInstance<WorldMapFactory>().GetCities());
+            SimpleIoc.Default.Register<IEnumerable<City>>(() => SimpleIoc.Default.GetInstance<IWorldMapFactory>().Cities);
             SimpleIoc.Default.Register<PlayerDeck>();
             SimpleIoc.Default.Register<SpecialActions>();
             SimpleIoc.Default.Register<TurnStateMachine>();
             SimpleIoc.Default.Register<ActionStateMachine>();
             SimpleIoc.Default.Register<IEnumerable<Character>>(() =>
             {
+                var startingCity = SimpleIoc.Default.GetInstance<IWorldMapFactory>().MapCities[City.Atlanta];
                 return new List<Character>(
                     new Character[]
                     {
-                        new Medic()
-                        {
-                            CurrentMapCity = SimpleIoc.Default.GetInstance<WorldMapFactory>().GetWorldMap().Cities[City.Atlanta]
-                        },
-                        new OperationsExpert()
-                        {
-                            CurrentMapCity = SimpleIoc.Default.GetInstance<WorldMapFactory>().GetWorldMap().Cities[City.Atlanta]
-                        }
+                        new OperationsExpertFactory(startingCity).GetCharacter(),
+                        new MedicFactory(startingCity).GetCharacter(),
+                        new ResearcherFactory(startingCity).GetCharacter()
                     });
             });
-            SimpleIoc.Default.Register(() => new Queue<Character>(SimpleIoc.Default.GetInstance<IEnumerable<Character>>()));
+            SimpleIoc.Default.Register(() => new CircularCollection<Character>(SimpleIoc.Default.GetInstance<IEnumerable<Character>>()));
 
             SimpleIoc.Default.Register<Board>();
 

@@ -8,10 +8,9 @@
         }
 
         public Character Character { get; set; }
-        public bool IsCardNeeded => false;
         public string MoveType { get => ActionTypes.DriveOrFerry; }
 
-        public bool CanMove(MapCity city)
+        public bool IsPossible(MapCity city)
         {
             return Character.CurrentMapCity.IsCityConnected(city);
         }

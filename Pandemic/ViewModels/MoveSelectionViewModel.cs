@@ -9,16 +9,10 @@ using System.Windows.Input;
 
 namespace Pandemic.ViewModels
 {
-    public class MoveSelectionViewModel : ViewModelBase
+    public class MoveSelectionViewModel : SelectionViewModel<IMoveAction>
     {
-        public ICommand MoveSelectedCommand { get; private set; }
-
-        public IEnumerable<IMoveAction> Moves { get; private set; }
-
-        public MoveSelectionViewModel(IEnumerable<IMoveAction> moves, Action<string> action)
+        public MoveSelectionViewModel(IEnumerable<IMoveAction> items, Action<IMoveAction> callbackAction) : base(items, callbackAction)
         {
-            Moves = moves;
-            MoveSelectedCommand = new RelayCommand<string>(action);
         }
     }
 }

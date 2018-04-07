@@ -2,17 +2,15 @@
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 
 namespace Pandemic.ViewModels
 {
-    public class ShareTypeSelectionViewModel : ViewModelBase
+    public class ShareTypeSelectionViewModel : SelectionViewModel<ShareType>
     {
-        public ShareTypeSelectionViewModel(Action<ShareType> action)
+        public ShareTypeSelectionViewModel(IEnumerable<ShareType> items, Action<ShareType> callbackAction) : base(items, callbackAction)
         {
-            ShareTypeSelectedCommand = new RelayCommand<ShareType>(action);
         }
-
-        public ICommand ShareTypeSelectedCommand { get; }
     }
 }

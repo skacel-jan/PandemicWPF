@@ -23,14 +23,11 @@ namespace Pandemic
             Cards = new ObservableCollection<PlayerCard>();
             Cards.CollectionChanged += Cards_CollectionChanged;
 
-            MoveActions = new Dictionary<string, IMoveAction>()
-            {
-                {ActionTypes.DriveOrFerry, new DriveOrFerry(this) },
-                {ActionTypes.DirectFlight, new DirectFlight(this) },
-                {ActionTypes.ShuttleFlight, new ShuttleFlight(this) },
-                {ActionTypes.CharterFlight, new CharterFlight(this) }
-            };
+            MoveFactory = new MoveStrategy(this);
         }
+
+        public ShareKnowledgeBehaviour ShareKnowledgeBehaviour { get; set; }
+        public BuildBehaviour BuildBehaviour { get; set; }
 
         public event EventHandler<CardDiscardedEventArgs> CardDiscarded;
 
@@ -60,7 +57,11 @@ namespace Pandemic
         public bool IsActive
         {
             get => _isActive;
-            set => Set(ref _isActive, value);
+            set
+            {
+                Set(ref _isActive, value);
+                CurrentMapCity.CharactersChanged();
+            }
         }
 
         public DiseaseColor MostCardsColor
@@ -73,27 +74,14 @@ namespace Pandemic
             get => _mostCardsColorCount;
         }
 
-        public IDictionary<string, IMoveAction> MoveActions { get; }
+        public MoveStrategy MoveFactory { get; set; }
         public abstract string Role { get; }
 
         public abstract IEnumerable<string> RoleDescription { get; }
 
-        public PlayerCard SelectedCard { get; set; }
-
         public void AddCard(PlayerCard card)
         {
             Cards.Add(card);
-        }
-
-        public virtual PlayerCard BuildResearhStation()
-        {
-            CurrentMapCity.HasResearchStation = true;
-            return RemoveCard(CurrentMapCity.City);
-        }
-
-        public virtual bool CanBuildResearchStation()
-        {
-            return HasCardOfCurrentCity() && !CurrentMapCity.HasResearchStation;
         }
 
         public virtual bool CanDiscoverCure()
@@ -108,9 +96,9 @@ namespace Pandemic
 
         public virtual bool CanMove(MapCity destinationCity)
         {
-            foreach (var action in MoveActions.Values)
+            foreach (var action in MoveFactory.GetPossibleMoves())
             {
-                if (action.CanMove(destinationCity))
+                if (action.IsPossible(destinationCity))
                 {
                     return true;
                 }
@@ -119,14 +107,9 @@ namespace Pandemic
             return false;
         }
 
-        public virtual bool CanRaiseInfection(MapCity city, DiseaseColor color)
+        public virtual bool CanPreventInfection(MapCity city, DiseaseColor color)
         {
-            return true;
-        }
-
-        public virtual bool CanShareKnowledge()
-        {
-            return (CurrentMapCity.Characters.Count() > 1 && CurrentMapCity.Characters.Any(c => c.HasCityCard(CurrentMapCity.City)));
+            return false;
         }
 
         public bool CanTreatDisease()
@@ -161,7 +144,7 @@ namespace Pandemic
 
         public virtual IEnumerable<IMoveAction> GetPossibleMoveTypes(MapCity destinationCity)
         {
-            return MoveActions.Values.Where(x => x.CanMove(destinationCity)).OrderBy(x => x.IsCardNeeded);
+            return MoveFactory.GetPossibleMoves();
         }
 
         public bool HasCityCard(City city)
@@ -171,8 +154,14 @@ namespace Pandemic
 
         public virtual bool Move(string moveType, MapCity city)
         {
-            return MoveActions.ContainsKey(moveType) && MoveActions[moveType].Move(city);
+            return MoveFactory.GetMoveAction(moveType, null).Move(city);
         }
+
+        public virtual bool Move(string moveType, MapCity city, PlayerCard card)
+        {
+            return MoveFactory.GetMoveAction(moveType, card).Move(city);
+        }
+
 
         public virtual void RegisterSpecialActions(SpecialActions actions)
         { }
@@ -188,18 +177,6 @@ namespace Pandemic
         {
             var card = Cards.Single(c => c.City == city);
             return RemoveCard(card as PlayerCard);
-        }
-
-        public virtual void ShareKnowledgeGive(PlayerCard card, Character character)
-        {
-            RemoveCard(card);
-            character.AddCard(card);
-        }
-
-        public virtual void ShareKnowledgeTake(PlayerCard card, Character character)
-        {
-            character.RemoveCard(card);
-            AddCard(card);
         }
 
         public virtual int TreatDisease(DiseaseColor diseaseColor)

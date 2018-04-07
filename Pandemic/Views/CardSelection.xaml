@@ -13,7 +13,7 @@
         <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
     </UserControl.Resources>
     <Grid>
-        <ItemsControl Background="Black" ItemsSource="{Binding Cards}">
+        <ItemsControl Background="Black" ItemsSource="{Binding Items}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <ToggleButton
@@ -21,7 +21,7 @@
                         Background="Black"
                         BorderBrush="{Binding City.Color, Converter={StaticResource diseaseToColor}}"
                         BorderThickness="2"
-                        Command="{Binding DataContext.CardSelectedCommand, Mode=OneWay, ElementName=root}"
+                        Command="{Binding DataContext.SelectedCommand, Mode=OneWay, ElementName=root}"
                         CommandParameter="{Binding}"
                         Content="{Binding City.Name, Mode=OneWay}"
                         FontSize="15"

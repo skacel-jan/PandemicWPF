@@ -15,17 +15,13 @@ namespace Pandemic.ViewModels
         public ICommand CharacterSelectedCommand { get; }
 
         public IEnumerable<Character> Characters { get; }
+        public Action<Character> CharacterSelectedDelegate { get; }
 
-        public CharacterSelectionViewModel(IEnumerable<Character> characters)
+        public CharacterSelectionViewModel(IEnumerable<Character> characters, Action<Character> characterSelectedDelegate)
         {
             Characters = characters ?? throw new ArgumentNullException(nameof(characters));
-
-            CharacterSelectedCommand = new RelayCommand<Character>(character => OnCharacterSelected(character));
-        }
-
-        protected void OnCharacterSelected(Character character)
-        {
-            MessengerInstance.Send(new GenericMessage<Character>(character));
+            CharacterSelectedDelegate = characterSelectedDelegate;
+            CharacterSelectedCommand = new RelayCommand<Character>(CharacterSelectedDelegate);
         }
     }
 }

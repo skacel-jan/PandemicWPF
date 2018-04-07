@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Pandemic
 {
-    public class CardDiscardedEventArgs
+    public class CardDiscardedEventArgs : EventArgs
     {
         public CardDiscardedEventArgs(PlayerCard card)
         {
@@ -27,7 +27,21 @@ namespace Pandemic
         public string Text { get; }
     }
 
-    public class InfectionEventArgs
+    public class CharacterSelectingEventArgs : EventArgs
+    {
+        public CharacterSelectingEventArgs(IEnumerable<Character> characters, string text, Action<Character> selectionDelegate)
+        {
+            Characters = characters;
+            Text = text;
+            SelectionDelegate = selectionDelegate;
+        }
+
+        public IEnumerable<Character> Characters { get; }
+        public Action<Character> SelectionDelegate { get; }
+        public string Text { get; }
+    }
+
+    public class InfectionEventArgs : EventArgs
     {
         public InfectionEventArgs(City city)
         {
@@ -47,19 +61,19 @@ namespace Pandemic
         public string InfoText { get; }
     }
 
-    public class MoveTypeEventArgs
+    public class MoveTypeEventArgs : EventArgs
     {
-        public MoveTypeEventArgs(IEnumerable<IMoveAction> moves, Action<string> selectionDelegate)
+        public MoveTypeEventArgs(IEnumerable<IMoveAction> moves, Action<IMoveAction> selectionDelegate)
         {
             Moves = moves;
             SelectionDelegate = selectionDelegate;
         }
 
         public IEnumerable<IMoveAction> Moves { get; }
-        public Action<string> SelectionDelegate { get; }
+        public Action<IMoveAction> SelectionDelegate { get; }
     }
 
-    public class OutbreakEventArgs
+    public class OutbreakEventArgs : EventArgs
     {
         public OutbreakEventArgs(City city)
         {
@@ -69,13 +83,15 @@ namespace Pandemic
         public City City { get; }
     }
 
-    public class ShareTypeEventArgs
+    public class ShareTypeEventArgs : EventArgs
     {
-        public ShareTypeEventArgs(Action<ShareType> selectionDelegate)
+        public ShareTypeEventArgs(IEnumerable<ShareType> shareTypes, Action<ShareType> selectionDelegate)
         {
-            SelectionDelegate = selectionDelegate;
+            SelectionDelegate = selectionDelegate ?? throw new ArgumentNullException(nameof(selectionDelegate));
+            ShareTypes = shareTypes ?? throw new ArgumentNullException(nameof(shareTypes));
         }
 
         public Action<ShareType> SelectionDelegate { get; }
+        public IEnumerable<ShareType> ShareTypes { get; }
     }
 }

@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Pandemic
+﻿namespace Pandemic
 {
-    public class OperationsExpertSpecialMove : IMoveAction
+    public class OperationsExpertSpecialMove : IMoveCardAction
     {
         public OperationsExpertSpecialMove(Character character)
         {
             Character = character;
         }
 
+        public PlayerCard Card { get; set; }
         public Character Character { get; set; }
-        public bool IsCardNeeded => true;
         public string MoveType { get => ActionTypes.OperationsExpertSpecialMove; }
 
-        public bool CanMove(MapCity city)
+        public bool IsPossible(MapCity city)
         {
             return Character.CurrentMapCity.HasResearchStation;
         }
@@ -25,7 +19,7 @@ namespace Pandemic
         public bool Move(MapCity city)
         {
             Character.CurrentMapCity = city;
-            Character.RemoveCard(Character.SelectedCard);
+            Character.RemoveCard(Card);
             return true;
         }
     }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Pandemic
 {
-    public class CharterFlight : IMoveAction
+    public class CharterFlight : IMoveCardAction
     {
         public CharterFlight(Character character)
         {
@@ -14,10 +14,11 @@ namespace Pandemic
         }
 
         public Character Character { get; set; }
-        public bool IsCardNeeded => true;
         public string MoveType { get => ActionTypes.CharterFlight; }
 
-        public bool CanMove(MapCity city)
+        public PlayerCard Card { get; set; }
+
+        public bool IsPossible(MapCity city)
         {
             return Character.HasCityCard(Character.CurrentMapCity.City);
         }
@@ -25,7 +26,7 @@ namespace Pandemic
         public bool Move(MapCity city)
         {
             Character.CurrentMapCity = city;
-            Character.RemoveCard(Character.SelectedCard);
+            Character.RemoveCard(Card);
             return true;
         }
     }

@@ -40,9 +40,9 @@ namespace Pandemic
                     .If(() => CurrentCharacter.CurrentMapCity.DiseasesToTreat.Count == 1)
                         .Execute(TreatDisease)
                 .On(ActionTypes.Build)
-                    .If(() => CurrentCharacter.CanBuildResearchStation() && GameData.ResearchStationsPile > 0)
+                    .If(() => CurrentCharacter.BuildBehaviour.CanBuild(CurrentCharacter.CurrentMapCity) && GameData.ResearchStationsPile > 0)
                         .Execute(BuildStructure)
-                    .If(() => CurrentCharacter.CanBuildResearchStation() && GameData.ResearchStationsPile == 0)
+                    .If(() => CurrentCharacter.BuildBehaviour.CanBuild(CurrentCharacter.CurrentMapCity) && GameData.ResearchStationsPile == 0)
                         .Goto(ActionStates.CitySelection)
                 .On(ActionTypes.Discover)
                     .If(() => CurrentCharacter.MostCardsColorCount > CurrentCharacter.CardsForCure)
@@ -50,7 +50,7 @@ namespace Pandemic
                     .Otherwise()
                         .Execute(() => DiscoverCure(CurrentCharacter.Cards.Where(card => card.City.Color == CurrentCharacter.MostCardsColor)))
                 .On(ActionTypes.Share)
-                    .Goto(ActionStates.CharacterSelection)
+                    .Goto(ActionStates.ShareTypeSelection)
                 .On(ActionTypes.Move)
                     .Goto(ActionStates.MoveSelection).Execute(EnableDestinationCities)
                 .On(ActionTypes.DriveOrFerry).Execute<MapCity>(MoveToCity);
@@ -71,22 +71,27 @@ namespace Pandemic
                         _shareKnowledgeData.Card = c;
                         ShareKnowledge();
                     })
+                .On(ActionTypes.CharterFlight)
+                    .Goto(ActionStates.Waiting)
+                .On(ActionTypes.DirectFlight)
+                    .Goto(ActionStates.Waiting)
+                .On(ActionTypes.OperationsExpertSpecialMove)
+                    .Goto(ActionStates.Waiting)
                  .On(ActionTypes.Cancel)
                     .Goto(ActionStates.Waiting);
 
             _actionsStateMachine.In(ActionStates.ShareTypeSelection)
                 .ExecuteOnEntry(SelectShareType)
                 .On(ActionTypes.Share)
-                    .Goto(ActionStates.CardsSelection)
-                        .Execute(SelectCardForShare)
+                    .Goto(ActionStates.CharacterSelection)
                 .On(ActionTypes.Cancel)
                     .Goto(ActionStates.Waiting);
 
             _actionsStateMachine.In(ActionStates.CharacterSelection)
                 .ExecuteOnEntry(SelectCharacter)
                 .On(ActionTypes.Share)
-                    .Goto(ActionStates.ShareTypeSelection)
-                        .Execute<Character>((character) => _shareKnowledgeData = new ShareKnowledgeData() { Character = character })
+                    .Goto(ActionStates.CardsSelection)
+                        .Execute(SelectCardForShare)
                 .On(ActionTypes.Cancel)
                     .Goto(ActionStates.Waiting);
 
@@ -104,10 +109,12 @@ namespace Pandemic
                     .Goto(ActionStates.Waiting)
                 .On(ActionTypes.ShuttleFlight)
                     .Goto(ActionStates.Waiting)
+                .On(ActionTypes.CharterFlight)
+                    .Goto(ActionStates.CardsSelection).Execute(SelectCardForMove)
                 .On(ActionTypes.DirectFlight)
-                    .Goto(ActionStates.Waiting)
+                    .Goto(ActionStates.CardsSelection).Execute(SelectCardForMove)
                 .On(ActionTypes.OperationsExpertSpecialMove)
-                    .Goto(ActionStates.Waiting)
+                    .Goto(ActionStates.CardsSelection).Execute(SelectCardForMove)
                 .On(ActionTypes.Cancel)
                     .Goto(ActionStates.Waiting);
         }
@@ -120,7 +127,7 @@ namespace Pandemic
 
         public event EventHandler DiseaseSelecting;
 
-        public event EventHandler CharacterSelecting;
+        public event EventHandler<CharacterSelectingEventArgs> CharacterSelecting;
 
         public event EventHandler<MoveTypeEventArgs> MoveTypeSelecting;
 
@@ -184,7 +191,7 @@ namespace Pandemic
             DiseaseSelecting?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual void OnCharacterSelecting(EventArgs e)
+        protected virtual void OnCharacterSelecting(CharacterSelectingEventArgs e)
         {
             CharacterSelecting?.Invoke(this, e);
         }
@@ -201,19 +208,22 @@ namespace Pandemic
 
         private void BuildStructure()
         {
-            PlayerCard card = CurrentCharacter.BuildResearhStation();
-            Board.PlayerDiscardPile.AddCard(card);
-            Board.GameData.ResearchStationsPile--;
+            if (CurrentCharacter.BuildBehaviour.CanBuild(CurrentCharacter.CurrentMapCity))
+            {
+                PlayerCard card = CurrentCharacter.BuildBehaviour.Build(CurrentCharacter.CurrentMapCity);
+                Board.PlayerDiscardPile.AddCard(card);
+                Board.GameData.ResearchStationsPile--;
 
-            OnActionDone(EventArgs.Empty);
+                OnActionDone(EventArgs.Empty);
+            }
         }
 
         private void DestinationCitySelected(MapCity destinationCity)
         {
-            var possibleMoves = CurrentCharacter.GetPossibleMoveTypes(destinationCity);
+            var possibleMoves = CurrentCharacter.GetPossibleMoveTypes(destinationCity).Where(x => x.IsPossible(destinationCity));
             foreach (var move in possibleMoves)
             {
-                if (!move.IsCardNeeded)
+                if (!(move is IMoveCardAction))
                 {
                     CurrentCharacter.Move(move.MoveType, destinationCity);
                     MoveDone();
@@ -226,9 +236,10 @@ namespace Pandemic
 
             if (possibleMoves.Count() > 1)
             {
-                var action = new Action<string>((string moveType) =>
+                var action = new Action<IMoveAction>((IMoveAction moveAction) =>
                 {
-                    DoAction(moveType);
+                    _moveData.MoveAction = moveAction;
+                    DoAction(moveAction.MoveType);
                 });
 
                 OnMoveTypeSelecting(new MoveTypeEventArgs(possibleMoves, action));
@@ -238,7 +249,8 @@ namespace Pandemic
                 var move = possibleMoves.First();
                 var action = new Action<Card>((Card card) =>
                 {
-                    CurrentCharacter.SelectedCard = card as PlayerCard;
+                    _moveData.MoveAction = move;
+                    _moveData.Card = card as PlayerCard;
                     if (CurrentCharacter.Move(move.MoveType, destinationCity))
                     {
                         Board.PlayerDiscardPile.AddCard(card);
@@ -306,27 +318,42 @@ namespace Pandemic
 
         private void MoveToCity(MapCity city)
         {
-            if (CurrentCharacter.MoveActions[ActionTypes.DriveOrFerry].CanMove(city))
+            if (CurrentCharacter.MoveFactory.GetMoveAction(ActionTypes.DriveOrFerry, null).IsPossible(city))
             {
                 CurrentCharacter.Move(ActionTypes.DriveOrFerry, city);
                 MoveDone();
             }
         }
 
+        private void SelectCardForMove()
+        {
+            var action = new Action<Card>((Card card) =>
+            {
+                if (CurrentCharacter.Move(_moveData.MoveAction.MoveType, _moveData.City, card as PlayerCard))
+                {
+                    Board.PlayerDiscardPile.AddCard(card);
+                    MoveDone();
+                    DoAction(_moveData.MoveAction.MoveType);
+                }
+            });
+
+            OnCardsSelecting(new CardsSelectingEventArgs(CurrentCharacter.Cards, "Select card of a destination city", action));
+        }
+
         private void SelectCardForShare()
         {
             var action = new Action<Card>((Card card) =>
             {
-                if (card is CityCard cityCard)
+                if (card is PlayerCard playerCard)
                 {
-                    if (cityCard.City == CurrentCharacter.CurrentMapCity.City)
+                    if (_shareKnowledgeData.FromCharacter.ShareKnowledgeBehaviour.CanShare(playerCard))
                     {
-                        DoAction(ActionTypes.Share, cityCard);
+                        DoAction(ActionTypes.Share, playerCard);
                     }
                 }
             });
 
-            var cards = _shareKnowledgeData.Type == ShareType.Give ? CurrentCharacter.Cards : _shareKnowledgeData.Character.Cards;
+            var cards = _shareKnowledgeData.FromCharacter.Cards;
 
             OnCardsSelecting(new CardsSelectingEventArgs(cards,
                 string.Format("Select card of a current city ({0}) to share", CurrentCharacter.CurrentMapCity.City), action));
@@ -369,30 +396,65 @@ namespace Pandemic
 
         private void SelectCharacter()
         {
-            OnCharacterSelecting(EventArgs.Empty);
+            var action = new Action<Character>((Character character) =>
+            {
+                if (_shareKnowledgeData.FromCharacter == null)
+                {
+                    _shareKnowledgeData.FromCharacter = character;
+                }
+                else
+                {
+                    _shareKnowledgeData.ToCharacter = character;
+                }
+                DoAction(ActionTypes.Share);
+            });
+
+            OnCharacterSelecting(new CharacterSelectingEventArgs(CurrentCharacter.CurrentMapCity.Characters.Where(x => x != CurrentCharacter),
+                "Select a character for share knowladge", action));
         }
 
         private void SelectShareType()
         {
-            OnShareTypeSelecting(new ShareTypeEventArgs((type) =>
+            _shareKnowledgeData = new ShareKnowledgeData();
+            var shareBehaviours = CurrentCharacter.CurrentMapCity.Characters.Where(x => x.ShareKnowledgeBehaviour.IsPossible()).Select(y => y.ShareKnowledgeBehaviour);
+            if (shareBehaviours.Count() > 1)
             {
-                _shareKnowledgeData.Type = type;
+                OnShareTypeSelecting(new ShareTypeEventArgs(Enum.GetValues(typeof(ShareType)).Cast<ShareType>(), (type) =>
+                {
+                    if (type == ShareType.Give)
+                    {
+                        _shareKnowledgeData.FromCharacter = CurrentCharacter;
+                    }
+                    else
+                    {
+                        _shareKnowledgeData.ToCharacter = CurrentCharacter;
+                    }
+
+                    DoAction(ActionTypes.Share);
+                }));
+            }
+            else
+            {
+                if (shareBehaviours.First().Character == CurrentCharacter)
+                {
+                    _shareKnowledgeData.FromCharacter = CurrentCharacter;
+                }
+                else
+                {
+                    _shareKnowledgeData.ToCharacter = CurrentCharacter;
+                }
+
                 DoAction(ActionTypes.Share);
-            }));
+            }
         }
 
         private void ShareKnowledge()
         {
-            if (_shareKnowledgeData.Type == ShareType.Give)
+            if (_shareKnowledgeData.FromCharacter.ShareKnowledgeBehaviour.CanShare(_shareKnowledgeData.Card))
             {
-                CurrentCharacter.ShareKnowledgeGive(_shareKnowledgeData.Card, _shareKnowledgeData.Character);
+                _shareKnowledgeData.FromCharacter.ShareKnowledgeBehaviour.Share(_shareKnowledgeData.ToCharacter, _shareKnowledgeData.Card);
+                OnActionDone(EventArgs.Empty);
             }
-            else
-            {
-                CurrentCharacter.ShareKnowledgeTake(_shareKnowledgeData.Card, _shareKnowledgeData.Character);
-            }
-
-            OnActionDone(EventArgs.Empty);
         }
 
         private void TreatDisease()
@@ -413,13 +475,16 @@ namespace Pandemic
     {
         public PlayerCard Card { get; set; }
         public MapCity City { get; set; }
+        public IMoveAction MoveAction { get; set; }
     }
 
     public class ShareKnowledgeData
     {
-        public PlayerCard Card { get; set; }
-        public Character Character { get; set; }
-        public ShareType Type { get; set; }
+        //public ShareType Type { get; set; }
+        public PlayerCard Card { get; internal set; }
+
+        public Character FromCharacter { get; set; }
+        public Character ToCharacter { get; set; }
     }
 
     public class SpecialActions

@@ -10,15 +10,15 @@
     d:DesignWidth="300"
     mc:Ignorable="d">
     <Grid>
-        <ItemsControl Background="Black" ItemsSource="{Binding Moves}">
+        <ItemsControl Background="Black" ItemsSource="{Binding Items}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Button
                         Background="Black"
                         BorderBrush="{StaticResource ActionEnabledBrush}"
                         BorderThickness="2"
-                        Command="{Binding DataContext.MoveSelectedCommand, Mode=OneWay, ElementName=root}"
-                        CommandParameter="{Binding MoveType}"
+                        Command="{Binding DataContext.SelectedCommand, Mode=OneWay, ElementName=root}"
+                        CommandParameter="{Binding}"
                         Content="{Binding MoveType}"
                         FontSize="18"
                         Foreground="White" />

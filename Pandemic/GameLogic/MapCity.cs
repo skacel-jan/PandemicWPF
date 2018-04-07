@@ -4,7 +4,6 @@ using GalaSoft.MvvmLight.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows.Input;
 
 namespace Pandemic
@@ -13,6 +12,7 @@ namespace Pandemic
     {
         private City _city;
         private ICommand _cityCommand;
+        private IList<DiseaseColor> _diseasesToTreat;
         private bool _hasResearchStation;
         private ICommand _instantMoveCommand;
         private bool _isMoveEnabled = false;
@@ -34,6 +34,8 @@ namespace Pandemic
             };
 
             _diseasesToTreat = new List<DiseaseColor>();
+
+            ConnectedCities = new List<MapCity>();
         }
 
         public double Area { get; private set; }
@@ -59,8 +61,10 @@ namespace Pandemic
             get => _cityCommand ?? (_cityCommand = new RelayCommand(() => MapCitySelected()));
         }
 
-        public IEnumerable<MapCity> ConnectedCities { get; set; }
+        public IList<MapCity> ConnectedCities { get; set; }
         public IDictionary<DiseaseColor, Disease> Diseases { get; private set; }
+
+        public IList<DiseaseColor> DiseasesToTreat => _diseasesToTreat;
 
         public bool HasResearchStation
         {
@@ -99,9 +103,9 @@ namespace Pandemic
             get => Infections[DiseaseColor.Yellow];
         }
 
-        public void AddConnectedCities(params MapCity[] cities)
+        public void AddConnectedCity(MapCity city)
         {
-            ConnectedCities = cities.ToList();
+            ConnectedCities.Add(city);
         }
 
         public int ChangeInfection(DiseaseColor color, int value)
@@ -140,18 +144,6 @@ namespace Pandemic
             }
 
             return Math.Abs(oldInfections - Infections[color]);
-        }
-
-        private void ChangeDiseasesToTreat(DiseaseColor color)
-        {
-            if (Infections[color] > 0 && !DiseasesToTreat.Contains(color))
-            {
-                DiseasesToTreat.Add(color);
-            }
-            else if (Infections[color] == 0 && DiseasesToTreat.Contains(color))
-            {
-                DiseasesToTreat.Remove(color);
-            }
         }
 
         public void CharactersChanged()
@@ -213,6 +205,18 @@ namespace Pandemic
             }
         }
 
+        private void ChangeDiseasesToTreat(DiseaseColor color)
+        {
+            if (Infections[color] > 0 && !DiseasesToTreat.Contains(color))
+            {
+                DiseasesToTreat.Add(color);
+            }
+            else if (Infections[color] == 0 && DiseasesToTreat.Contains(color))
+            {
+                DiseasesToTreat.Remove(color);
+            }
+        }
+
         private void InstantMove()
         {
             MessengerInstance.Send(new GenericMessage<MapCity>(this), MessageTokens.InstantMove);
@@ -222,9 +226,5 @@ namespace Pandemic
         {
             MessengerInstance.Send(new GenericMessage<MapCity>(this), MessageTokens.CitySelected);
         }
-
-        private IList<DiseaseColor> _diseasesToTreat;
-        public IList<DiseaseColor> DiseasesToTreat => _diseasesToTreat;
-
     }
 }
