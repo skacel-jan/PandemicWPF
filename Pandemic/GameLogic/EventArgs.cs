@@ -63,14 +63,14 @@ namespace Pandemic
 
     public class MoveTypeEventArgs : EventArgs
     {
-        public MoveTypeEventArgs(IEnumerable<IMoveAction> moves, Action<IMoveAction> selectionDelegate)
+        public MoveTypeEventArgs(IEnumerable<IMoveCardAction> moves, Action<IMoveCardAction> selectionDelegate)
         {
             Moves = moves;
             SelectionDelegate = selectionDelegate;
         }
 
-        public IEnumerable<IMoveAction> Moves { get; }
-        public Action<IMoveAction> SelectionDelegate { get; }
+        public IEnumerable<IMoveCardAction> Moves { get; }
+        public Action<IMoveCardAction> SelectionDelegate { get; }
     }
 
     public class OutbreakEventArgs : EventArgs

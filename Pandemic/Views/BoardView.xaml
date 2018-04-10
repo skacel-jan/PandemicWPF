@@ -287,7 +287,7 @@
                     Command="{Binding InfectionDiscardPileCommand}"
                     Content="{Binding Path=Board.InfectionDiscardPile.LastCard, FallbackValue=No cards}" />
             </Grid>
-            <Grid DockPanel.Dock="Bottom">
+            <Grid HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
@@ -300,6 +300,18 @@
                         </CollectionViewSource.SortDescriptions>
                     </CollectionViewSource>
                 </Grid.Resources>
+
+                <ScrollViewer
+                    Grid.RowSpan="2"
+                    Width="1400"
+                    default:TouchScrolling.IsEnabled="True"
+                    HorizontalScrollBarVisibility="Hidden"
+                    VerticalScrollBarVisibility="Hidden">
+                    <StackPanel Width="2800" Orientation="Horizontal">
+                        <view:WorldMap Width="1400" Margin="0,-80,0,0" />
+                        <view:WorldMap Width="1400" Margin="0,-80,0,0" />
+                    </StackPanel>
+                </ScrollViewer>
 
                 <ItemsControl
                     Grid.Row="1"
@@ -328,16 +340,6 @@
                 </ItemsControl>
 
             </Grid>
-            <ScrollViewer
-                Width="1400"
-                default:TouchScrolling.IsEnabled="True"
-                HorizontalScrollBarVisibility="Hidden"
-                VerticalScrollBarVisibility="Hidden">
-                <StackPanel Width="2800" Orientation="Horizontal">
-                    <view:WorldMap Width="1400" Margin="0,-60,0,0" />
-                    <view:WorldMap Width="1400" Margin="0,-60,0,0" />
-                </StackPanel>
-            </ScrollViewer>
         </DockPanel>
         <Grid>
             <Thumb

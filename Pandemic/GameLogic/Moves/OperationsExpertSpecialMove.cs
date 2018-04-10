@@ -7,19 +7,18 @@
             Character = character;
         }
 
-        public PlayerCard Card { get; set; }
         public Character Character { get; set; }
         public string MoveType { get => ActionTypes.OperationsExpertSpecialMove; }
 
         public bool IsPossible(MapCity city)
         {
-            return Character.CurrentMapCity.HasResearchStation;
+            return Character.CurrentMapCity.HasResearchStation && Character.Cards.Count > 0;
         }
 
-        public bool Move(MapCity city)
-        {
+        public bool Move(MapCity city, PlayerCard card)
+        {            
             Character.CurrentMapCity = city;
-            Character.RemoveCard(Card);
+            Character.RemoveCard(card);
             return true;
         }
     }

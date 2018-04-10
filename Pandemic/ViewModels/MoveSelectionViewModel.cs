@@ -9,9 +9,9 @@ using System.Windows.Input;
 
 namespace Pandemic.ViewModels
 {
-    public class MoveSelectionViewModel : SelectionViewModel<IMoveAction>
+    public class MoveSelectionViewModel : SelectionViewModel<IMoveCardAction>
     {
-        public MoveSelectionViewModel(IEnumerable<IMoveAction> items, Action<IMoveAction> callbackAction) : base(items, callbackAction)
+        public MoveSelectionViewModel(IEnumerable<IMoveCardAction> items, Action<IMoveCardAction> callbackAction) : base(items, callbackAction)
         {
         }
     }

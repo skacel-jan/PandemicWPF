@@ -23,7 +23,7 @@ namespace Pandemic
             Cards = new ObservableCollection<PlayerCard>();
             Cards.CollectionChanged += Cards_CollectionChanged;
 
-            MoveFactory = new MoveStrategy(this);
+            MoveStrategy = new MoveStrategy(this);
         }
 
         public ShareKnowledgeBehaviour ShareKnowledgeBehaviour { get; set; }
@@ -74,7 +74,7 @@ namespace Pandemic
             get => _mostCardsColorCount;
         }
 
-        public MoveStrategy MoveFactory { get; set; }
+        public MoveStrategy MoveStrategy { get; set; }
         public abstract string Role { get; }
 
         public abstract IEnumerable<string> RoleDescription { get; }
@@ -96,7 +96,15 @@ namespace Pandemic
 
         public virtual bool CanMove(MapCity destinationCity)
         {
-            foreach (var action in MoveFactory.GetPossibleMoves())
+            foreach (var action in MoveStrategy.GetPossibleMoves())
+            {
+                if (action.IsPossible(destinationCity))
+                {
+                    return true;
+                }
+            }
+
+            foreach (var action in MoveStrategy.GetPossibleCardMoves())
             {
                 if (action.IsPossible(destinationCity))
                 {
@@ -142,9 +150,14 @@ namespace Pandemic
             }
         }
 
-        public virtual IEnumerable<IMoveAction> GetPossibleMoveTypes(MapCity destinationCity)
+        public virtual IEnumerable<IMoveAction> GetPossibleMoves(MapCity destinationCity)
         {
-            return MoveFactory.GetPossibleMoves();
+            return MoveStrategy.GetPossibleMoves();
+        }
+
+        public virtual IEnumerable<IMoveCardAction> GetPossibleCardMoves(MapCity destinationCity)
+        {
+            return MoveStrategy.GetPossibleCardMoves();
         }
 
         public bool HasCityCard(City city)
@@ -154,14 +167,13 @@ namespace Pandemic
 
         public virtual bool Move(string moveType, MapCity city)
         {
-            return MoveFactory.GetMoveAction(moveType, null).Move(city);
+            return MoveStrategy.GetMoveAction(moveType).Move(city);
         }
 
         public virtual bool Move(string moveType, MapCity city, PlayerCard card)
         {
-            return MoveFactory.GetMoveAction(moveType, card).Move(city);
+            return MoveStrategy.GetCardMoveAction(moveType).Move(city, card);
         }
-
 
         public virtual void RegisterSpecialActions(SpecialActions actions)
         { }

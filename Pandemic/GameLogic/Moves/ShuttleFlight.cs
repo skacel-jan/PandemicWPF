@@ -2,16 +2,14 @@
 {
     public class ShuttleFlight : IMoveAction
     {
-        public string MoveType { get => ActionTypes.ShuttleFlight; }
-
-        public Character Character { get; set; }
-
-        public bool IsCardNeeded => false;
-
         public ShuttleFlight(Character character)
         {
             Character = character;
         }
+
+        public Character Character { get; set; }
+        public bool IsCardNeeded => false;
+        public string MoveType { get => ActionTypes.ShuttleFlight; }
 
         public bool IsPossible(MapCity city)
         {

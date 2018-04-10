@@ -25,10 +25,11 @@ namespace Pandemic.Characters
         public override bool Move(string moveType, MapCity city)
         {
             bool result = base.Move(moveType, city);
+
             if (result)
             {
                 SpecialTreatDisease();
-            }            
+            }
 
             return result;
         }

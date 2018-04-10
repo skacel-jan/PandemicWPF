@@ -23,7 +23,7 @@ namespace Pandemic.Characters
 
         public OperationsExpert() : base()
         {
-            MoveFactory = new OperationsExpertMoveStrategy(this);
+            MoveStrategy = new OperationsExpertMoveStrategy(this);
         }
     }
 }

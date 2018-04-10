@@ -5,7 +5,6 @@ namespace Pandemic
 {
     public interface IMoveAction
     {
-        Character Character { get; set; }
         string MoveType { get; }
 
         bool IsPossible(MapCity city);
@@ -13,8 +12,12 @@ namespace Pandemic
         bool Move(MapCity city);
     }
 
-    public interface IMoveCardAction : IMoveAction
+    public interface IMoveCardAction
     {
-        PlayerCard Card { get; set; }
+        string MoveType { get; }
+
+        bool IsPossible(MapCity city);
+
+        bool Move(MapCity city, PlayerCard card);
     }
 }

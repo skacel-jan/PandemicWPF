@@ -220,46 +220,33 @@ namespace Pandemic
 
         private void DestinationCitySelected(MapCity destinationCity)
         {
-            var possibleMoves = CurrentCharacter.GetPossibleMoveTypes(destinationCity).Where(x => x.IsPossible(destinationCity));
+            var possibleMoves = CurrentCharacter.GetPossibleMoves(destinationCity).Where(x => x.IsPossible(destinationCity));
             foreach (var move in possibleMoves)
             {
-                if (!(move is IMoveCardAction))
-                {
-                    CurrentCharacter.Move(move.MoveType, destinationCity);
-                    MoveDone();
-                    DoAction(move.MoveType);
-                    return;
-                }
+                CurrentCharacter.Move(move.MoveType, destinationCity);
+                MoveDone();
+                DoAction(move.MoveType);
+                return;
             }
+
+            var possibleCardMoves = CurrentCharacter.GetPossibleCardMoves(destinationCity).Where(x => x.IsPossible(destinationCity));
 
             _moveData = new MoveData() { City = destinationCity };
 
-            if (possibleMoves.Count() > 1)
+            if (possibleCardMoves.Count() > 1)
             {
-                var action = new Action<IMoveAction>((IMoveAction moveAction) =>
+                var action = new Action<IMoveCardAction>((IMoveCardAction moveAction) =>
                 {
                     _moveData.MoveAction = moveAction;
                     DoAction(moveAction.MoveType);
                 });
 
-                OnMoveTypeSelecting(new MoveTypeEventArgs(possibleMoves, action));
+                OnMoveTypeSelecting(new MoveTypeEventArgs(possibleCardMoves, action));
             }
             else
             {
-                var move = possibleMoves.First();
-                var action = new Action<Card>((Card card) =>
-                {
-                    _moveData.MoveAction = move;
-                    _moveData.Card = card as PlayerCard;
-                    if (CurrentCharacter.Move(move.MoveType, destinationCity))
-                    {
-                        Board.PlayerDiscardPile.AddCard(card);
-                        MoveDone();
-                        DoAction(move.MoveType);
-                    }
-                });
-
-                OnCardsSelecting(new CardsSelectingEventArgs(CurrentCharacter.Cards, "Select card of a city", action));
+                _moveData.MoveAction = possibleCardMoves.First(); ;
+                DoAction(_moveData.MoveAction.MoveType);
             }
         }
 
@@ -318,7 +305,7 @@ namespace Pandemic
 
         private void MoveToCity(MapCity city)
         {
-            if (CurrentCharacter.MoveFactory.GetMoveAction(ActionTypes.DriveOrFerry, null).IsPossible(city))
+            if (CurrentCharacter.MoveStrategy.GetMoveAction(ActionTypes.DriveOrFerry).IsPossible(city))
             {
                 CurrentCharacter.Move(ActionTypes.DriveOrFerry, city);
                 MoveDone();
@@ -409,7 +396,9 @@ namespace Pandemic
                 DoAction(ActionTypes.Share);
             });
 
-            OnCharacterSelecting(new CharacterSelectingEventArgs(CurrentCharacter.CurrentMapCity.Characters.Where(x => x != CurrentCharacter),
+            var characters = CurrentCharacter.CurrentMapCity.Characters.Where(x => x.ShareKnowledgeBehaviour.IsPossible() && x.ShareKnowledgeBehaviour.Character != CurrentCharacter).Select(y => y.ShareKnowledgeBehaviour.Character);
+
+            OnCharacterSelecting(new CharacterSelectingEventArgs(characters,
                 "Select a character for share knowladge", action));
         }
 
@@ -475,7 +464,7 @@ namespace Pandemic
     {
         public PlayerCard Card { get; set; }
         public MapCity City { get; set; }
-        public IMoveAction MoveAction { get; set; }
+        public IMoveCardAction MoveAction { get; set; }
     }
 
     public class ShareKnowledgeData

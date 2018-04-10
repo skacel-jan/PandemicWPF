@@ -9,7 +9,6 @@ namespace Pandemic
             Character = character;
         }
 
-        public PlayerCard Card { get; set; }
         public Character Character { get; set; }
         public string MoveType { get => ActionTypes.DirectFlight; }
 
@@ -18,11 +17,19 @@ namespace Pandemic
             return Character.Cards.Any(card => card.City == city.City);
         }
 
-        public bool Move(MapCity city)
+        public bool Move(MapCity city, PlayerCard card)
         {
-            Character.CurrentMapCity = city;
-            Character.RemoveCard(Card);
-            return true;
+            if (city.City == card.City)
+            {
+                Character.CurrentMapCity = city;
+                Character.RemoveCard(card);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
         }
     }
 }
