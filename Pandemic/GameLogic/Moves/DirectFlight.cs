@@ -14,7 +14,7 @@ namespace Pandemic
 
         public bool IsPossible(MapCity city)
         {
-            return Character.Cards.Any(card => card.City == city.City);
+            return Character.CityCards.Any(card => card.City == city.City);
         }
 
         public bool Move(MapCity city, PlayerCard card)

@@ -5,12 +5,12 @@ namespace Pandemic
 {
     public class CardDiscardedEventArgs : EventArgs
     {
-        public CardDiscardedEventArgs(PlayerCard card)
+        public CardDiscardedEventArgs(Card card)
         {
             Card = card;
         }
 
-        public PlayerCard Card { get; }
+        public Card Card { get; }
     }
 
     public class CardsSelectingEventArgs : EventArgs
@@ -24,6 +24,18 @@ namespace Pandemic
 
         public IEnumerable<Card> Cards { get; }
         public Action<Card> SelectionDelegate { get; }
+        public string Text { get; }
+    }
+
+    public class CitySelectingEventArgs : EventArgs
+    {
+        public CitySelectingEventArgs(string text, Action<MapCity> selectionDelegate)
+        {
+            Text = text;
+            SelectionDelegate = selectionDelegate;
+        }
+
+        public Action<MapCity> SelectionDelegate { get; }
         public string Text { get; }
     }
 

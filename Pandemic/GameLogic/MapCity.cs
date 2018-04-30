@@ -15,7 +15,7 @@ namespace Pandemic
         private IList<DiseaseColor> _diseasesToTreat;
         private bool _hasResearchStation;
         private ICommand _instantMoveCommand;
-        private bool _isMoveEnabled = false;
+        private bool _isSelectable = false;
 
         private int _population;
 
@@ -81,10 +81,10 @@ namespace Pandemic
             get => _instantMoveCommand ?? (_instantMoveCommand = new RelayCommand(() => InstantMove()));
         }
 
-        public bool IsMoveEnabled
+        public bool IsSelectable
         {
-            get => _isMoveEnabled;
-            set => Set(ref _isMoveEnabled, value);
+            get => _isSelectable;
+            set => Set(ref _isSelectable, value);
         }
 
         public int Population

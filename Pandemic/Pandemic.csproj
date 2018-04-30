@@ -83,11 +83,10 @@
     <Compile Include="Characters\CharacterFactory.cs" />
     <Compile Include="Characters\Researcher.cs" />
     <Compile Include="GameLogic\Actions\BuildBehaviour.cs" />
-    <Compile Include="GameLogic\Actions\ShareKnowledge.cs" />
+    <Compile Include="GameLogic\Actions\ShareKnowledgeBehaviour.cs" />
     <Compile Include="GameLogic\Moves\MoveStrategy.cs" />
     <Compile Include="Helpers\CircularCollection.cs" />
     <Compile Include="Decks\IDeck.cs" />
-    <Compile Include="Decks\IInfectionDeckFactory.cs" />
     <Compile Include="GameLogic\ActionStateMachine.cs" />
     <Compile Include="GameLogic\ActionTypes.cs" />
     <Compile Include="GameLogic\Board.cs" />
@@ -137,10 +136,13 @@
     <Compile Include="Decks\PlayerDeck.cs" />
     <Compile Include="GameLogic\Disease.cs" />
     <Compile Include="Cards\EpidemicCard.cs" />
-    <Compile Include="Decks\InfectionDeck.cs" />
     <Compile Include="Characters\Generalist.cs" />
     <Compile Include="Helpers\ThreadSafeRandom.cs" />
     <Compile Include="Helpers\Converters\DiseaseToColorConverter.cs" />
+    <Compile Include="Views\CardsView.xaml.cs">
+      <DependentUpon>CardsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CardTemplateSelector.cs" />
     <Compile Include="Views\CharacterSelection.xaml.cs">
       <DependentUpon>CharacterSelection.xaml</DependentUpon>
     </Compile>
@@ -194,6 +196,10 @@
     <Compile Include="GameLogic\City.cs" />
     <Compile Include="Decks\Deck.cs" />
     <Compile Include="Cards\InfectionCard.cs" />
+    <Page Include="Views\CardsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\CharacterSelection.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

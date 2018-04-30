@@ -1,5 +1,6 @@
 ﻿using Appccelerate.StateMachine;
 using GalaSoft.MvvmLight;
+using Pandemic.Cards;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -129,6 +130,8 @@ namespace Pandemic
             _phaseStateMachine.Fire(TurnEvents.GameOver);
         }
 
+        public bool IsActionPhase() => Actions > 0;
+
         public void Start()
         {
             _phaseStateMachine.Initialize(TurnStates.StartOfTurn);
@@ -243,9 +246,13 @@ namespace Pandemic
                     isGameOver = true;
                 }
 
-                if (card is PlayerCard playerCard)
+                if (card is PlayerCard)
                 {
-                    character.AddCard(playerCard);
+                    character.AddCard(card);
+                }
+                else if (card is EventCard)
+                {
+                    character.AddCard(card);
                 }
                 else if (card is EpidemicCard epidemicCard)
                 {

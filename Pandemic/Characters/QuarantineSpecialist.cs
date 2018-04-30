@@ -20,7 +20,7 @@ namespace Pandemic.Characters
 
         public override bool CanPreventInfection(MapCity city, DiseaseColor color)
         {
-            return ((CurrentMapCity == city) || (CurrentMapCity.ConnectedCities.Contains(city)));
+            return ((CurrentMapCity == city) || (CurrentMapCity.IsCityConnected(city)));
         }
     }
 }

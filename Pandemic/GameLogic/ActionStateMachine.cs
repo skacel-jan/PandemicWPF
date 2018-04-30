@@ -1,4 +1,5 @@
 ﻿using Appccelerate.StateMachine;
+using Pandemic.Cards;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,7 @@ namespace Pandemic
             foreach (var character in gameData.Characters)
             {
                 character.RegisterSpecialActions(specialActions);
+                character.CardDiscarded += Character_CardDiscarded;
             }
 
             GameData = gameData;
@@ -43,22 +45,26 @@ namespace Pandemic
                     .If(() => CurrentCharacter.BuildBehaviour.CanBuild(CurrentCharacter.CurrentMapCity) && GameData.ResearchStationsPile > 0)
                         .Execute(BuildStructure)
                     .If(() => CurrentCharacter.BuildBehaviour.CanBuild(CurrentCharacter.CurrentMapCity) && GameData.ResearchStationsPile == 0)
-                        .Goto(ActionStates.CitySelection)
+                        .Goto(ActionStates.CitySelection).Execute(SelectResearchStationToDestroy)
                 .On(ActionTypes.Discover)
                     .If(() => CurrentCharacter.MostCardsColorCount > CurrentCharacter.CardsForCure)
                         .Goto(ActionStates.CardsSelection).Execute(SelectCardsForCure)
                     .Otherwise()
-                        .Execute(() => DiscoverCure(CurrentCharacter.Cards.Where(card => card.City.Color == CurrentCharacter.MostCardsColor)))
+                        .Execute(() => DiscoverCure(CurrentCharacter.CityCards.Where(card => card.City.Color == CurrentCharacter.MostCardsColor)))
                 .On(ActionTypes.Share)
                     .Goto(ActionStates.ShareTypeSelection)
                 .On(ActionTypes.Move)
-                    .Goto(ActionStates.MoveSelection).Execute(EnableDestinationCities)
-                .On(ActionTypes.DriveOrFerry).Execute<MapCity>(MoveToCity);
+                    .Goto(ActionStates.MoveSelection)
+                        .Execute(EnableDestinationCities)
+                .On(ActionTypes.DriveOrFerry)
+                    .Execute<MapCity>(MoveToCity)
+                .On(ActionTypes.Event)
+                    .Goto(ActionStates.CardsSelection)
+                        .Execute(SelectEventCard);
 
             _actionsStateMachine.In(ActionStates.CitySelection)
-                .ExecuteOnEntry(SelectCity)
                 .On(ActionTypes.Build)
-                    .Goto(ActionStates.Waiting).Execute<MapCity>(DestroyStructure)
+                    .Goto(ActionStates.Waiting)
                 .On(ActionTypes.Cancel)
                     .Goto(ActionStates.Waiting);
 
@@ -66,18 +72,16 @@ namespace Pandemic
                 .On(ActionTypes.Discover)
                     .Goto(ActionStates.Waiting).Execute<IEnumerable<CityCard>>(DiscoverCure)
                  .On(ActionTypes.Share)
-                    .Goto(ActionStates.Waiting).Execute((PlayerCard c) =>
-                    {
-                        _shareKnowledgeData.Card = c;
-                        ShareKnowledge();
-                    })
+                    .Goto(ActionStates.Waiting)
                 .On(ActionTypes.CharterFlight)
                     .Goto(ActionStates.Waiting)
                 .On(ActionTypes.DirectFlight)
                     .Goto(ActionStates.Waiting)
                 .On(ActionTypes.OperationsExpertSpecialMove)
                     .Goto(ActionStates.Waiting)
-                 .On(ActionTypes.Cancel)
+                .On(ActionTypes.GovernmentGrant)
+                    .Goto(ActionStates.CitySelection).Execute<EventCard>(GovernmentGrantCitySelection)
+                .On(ActionTypes.Cancel)
                     .Goto(ActionStates.Waiting);
 
             _actionsStateMachine.In(ActionStates.ShareTypeSelection)
@@ -123,9 +127,11 @@ namespace Pandemic
 
         public event EventHandler<CardsSelectingEventArgs> CardsSelecting;
 
-        public event EventHandler<InfoTextEventArgs> CitySelecting;
+        public event EventHandler<CitySelectingEventArgs> CitySelecting;
 
         public event EventHandler DiseaseSelecting;
+
+        public event EventHandler EventDone;
 
         public event EventHandler<CharacterSelectingEventArgs> CharacterSelecting;
 
@@ -181,7 +187,7 @@ namespace Pandemic
             CardsSelecting?.Invoke(this, e);
         }
 
-        protected virtual void OnCitySelecting(InfoTextEventArgs e)
+        protected virtual void OnCitySelecting(CitySelectingEventArgs e)
         {
             CitySelecting?.Invoke(this, e);
         }
@@ -189,6 +195,11 @@ namespace Pandemic
         protected virtual void OnDiseaseSeleting(EventArgs e)
         {
             DiseaseSelecting?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnEventDone(EventArgs e)
+        {
+            EventDone?.Invoke(this, e);
         }
 
         protected virtual void OnCharacterSelecting(CharacterSelectingEventArgs e)
@@ -210,8 +221,7 @@ namespace Pandemic
         {
             if (CurrentCharacter.BuildBehaviour.CanBuild(CurrentCharacter.CurrentMapCity))
             {
-                PlayerCard card = CurrentCharacter.BuildBehaviour.Build(CurrentCharacter.CurrentMapCity);
-                Board.PlayerDiscardPile.AddCard(card);
+                CurrentCharacter.BuildBehaviour.Build(CurrentCharacter.CurrentMapCity);
                 Board.GameData.ResearchStationsPile--;
 
                 OnActionDone(EventArgs.Empty);
@@ -267,8 +277,7 @@ namespace Pandemic
             Board.DiscoverCure(colorToCure);
             foreach (var card in new List<CityCard>(cards))
             {
-                CurrentCharacter.RemoveCard(card as PlayerCard);
-                Board.PlayerDiscardPile.AddCard(card);
+                CurrentCharacter.RemoveCard(card);
             }
 
             _specialActions.DoDiseaseCuredActions(colorToCure);
@@ -281,9 +290,38 @@ namespace Pandemic
             {
                 foreach (var city in CurrentCharacter.GetPossibleDestinationCities(Board.WorldMap.Cities.Values))
                 {
-                    city.IsMoveEnabled = true;
+                    city.IsSelectable = true;
                 }
             });
+        }
+
+        private void GovernmentGrantCitySelection(EventCard eventCard)
+        {
+            foreach (var city in Board.WorldMap.Cities.Values.Where(x => !x.HasResearchStation))
+            {
+                city.IsSelectable = true;
+            }
+
+            var action = new Action<MapCity>((MapCity mapCity) =>
+            {
+                mapCity.HasResearchStation = true;
+                eventCard.Character.RemoveCard(eventCard);
+
+                Task.Run(() =>
+                {
+                    foreach (var city in Board.WorldMap.Cities.Values)
+                    {
+                        city.IsSelectable = false;
+                    }
+                });
+            });
+
+            OnCitySelecting(new CitySelectingEventArgs("Select city", action));
+        }
+
+        private void Character_CardDiscarded(object sender, CardDiscardedEventArgs e)
+        {
+            Board.AddCardToPlayerDiscardPile(e.Card);
         }
 
         private void ChooseDisease()
@@ -297,7 +335,7 @@ namespace Pandemic
             {
                 foreach (var city in Board.WorldMap.Cities.Values)
                 {
-                    city.IsMoveEnabled = false;
+                    city.IsSelectable = false;
                 }
             });
             OnActionDone(EventArgs.Empty);
@@ -318,7 +356,6 @@ namespace Pandemic
             {
                 if (CurrentCharacter.Move(_moveData.MoveAction.MoveType, _moveData.City, card as PlayerCard))
                 {
-                    Board.PlayerDiscardPile.AddCard(card);
                     MoveDone();
                     DoAction(_moveData.MoveAction.MoveType);
                 }
@@ -335,7 +372,9 @@ namespace Pandemic
                 {
                     if (_shareKnowledgeData.FromCharacter.ShareKnowledgeBehaviour.CanShare(playerCard))
                     {
-                        DoAction(ActionTypes.Share, playerCard);
+                        _shareKnowledgeData.FromCharacter.ShareKnowledgeBehaviour.Share(_shareKnowledgeData.ToCharacter, playerCard);
+                        OnActionDone(EventArgs.Empty);
+                        DoAction(ActionTypes.Share);
                     }
                 }
             });
@@ -372,13 +411,47 @@ namespace Pandemic
                 }
             });
 
-            OnCardsSelecting(new CardsSelectingEventArgs(CurrentCharacter.Cards.Where(card => card.City.Color == CurrentCharacter.MostCardsColor),
+            OnCardsSelecting(new CardsSelectingEventArgs(CurrentCharacter.CityCards.Where(card => card.City.Color == CurrentCharacter.MostCardsColor),
                 string.Format("Select {0} cards to discover a cure", CurrentCharacter.CardsForCure), action));
         }
 
-        private void SelectCity()
+        private void SelectResearchStationToDestroy()
         {
-            OnCitySelecting(new InfoTextEventArgs(string.Format("Cannot build another research station. One must be destroyed.{0}Please select city where research station is built.", Environment.NewLine)));
+            foreach (var city in Board.WorldMap.Cities.Values.Where(x => x.HasResearchStation))
+            {
+                city.IsSelectable = true;
+            }
+
+            var action = new Action<MapCity>((MapCity mapCity) =>
+            {
+                mapCity.HasResearchStation = false;
+                Board.GameData.ResearchStationsPile++;
+
+                Task.Run(() =>
+                {
+                    foreach (var city in Board.WorldMap.Cities.Values)
+                    {
+                        city.IsSelectable = false;
+                    }
+                });
+
+                DoAction(ActionTypes.Build);
+            });
+
+            OnCitySelecting(new CitySelectingEventArgs(string.Format("Cannot build another research station. One must be destroyed.{0}Please select city where research station is built.", Environment.NewLine),
+                action));
+        }
+
+        private void SelectEventCard()
+        {
+            var action = new Action<Card>(c =>
+            {
+                var eventCard = c as EventCard;
+
+                DoAction(eventCard.EventCode, eventCard);
+            });
+
+            OnCardsSelecting(new CardsSelectingEventArgs(Board.EventCards, "Select event card", action));
         }
 
         private void SelectCharacter()
@@ -434,15 +507,6 @@ namespace Pandemic
                 }
 
                 DoAction(ActionTypes.Share);
-            }
-        }
-
-        private void ShareKnowledge()
-        {
-            if (_shareKnowledgeData.FromCharacter.ShareKnowledgeBehaviour.CanShare(_shareKnowledgeData.Card))
-            {
-                _shareKnowledgeData.FromCharacter.ShareKnowledgeBehaviour.Share(_shareKnowledgeData.ToCharacter, _shareKnowledgeData.Card);
-                OnActionDone(EventArgs.Empty);
             }
         }
 

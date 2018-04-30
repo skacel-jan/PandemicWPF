@@ -11,11 +11,5 @@ namespace Pandemic
         public PlayerCard(City city) : base(city)
         {
         }
-
-        public override string ToString()
-        {
-            return string.Format("{0}: {1}", "Player", base.ToString());
-            
-        }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
+using Pandemic.Cards;
 using Pandemic.Decks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,17 +9,18 @@ namespace Pandemic
 {
     public class Board : ObservableObject
     {
-        public Board(WorldMap worldMap, IInfectionDeckFactory infectionDeckFactory, PlayerDeck playerDeck, IGameData gameData)
+        public Board(WorldMap worldMap, PlayerDeck playerDeck, IGameData gameData)
         {
             WorldMap = worldMap;
-            InfectionDeckFactory = infectionDeckFactory;
-            InfectionDeck = InfectionDeckFactory.GetInfectionDeck(WorldMap.Cities.Values.Select(x => x.City));
+            InfectionDeck = new Deck<InfectionCard>(WorldMap.Cities.Values.Select(x => new InfectionCard(x.City)));
             PlayerDeck = playerDeck;
 
             GameData = gameData;
 
-            InfectionDiscardPile = InfectionDeckFactory.GetEmptyInfectionDeck();
-            PlayerDiscardPile = new Deck<Card>();
+            EventCards = new List<EventCard>();
+
+            InfectionDiscardPile = new DiscardPile<InfectionCard>();
+            PlayerDiscardPile = new DiscardPile<Card>();
 
             //InfectionDeck.Shuffle();
             //PlayerDeck.Shuffle();
@@ -27,15 +30,25 @@ namespace Pandemic
             InitialInfection();
         }
 
+        public IList<EventCard> EventCards { get; }
         public IGameData GameData { get; }
         public Deck<InfectionCard> InfectionDeck { get; set; }
-        public IInfectionDeckFactory InfectionDeckFactory { get; }
-        public Deck<InfectionCard> InfectionDiscardPile { get; private set; }
+        public DiscardPile<InfectionCard> InfectionDiscardPile { get; private set; }
 
         public PlayerDeck PlayerDeck { get; private set; }
-        public IDeck<Card> PlayerDiscardPile { get; private set; }
+        public DiscardPile<Card> PlayerDiscardPile { get; private set; }
 
         public WorldMap WorldMap { get; private set; }
+
+        public void AddCardToPlayerDiscardPile(Card card)
+        {
+            PlayerDiscardPile.AddCard(card);
+
+            if (card is EventCard eventCard)
+            {
+                EventCards.Remove(eventCard);
+            }
+        }
 
         public void BuildResearchStation(MapCity mapCity)
         {
@@ -55,17 +68,15 @@ namespace Pandemic
 
         public InfectionCard DrawInfectionBottomCard()
         {
-            InfectionCard card = InfectionDeck.Cards.Last();
+            InfectionCard card = InfectionDeck.DrawBottom();
             InfectionDiscardPile.Cards.Add(card);
-            InfectionDeck.Cards.Remove(card);
             return card;
         }
 
         public InfectionCard DrawInfectionCard()
         {
-            InfectionCard card = InfectionDeck.Cards.First();
+            InfectionCard card = InfectionDeck.DrawTop();
             InfectionDiscardPile.Cards.Add(card);
-            InfectionDeck.Cards.Remove(card);
             return card;
         }
 
@@ -73,6 +84,12 @@ namespace Pandemic
         {
             Card card = PlayerDeck.Cards.FirstOrDefault();
             PlayerDeck.Cards.Remove(card);
+
+            if (card is EventCard eventCard)
+            {
+                EventCards.Add(eventCard);
+            }
+
             return card;
         }
 
@@ -114,7 +131,7 @@ namespace Pandemic
 
         public void ShuffleInfectionDiscardPileBack()
         {
-            var newDeck = InfectionDeckFactory.GetInfectionDeck(InfectionDiscardPile.Cards);
+            var newDeck = new Deck<InfectionCard>(InfectionDiscardPile.Cards);
             newDeck.Shuffle();
             newDeck.AddCards(InfectionDeck.Cards);
             InfectionDeck = newDeck;

@@ -362,7 +362,7 @@
                     Padding="0"
                     HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"
-                    Content="{Binding CityName, FallbackValue=No city}"
+                    Content="{Binding CityName, FallbackValue=No city, ElementName=mapCityControl}"
                     FontWeight="DemiBold"
                     Foreground="White">
                     <Label.Effect>

@@ -20,5 +20,7 @@ namespace Pandemic
         public static readonly string Treat = "Treat";
         public static readonly string OperationsExpertSpecialMove = "Operations Expert Special Move";
 
+        public static readonly string Event = "Event";
+        public static readonly string GovernmentGrant = "Government grant";
     }
 }

@@ -56,7 +56,7 @@
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type viewModels:CardsViewModel}">
-            <view:CardSelection />
+            <view:CardsView />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type viewModels:MoveSelectionViewModel}">
@@ -65,6 +65,24 @@
 
         <DataTemplate DataType="{x:Type viewModels:TextViewModel}">
             <view:InfoTextView />
+        </DataTemplate>
+
+        <view:CardTemplateSelector x:Key="cardTemplateSelector" />
+        <DataTemplate x:Key="EventCardDataTemplate">
+            <Image
+                Width="30"
+                Height="40"
+                Source="{Binding Path=Image}" />
+        </DataTemplate>
+        <DataTemplate x:Key="CityCardDataTemplate">
+            <Button
+                Padding="10"
+                Background="Black"
+                BorderBrush="{Binding Color}"
+                BorderThickness="2"
+                Content="{Binding Mode=OneWay}"
+                FontSize="12"
+                Foreground="White" />
         </DataTemplate>
 
         <Style x:Key="PileBorder" TargetType="{x:Type Border}">
@@ -116,6 +134,7 @@
                         <ColumnDefinition SharedSizeGroup="A" />
                         <ColumnDefinition SharedSizeGroup="A" />
                         <ColumnDefinition SharedSizeGroup="A" />
+                        <ColumnDefinition SharedSizeGroup="A" />
                     </Grid.ColumnDefinitions>
                     <Button
                         Grid.Column="0"
@@ -145,13 +164,17 @@
 
                     <Button
                         Grid.Column="5"
-                        Width="90"
-                        HorizontalAlignment="Left"
                         Background="Black"
                         Command="{Binding CancelCommand}"
                         Content="Cancel"
                         Foreground="Red"
                         IsCancel="True" />
+                    <Button
+                        Grid.Column="6"
+                        Background="Black"
+                        Command="{Binding EventsCommand}"
+                        Content="Events"
+                        Foreground="Yellow" />
                 </Grid>
                 <Label
                     Margin="163,0,327,29"
@@ -281,11 +304,11 @@
                 <Button
                     Grid.Column="3"
                     Command="{Binding PlayerDiscardPileCommand}"
-                    Content="{Binding Path=Board.PlayerDiscardPile.LastCard, FallbackValue=No cards}" />
+                    Content="{Binding Path=Board.PlayerDiscardPile.TopCard, FallbackValue=No cards}" />
                 <Button
                     Grid.Column="4"
                     Command="{Binding InfectionDiscardPileCommand}"
-                    Content="{Binding Path=Board.InfectionDiscardPile.LastCard, FallbackValue=No cards}" />
+                    Content="{Binding Path=Board.InfectionDiscardPile.TopCard, FallbackValue=No cards}" />
             </Grid>
             <Grid HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -317,21 +340,8 @@
                     Grid.Row="1"
                     HorizontalAlignment="Center"
                     Background="Black"
+                    ItemTemplateSelector="{StaticResource cardTemplateSelector}"
                     ItemsSource="{Binding Source={StaticResource playerCards}}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button
-                                Padding="10"
-                                Background="Black"
-                                BorderBrush="{Binding City.Color, Converter={StaticResource DiseaseToColorConverter}}"
-                                BorderThickness="2"
-                                Command="{Binding DataContext.CardCommand, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:BoardView}}}"
-                                CommandParameter="{Binding}"
-                                Content="{Binding City.Name, Mode=OneWay}"
-                                FontSize="12"
-                                Foreground="White" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal" />

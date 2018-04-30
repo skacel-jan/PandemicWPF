@@ -17,10 +17,13 @@ namespace Pandemic.ViewModels
 
     public class CardsViewModel : ViewModelBase
     {
-        public CardsViewModel(IEnumerable<Card> cards)
+        public CardsViewModel(string code, IEnumerable<Card> items)
         {
-            Items = cards;
+            Code = code ?? throw new ArgumentNullException(nameof(code));
+            Items = items ?? throw new ArgumentNullException(nameof(items));
         }
+
+        public string Code { get; }
 
         public IEnumerable<Card> Items { get; private set; }
     }

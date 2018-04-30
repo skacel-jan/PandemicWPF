@@ -5,29 +5,29 @@ using System.Linq;
 
 namespace Pandemic.Decks
 {
-    public class Deck<T> : ObservableObject, IDeck<T>, IShuffle<T>, IDraw<T> where T : Card
+    public class BaseDeck<T> : ObservableObject, IDeck<T> where T : Card
     {
-        public Deck()
+        public BaseDeck()
         {
             Cards = new ObservableCollection<T>();
         }
 
-        public Deck(IEnumerable<T> cards)
+        public BaseDeck(IEnumerable<T> cards)
         {
             Cards = new ObservableCollection<T>(cards);
         }
 
         public ObservableCollection<T> Cards { get; }
 
-        public T LastCard { get => Cards.LastOrDefault(); }
-
-        public void AddCard(T card)
+        public virtual void AddCard(T card)
         {
-            Cards.Add(card);
-            RaisePropertyChanged(nameof(LastCard));
+            if (card != null)
+            {
+                Cards.Add(card);
+            }
         }
 
-        public void AddCards(IEnumerable<T> cards)
+        public virtual void AddCards(IEnumerable<T> cards)
         {
             foreach (var card in cards)
             {
@@ -35,7 +35,7 @@ namespace Pandemic.Decks
             }
         }
 
-        public T Draw()
+        public virtual T DrawTop()
         {
             if (Cards.Count > 0)
             {
@@ -49,6 +49,31 @@ namespace Pandemic.Decks
             }
         }
 
+        public virtual T DrawBottom()
+        {
+            if (Cards.Count > 0)
+            {
+                var card = Cards[Cards.Count - 1];
+                Cards.RemoveAt(Cards.Count - 1);
+                return card;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    public class Deck<T> : BaseDeck<T>, IShuffle<T> where T : Card
+    {
+        public Deck()
+        {
+        }
+
+        public Deck(IEnumerable<T> cards) : base(cards)
+        {
+        }
+
         public void Shuffle()
         {
             int n = Cards.Count();
@@ -60,7 +85,25 @@ namespace Pandemic.Decks
                 Cards[k] = Cards[n];
                 Cards[n] = value;
             }
-            RaisePropertyChanged(nameof(LastCard));
+        }
+    }
+
+    public class DiscardPile<T> : BaseDeck<T> where T: Card
+    {
+        public DiscardPile()
+        {
+        }
+
+        public DiscardPile(IEnumerable<T> cards) : base(cards)
+        {
+        }
+
+        public T TopCard { get => Cards.LastOrDefault(); }
+
+        public override void AddCard(T card)
+        {
+            base.AddCard(card);
+            RaisePropertyChanged(nameof(TopCard));
         }
     }
 }

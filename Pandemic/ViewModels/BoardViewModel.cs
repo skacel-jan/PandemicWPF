@@ -10,24 +10,26 @@ namespace Pandemic.ViewModels
 {
     public class BoardViewModel : ViewModelBase
     {
+        private string _actionEvent;
         private ViewModelBase _actionViewModel;
+        private Action<MapCity> _build;
         private ViewModelBase _infoViewModel;
         private bool _isActionVisible;
         private bool _isInfoVisible;
-        private string _actionEvent;
 
         public BoardViewModel(Board board, TurnStateMachine turnStateMachine, ActionStateMachine actionStateMachine)
         {
             Board = board ?? throw new ArgumentNullException(nameof(board));
 
             ActionStateMachine = actionStateMachine;
-            ActionStateMachine.CitySelecting += ActionStateMachine_CitySelecting;
             ActionStateMachine.CardsSelecting += ActionStateMachine_CardsSelecting;
             ActionStateMachine.DiseaseSelecting += ActionStateMachine_DiseaseSelecting;
             ActionStateMachine.ShareTypeSelecting += ActionStateMachine_ShareTypeSelecting;
             ActionStateMachine.CharacterSelecting += ActionStateMachine_CharacterSelecting;
             ActionStateMachine.MoveTypeSelecting += ActionStateMachine_MoveTypeSelecting;
             ActionStateMachine.ActionDone += ActionStateMachine_ActionDone;
+            ActionStateMachine.EventDone += ActionStateMachine_EventDone;
+            ActionStateMachine.CitySelecting += ActionStateMachine_CitySelecting;
 
             TurnStateMachine = turnStateMachine;
             TurnStateMachine.ActionDone += TurnStateMachine_ActionDone;
@@ -55,13 +57,14 @@ namespace Pandemic.ViewModels
                     }
                     return canShare;
                 }
-                
             });
-            BuildActionCommand = new RelayCommand(() => DoAction(ActionTypes.Build), 
+            BuildActionCommand = new RelayCommand(() => DoAction(ActionTypes.Build),
                 () => CurrentCharacter.BuildBehaviour.CanBuild(CurrentCharacter.CurrentMapCity));
             DiscoverCureActionCommand = new RelayCommand(() => DoAction(ActionTypes.Discover), () => CurrentCharacter.CanDiscoverCure());
 
             CancelCommand = new RelayCommand(Cancel);
+
+            EventsCommand = new RelayCommand(() => DoAction(ActionTypes.Event));
 
             PlayerDiscardPileCommand = new RelayCommand(ShowPlayerDiscardPile);
             InfectionDiscardPileCommand = new RelayCommand(ShowInfectionDiscardPile);
@@ -71,35 +74,6 @@ namespace Pandemic.ViewModels
 
             ActionStateMachine.Start();
             TurnStateMachine.Start();
-        }
-
-        private void ShowInfectionDiscardPile()
-        {
-            if (InfoViewModel != null)
-            {
-                InfoViewModel = null;
-            }
-            else
-            {
-                InfoViewModel = new CardsViewModel(Board.InfectionDiscardPile.Cards);
-            }
-        }
-
-        private void ShowPlayerDiscardPile()
-        {
-            if (InfoViewModel != null)
-            {
-                InfoViewModel = null;
-            }
-            else
-            {
-                InfoViewModel = new CardsViewModel(Board.PlayerDiscardPile.Cards);
-            }
-        }
-
-        private void ActionStateMachine_MoveTypeSelecting(object sender, MoveTypeEventArgs e)
-        {
-            ActionViewModel = new MoveSelectionViewModel(e.Moves, e.SelectionDelegate);
         }
 
         public ActionStateMachine ActionStateMachine { get; }
@@ -116,22 +90,22 @@ namespace Pandemic.ViewModels
 
         public Board Board { get; private set; }
 
-        public RelayCommand BuildActionCommand { get; set; }
+        public RelayCommand BuildActionCommand { get; }
 
-        public RelayCommand CancelCommand { get; set; }
-
-        public RelayCommand CardCommand { get; set; }
+        public RelayCommand CancelCommand { get; }
 
         public Character CurrentCharacter
         {
             get { return TurnStateMachine.Characters.Current; }
         }
 
-        public RelayCommand PlayerDiscardPileCommand { get; set; }
-        public RelayCommand InfectionDiscardPileCommand { get; private set; }
-        public RelayCommand DiscoverCureActionCommand { get; set; }
+        public RelayCommand DiscoverCureActionCommand { get; }
 
-        public RelayCommand DiseaseSelectedCommand { get; set; }
+        public RelayCommand DiseaseSelectedCommand { get; }
+
+        public RelayCommand EventsCommand { get; }
+
+        public RelayCommand InfectionDiscardPileCommand { get; private set; }
 
         public string InfoText
         {
@@ -162,7 +136,7 @@ namespace Pandemic.ViewModels
 
         public RelayCommand MoveActionCommand { get; set; }
 
-        public MapCity SelectedCity { get; private set; }
+        public RelayCommand PlayerDiscardPileCommand { get; set; }
 
         public RelayCommand ShareActionCommand { get; set; }
 
@@ -179,12 +153,17 @@ namespace Pandemic.ViewModels
         {
             InfoViewModel = new TextViewModel(e.Text);
 
-            ActionViewModel = new CardsSelectionViewModel(e.Cards, e.SelectionDelegate);
+            ActionViewModel = new CardsSelectionViewModel(e.Cards, (Card c) =>
+            {
+                e.SelectionDelegate(c);
+                HideActionViews();
+            });
         }
 
-        private void ActionStateMachine_CitySelecting(object sender, InfoTextEventArgs e)
+        private void ActionStateMachine_CitySelecting(object sender, CitySelectingEventArgs e)
         {
-            InfoViewModel = new TextViewModel(e.InfoText);
+            InfoViewModel = new TextViewModel(e.Text);
+            _build = e.SelectionDelegate;
         }
 
         private void ActionStateMachine_DiseaseSelecting(object sender, EventArgs e)
@@ -193,9 +172,22 @@ namespace Pandemic.ViewModels
                 (disease) => ActionStateMachine.DoAction(_actionEvent, disease));
         }
 
+        private void ActionStateMachine_EventDone(object sender, EventArgs e)
+        {
+            InfoViewModel = null;
+            ActionViewModel = null;
+
+            RefreshAllCommands();
+        }
+
         private void ActionStateMachine_CharacterSelecting(object sender, CharacterSelectingEventArgs e)
         {
             ActionViewModel = new CharacterSelectionViewModel(e.Characters, e.SelectionDelegate);
+        }
+
+        private void ActionStateMachine_MoveTypeSelecting(object sender, MoveTypeEventArgs e)
+        {
+            ActionViewModel = new MoveSelectionViewModel(e.Moves, e.SelectionDelegate);
         }
 
         private void ActionStateMachine_ShareTypeSelecting(object sender, ShareTypeEventArgs e)
@@ -205,26 +197,58 @@ namespace Pandemic.ViewModels
 
         private void Cancel()
         {
+            if (TurnStateMachine.IsActionPhase())
+            {
+                InfoViewModel = null;
+                ActionViewModel = null;
+                _actionEvent = null;
+                ActionStateMachine.DoAction(ActionTypes.Cancel);
+                RefreshAllCommands();
+
+                Task.Run(() =>
+                {
+                    foreach (var city in Board.WorldMap.Cities.Values)
+                    {
+                        city.IsSelectable = false;
+                    }
+                });
+            }
+        }
+
+        private void HideActionViews()
+        {
             InfoViewModel = null;
             ActionViewModel = null;
-            _actionEvent = null;
-            ActionStateMachine.DoAction(ActionTypes.Cancel);
-            RefreshAllCommands();
-
-            Task.Run(() =>
-            {
-                foreach (var city in Board.WorldMap.Cities.Values)
-                {
-                    city.IsMoveEnabled = false;
-                }
-            });
         }
 
         private void CitySelected(GenericMessage<MapCity> mapCityMessage)
         {
+            if (_build != null)
+            {
+                _build.Invoke(mapCityMessage.Content);
+            }
+
             if (!string.IsNullOrEmpty(_actionEvent))
             {
                 ActionStateMachine.DoAction(_actionEvent, mapCityMessage.Content);
+            }
+        }
+
+        private void DoAction(string actionString)
+        {
+            if (TurnStateMachine.IsActionPhase())
+            {
+                _actionEvent = actionString;
+                ActionStateMachine.DoAction(_actionEvent);
+            }
+        }
+
+        private void DoAction(string actionString, object parameter)
+        {
+            if (TurnStateMachine.IsActionPhase())
+            {
+                _actionEvent = actionString;
+                ActionStateMachine.DoAction(actionString, parameter);
             }
         }
 
@@ -242,28 +266,13 @@ namespace Pandemic.ViewModels
             DoAction(ActionTypes.DriveOrFerry, mapCityMessage.Content);
         }
 
-        private void DoAction(string actionString)
-        {
-            if (TurnStateMachine.Actions > 0)
-            {
-                _actionEvent = actionString;
-                ActionStateMachine.DoAction(_actionEvent);
-            }
-        }
-
-        private void DoAction(string actionString, object parameter)
-        {
-            if (TurnStateMachine.Actions > 0)
-            {
-                _actionEvent = actionString;
-                ActionStateMachine.DoAction(actionString, parameter);
-            }
-        }
-
         private void OnMoveAction()
         {
-            InfoViewModel = new TextViewModel("Select city where do you want to move");
-            DoAction(ActionTypes.Move);
+            if (TurnStateMachine.IsActionPhase())
+            {
+                InfoViewModel = new TextViewModel("Select city where do you want to move");
+                DoAction(ActionTypes.Move);
+            }
         }
 
         private void RefreshAllCommands()
@@ -273,6 +282,30 @@ namespace Pandemic.ViewModels
             MoveActionCommand.RaiseCanExecuteChanged();
             TreatActionCommand.RaiseCanExecuteChanged();
             ShareActionCommand.RaiseCanExecuteChanged();
+        }
+
+        private void ShowInfectionDiscardPile()
+        {
+            if (InfoViewModel != null && InfoViewModel is CardsViewModel cardsViewModel && cardsViewModel.Code.Equals("Infection"))
+            {
+                InfoViewModel = null;
+            }
+            else
+            {
+                InfoViewModel = new CardsViewModel("Infection", Board.InfectionDiscardPile.Cards);
+            }
+        }
+
+        private void ShowPlayerDiscardPile()
+        {
+            if (InfoViewModel != null && InfoViewModel is CardsViewModel cardsViewModel && cardsViewModel.Code.Equals("Player"))
+            {
+                InfoViewModel = null;
+            }
+            else
+            {
+                InfoViewModel = new CardsViewModel("Player", Board.PlayerDiscardPile.Cards);
+            }
         }
 
         private void TurnStateMachine_ActionDone(object sender, EventArgs e)
@@ -307,14 +340,12 @@ namespace Pandemic.ViewModels
 
                     if (CurrentCharacter.CardsLimit == (CurrentCharacter.Cards.Count - selectedCards.Count))
                     {
-                        foreach (var playerCard in selectedCards.Cast<PlayerCard>())
+                        foreach (var playerCard in selectedCards)
                         {
                             CurrentCharacter.RemoveCard(playerCard);
-                            Board.PlayerDiscardPile.AddCard(playerCard);
                             TurnStateMachine.DoAction();
                         }
                     }
-
                 });
             }
             else

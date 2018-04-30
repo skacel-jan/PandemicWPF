@@ -11,10 +11,10 @@ namespace Pandemic
 
         public Character Character { get; }
 
-        public virtual PlayerCard Build(MapCity mapCity)
+        public virtual void Build(MapCity mapCity)
         {
             mapCity.HasResearchStation = true;
-            return Character.RemoveCard(mapCity.City);
+            Character.RemoveCard(mapCity.City);
         }
 
         public virtual bool CanBuild(MapCity mapCity)
@@ -34,10 +34,9 @@ namespace Pandemic
         {
         }
 
-        public override PlayerCard Build(MapCity mapCity)
+        public override void Build(MapCity mapCity)
         {
             mapCity.HasResearchStation = true;
-            return null;
         }
 
         public override bool CanBuild(MapCity mapCity)

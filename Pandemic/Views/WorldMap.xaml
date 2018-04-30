@@ -40,7 +40,7 @@
             <Setter Property="CityName" Value="{Binding City.Name}" />
             <Setter Property="HasResearchStation" Value="{Binding HasResearchStation}" />
             <Setter Property="Characters" Value="{Binding Characters}" />
-            <Setter Property="IsBorderVisible" Value="{Binding IsMoveEnabled}" />
+            <Setter Property="IsBorderVisible" Value="{Binding IsSelectable}" />
             <Setter Property="Visibility" Value="Visible" />
             <Setter Property="CityColor" Value="{Binding City.Color}" />
             <!--<Setter Property="CacheMode" Value="{StaticResource cacheMode}" />-->

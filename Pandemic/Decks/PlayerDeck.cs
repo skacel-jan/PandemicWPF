@@ -29,7 +29,7 @@ namespace Pandemic.Decks
             var action = new Action(() =>
                 {
                 });
-            return new EventCard("Government Grant", action, "");
+            return new EventCard("Government Grant");
         }
     }
 
@@ -37,10 +37,11 @@ namespace Pandemic.Decks
     {
         public PlayerDeck(IEnumerable<City> cities, IEventCardFactory eventCardFactory) : base(cities.Select(city => new PlayerCard(city)))
         {
-            foreach (var card in eventCardFactory.GetEventCards())
-            {
-                Cards.Add(card);
-            }
+            Cards.Insert(0, new EventCard("Grant"));
+            //foreach (var card in eventCardFactory.GetEventCards())
+            //{
+            //    Cards.Add(card);
+            //}
         }
 
         public void AddEpidemicCards(int epidemicCount)

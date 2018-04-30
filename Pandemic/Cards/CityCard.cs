@@ -15,11 +15,6 @@ namespace Pandemic
             City = city ?? throw new ArgumentNullException(nameof(city));
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0} - {1}", City.Name, City.Color);
-        }
-
         public int CompareTo(CityCard other)
         {
             if (City == other.City) return 0;

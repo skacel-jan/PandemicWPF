@@ -10,7 +10,7 @@ namespace Pandemic
 
         public override bool CanShare(PlayerCard cityCard)
         {
-            return true;
+            return Character.HasCityCard(cityCard.City);
         }
 
         public override bool IsPossible()
@@ -36,12 +36,12 @@ namespace Pandemic
 
         public virtual bool CanShare(PlayerCard cityCard)
         {
-            return cityCard.City == Character.CurrentMapCity.City;
+            return Character.HasCityCard(cityCard.City) && cityCard.City == Character.CurrentMapCity.City;
         }
 
         public virtual bool IsPossible()
         {
-            return Character.HasCityCard(Character.CurrentMapCity.City);
+            return Character.Cards.Count > 0 && Character.HasCityCard(Character.CurrentMapCity.City);
         }
 
         public virtual void Share(Character toCharacter, PlayerCard card)
