@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Pandemic
+namespace Pandemic.Cards
 {
     public class CityCard : Card, IComparable, IComparable<CityCard>, IEquatable<CityCard>
     {
@@ -26,7 +26,7 @@ namespace Pandemic
             return City.Equals(other.City);
         }
 
-        public int CompareTo(object obj)
+        int IComparable.CompareTo(object obj)
         {
             if (obj.GetType() != GetType())
                 return -1;

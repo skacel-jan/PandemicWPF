@@ -1,5 +1,6 @@
 ﻿using Appccelerate.StateMachine;
 using Pandemic.Cards;
+using Pandemic.GameLogic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,11 @@ namespace Pandemic
         private ShareKnowledgeData _shareKnowledgeData;
         private SpecialActions _specialActions;
 
-        public ActionStateMachine(Board board, SpecialActions specialActions, IGameData gameData)
+        private CitySelectionService CitySelectionService;
+
+        public ActionStateMachine(Board board, SpecialActions specialActions, GameData gameData,
+            CitySelectionService citySelectionService, CharacterSelectionService characterSelectionService,
+            CardSelectionService cardSelectionService)
         {
             Board = board;
             _specialActions = specialActions;
@@ -33,6 +38,17 @@ namespace Pandemic
             }
 
             GameData = gameData;
+            CitySelectionService = citySelectionService ?? throw new ArgumentNullException(nameof(citySelectionService));
+            CitySelectionService.CitySelecting += (s, e) => CitySelecting?.Invoke(s, e);
+
+            CharacterSelectionService = characterSelectionService ?? throw new ArgumentNullException(nameof(characterSelectionService));
+            CharacterSelectionService.CharacterSelecting += (s, e) => CharacterSelecting?.Invoke(s, e);
+
+            CardSelectionService = cardSelectionService ?? throw new ArgumentNullException(nameof(cardSelectionService));
+            CardSelectionService.CardSelecting += (s, e) => CardsSelecting(s, e);
+
+            GameData.DecksService.EventFinished += (s, e) => OnEventDone(e);
+
             _actionsStateMachine = new PassiveStateMachine<ActionStates, string>();
 
             _actionsStateMachine.In(ActionStates.Waiting)
@@ -59,8 +75,7 @@ namespace Pandemic
                 .On(ActionTypes.DriveOrFerry)
                     .Execute<MapCity>(MoveToCity)
                 .On(ActionTypes.Event)
-                    .Goto(ActionStates.CardsSelection)
-                        .Execute(SelectEventCard);
+                    .Execute(SelectEventCard);
 
             _actionsStateMachine.In(ActionStates.CitySelection)
                 .On(ActionTypes.Build)
@@ -79,8 +94,6 @@ namespace Pandemic
                     .Goto(ActionStates.Waiting)
                 .On(ActionTypes.OperationsExpertSpecialMove)
                     .Goto(ActionStates.Waiting)
-                .On(ActionTypes.GovernmentGrant)
-                    .Goto(ActionStates.CitySelection).Execute<EventCard>(GovernmentGrantCitySelection)
                 .On(ActionTypes.Cancel)
                     .Goto(ActionStates.Waiting);
 
@@ -154,7 +167,9 @@ namespace Pandemic
 
         public Character CurrentCharacter { get; set; }
 
-        public IGameData GameData { get; }
+        public GameData GameData { get; }
+        public CharacterSelectionService CharacterSelectionService { get; }
+        public CardSelectionService CardSelectionService { get; }
 
         public void DoAction(string actionType)
         {
@@ -295,30 +310,6 @@ namespace Pandemic
             });
         }
 
-        private void GovernmentGrantCitySelection(EventCard eventCard)
-        {
-            foreach (var city in Board.WorldMap.Cities.Values.Where(x => !x.HasResearchStation))
-            {
-                city.IsSelectable = true;
-            }
-
-            var action = new Action<MapCity>((MapCity mapCity) =>
-            {
-                mapCity.HasResearchStation = true;
-                eventCard.Character.RemoveCard(eventCard);
-
-                Task.Run(() =>
-                {
-                    foreach (var city in Board.WorldMap.Cities.Values)
-                    {
-                        city.IsSelectable = false;
-                    }
-                });
-            });
-
-            OnCitySelecting(new CitySelectingEventArgs("Select city", action));
-        }
-
         private void Character_CardDiscarded(object sender, CardDiscardedEventArgs e)
         {
             Board.AddCardToPlayerDiscardPile(e.Card);
@@ -438,8 +429,9 @@ namespace Pandemic
                 DoAction(ActionTypes.Build);
             });
 
-            OnCitySelecting(new CitySelectingEventArgs(string.Format("Cannot build another research station. One must be destroyed.{0}Please select city where research station is built.", Environment.NewLine),
-                action));
+            CitySelectionService.SelectCity($"Cannot build another research station. One must be destroyed." +
+                $"{Environment.NewLine}Please select city where research station is built.",
+                action);
         }
 
         private void SelectEventCard()
@@ -448,7 +440,7 @@ namespace Pandemic
             {
                 var eventCard = c as EventCard;
 
-                DoAction(eventCard.EventCode, eventCard);
+                eventCard.PlayEvent();
             });
 
             OnCardsSelecting(new CardsSelectingEventArgs(Board.EventCards, "Select event card", action));

@@ -1,26 +1,18 @@
 ﻿using CommonServiceLocator;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Messaging;
+using Pandemic.Cards;
 using Pandemic.Characters;
 using Pandemic.Decks;
-using System;
+using Pandemic.GameLogic;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pandemic.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
         private ViewModelBase _currentViewModel;
-
-        public ViewModelBase CurrentViewModel
-        {
-            get => _currentViewModel;
-            set => Set(ref _currentViewModel, value);
-        }
 
         public MainViewModel()
         {
@@ -34,10 +26,19 @@ namespace Pandemic.ViewModels
             SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<DiseaseFactory>().GetDiseases());
             SimpleIoc.Default.Register<IWorldMapFactory, XmlWorldMapFactory>();
             SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<IWorldMapFactory>().WorldMap);
-            SimpleIoc.Default.Register<IEventCardFactory, EventCardFactory>();
-            SimpleIoc.Default.Register<IGameData, GameData>();
+            SimpleIoc.Default.Register<EventCardFactory>();
+            //SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<IEventCardFactory>().GetEventCards());
+            SimpleIoc.Default.Register<GameData>();
+            SimpleIoc.Default.Register<DecksService>();
+            SimpleIoc.Default.Register<CitySelectionService>();
+            SimpleIoc.Default.Register<CharacterSelectionService>();
+            SimpleIoc.Default.Register<CardSelectionService>();
+            SimpleIoc.Default.Register<DecksService>();
             SimpleIoc.Default.Register<IEnumerable<City>>(() => SimpleIoc.Default.GetInstance<IWorldMapFactory>().Cities);
+            SimpleIoc.Default.Register<IEnumerable<MapCity>>(() => SimpleIoc.Default.GetInstance<IWorldMapFactory>().MapCities.Values);
             SimpleIoc.Default.Register<PlayerDeck>();
+            SimpleIoc.Default.Register(() => new Deck<InfectionCard>(SimpleIoc.Default.GetInstance<WorldMap>()
+                .Cities.Values.Select(x => new InfectionCard(x.City))));
             SimpleIoc.Default.Register<SpecialActions>();
             SimpleIoc.Default.Register<TurnStateMachine>();
             SimpleIoc.Default.Register<ActionStateMachine>();
@@ -58,8 +59,18 @@ namespace Pandemic.ViewModels
 
             MessengerInstance.Register<NavigateToViewModelMessage>(this, NavigateTo);
 
-
             CurrentViewModel = SimpleIoc.Default.GetInstance<MainMenuViewModel>();
+        }
+
+        public ViewModelBase CurrentViewModel
+        {
+            get => _currentViewModel;
+            set => Set(ref _currentViewModel, value);
+        }
+
+        public void SetGameView()
+        {
+            CurrentViewModel = SimpleIoc.Default.GetInstance<BoardViewModel>();
         }
 
         private void NavigateTo(NavigateToViewModelMessage message)
@@ -70,11 +81,6 @@ namespace Pandemic.ViewModels
                     SetGameView();
                     break;
             }
-        }
-
-        public void SetGameView()
-        {
-            CurrentViewModel = SimpleIoc.Default.GetInstance<BoardViewModel>();
         }
     }
 }

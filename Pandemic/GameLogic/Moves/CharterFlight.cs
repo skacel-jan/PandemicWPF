@@ -1,4 +1,6 @@
-﻿namespace Pandemic
+﻿using Pandemic.Cards;
+
+namespace Pandemic
 {
     public class CharterFlight : IMoveCardAction
     {

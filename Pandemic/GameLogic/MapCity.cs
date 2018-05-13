@@ -19,6 +19,13 @@ namespace Pandemic
 
         private int _population;
 
+        public event EventHandler CitySelected;
+
+        protected virtual void OnCitySelected(EventArgs e)
+        {
+            CitySelected?.Invoke(this, e);
+        }
+
         public MapCity(City city, IDictionary<DiseaseColor, Disease> diseases)
         {
             City = city ?? throw new ArgumentNullException(nameof(city));
@@ -224,6 +231,7 @@ namespace Pandemic
 
         private void MapCitySelected()
         {
+            OnCitySelected(EventArgs.Empty);
             MessengerInstance.Send(new GenericMessage<MapCity>(this), MessageTokens.CitySelected);
         }
     }

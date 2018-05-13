@@ -1,47 +1,24 @@
 ﻿using Pandemic.Cards;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Pandemic.Decks
 {
-    public interface IEventCardFactory
-    {
-        IEnumerable<EventCard> GetEventCards();
-    }
 
-    public class EventCardFactory : IEventCardFactory
-    {
-        public EventCardFactory()
-        {
-            //Board = board ?? throw new ArgumentNullException(nameof(board));
-        }
-
-        public Board Board { get; }
-
-        public IEnumerable<EventCard> GetEventCards()
-        {
-            yield return GetGovermentGrant();
-        }
-
-        private EventCard GetGovermentGrant()
-        {
-            var action = new Action(() =>
-                {
-                });
-            return new EventCard("Government Grant");
-        }
-    }
 
     public class PlayerDeck : Deck<Card>
     {
-        public PlayerDeck(IEnumerable<City> cities, IEventCardFactory eventCardFactory) : base(cities.Select(city => new PlayerCard(city)))
+        public PlayerDeck(IEnumerable<City> cities) : base(cities.Select(city => new PlayerCard(city)))
         {
-            Cards.Insert(0, new EventCard("Grant"));
-            //foreach (var card in eventCardFactory.GetEventCards())
-            //{
-            //    Cards.Add(card);
-            //}
+            
+        }
+
+        public void AddEventCards(IEnumerable<EventCard> eventCards)
+        {
+            foreach (var card in eventCards)
+            {
+                Cards.Insert(0, card);
+            }
         }
 
         public void AddEpidemicCards(int epidemicCount)

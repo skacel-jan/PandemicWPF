@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pandemic.Cards;
+using System;
 using System.Collections.Generic;
 
 namespace Pandemic
@@ -29,13 +30,11 @@ namespace Pandemic
 
     public class CitySelectingEventArgs : EventArgs
     {
-        public CitySelectingEventArgs(string text, Action<MapCity> selectionDelegate)
+        public CitySelectingEventArgs(string text)
         {
             Text = text;
-            SelectionDelegate = selectionDelegate;
         }
 
-        public Action<MapCity> SelectionDelegate { get; }
         public string Text { get; }
     }
 

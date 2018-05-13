@@ -16,8 +16,6 @@
     mc:Ignorable="d">
     <UserControl.Resources>
 
-        <converters:DiseaseToColorConverter x:Key="DiseaseToColorConverter" />
-
         <DataTemplate DataType="{x:Type viewModels:DiseaseSelectionViewModel}">
             <view:DiseaseSelection />
         </DataTemplate>
@@ -67,24 +65,6 @@
             <view:InfoTextView />
         </DataTemplate>
 
-        <view:CardTemplateSelector x:Key="cardTemplateSelector" />
-        <DataTemplate x:Key="EventCardDataTemplate">
-            <Image
-                Width="30"
-                Height="40"
-                Source="{Binding Path=Image}" />
-        </DataTemplate>
-        <DataTemplate x:Key="CityCardDataTemplate">
-            <Button
-                Padding="10"
-                Background="Black"
-                BorderBrush="{Binding Color}"
-                BorderThickness="2"
-                Content="{Binding Mode=OneWay}"
-                FontSize="12"
-                Foreground="White" />
-        </DataTemplate>
-
         <Style x:Key="PileBorder" TargetType="{x:Type Border}">
             <Setter Property="BorderThickness" Value="3" />
             <Setter Property="Margin" Value="1" />
@@ -101,7 +81,6 @@
     </UserControl.Resources>
 
     <Grid>
-
         <DockPanel
             Grid.RowSpan="3"
             Grid.ColumnSpan="3"
@@ -115,7 +94,10 @@
                 DockPanel.Dock="Bottom"
                 FontSize="14"
                 Foreground="White" />
-            <Grid Width="1400" DockPanel.Dock="Bottom">
+            <Grid
+                Width="1400"
+                Panel.ZIndex="1"
+                DockPanel.Dock="Bottom">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto" />
@@ -178,12 +160,12 @@
                 </Grid>
                 <Label
                     Margin="163,0,327,29"
-                    Content="{Binding Path=Board.GameData.InfectionRate, FallbackValue=2}"
+                    Content="{Binding Board.GameData.InfectionRate, FallbackValue=2}"
                     ContentStringFormat="Infection rate: {0}"
                     Style="{StaticResource PileLabel}" />
                 <Label
                     Margin="163,32,349,0"
-                    Content="{Binding Path=Board.GameData.Outbreaks, FallbackValue=0}"
+                    Content="{Binding Board.GameData.Outbreaks, FallbackValue=0}"
                     ContentStringFormat="Outbreaks: {0}"
                     Style="{StaticResource PileLabel}" />
                 <Grid Grid.Column="0" HorizontalAlignment="Left">
@@ -301,20 +283,27 @@
                         <Label Content="{Binding Path=Board.GameData.Diseases[(default:DiseaseColor)Yellow].Cubes}" Style="{StaticResource PileLabel}" />
                     </Border>
                 </Grid>
-                <Button
+                <view:PlayingCard
                     Grid.Column="3"
-                    Command="{Binding PlayerDiscardPileCommand}"
-                    Content="{Binding Path=Board.PlayerDiscardPile.TopCard, FallbackValue=No cards}" />
-                <Button
+                    Height="50"
+                    CardName="{Binding}"
+                    Command="{Binding DataContext.PlayerDiscardPileCommand, ElementName=Board}"
+                    DataContext="{Binding Board.PlayerDiscardPile.TopCard}" />
+                <view:PlayingCard
                     Grid.Column="4"
-                    Command="{Binding InfectionDiscardPileCommand}"
-                    Content="{Binding Path=Board.InfectionDiscardPile.TopCard, FallbackValue=No cards}" />
+                    Height="50"
+                    CardName="{Binding}"
+                    Command="{Binding DataContext.InfectionDiscardPileCommand, ElementName=Board}"
+                    DataContext="{Binding Board.InfectionDiscardPile.TopCard}" >
+                    <view:PlayingCard.Background>
+                        <RadialGradientBrush>
+                            <GradientStop Color="Black"/>
+                            <GradientStop Color="White" Offset="1"/>
+                        </RadialGradientBrush>
+                    </view:PlayingCard.Background>
+                </view:PlayingCard>
             </Grid>
-            <Grid HorizontalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+            <Grid HorizontalAlignment="Center" Panel.ZIndex="10">
 
                 <Grid.Resources>
                     <CollectionViewSource x:Key="playerCards" Source="{Binding CurrentCharacter.Cards}">
@@ -323,6 +312,11 @@
                         </CollectionViewSource.SortDescriptions>
                     </CollectionViewSource>
                 </Grid.Resources>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
                 <ScrollViewer
                     Grid.RowSpan="2"
@@ -335,20 +329,21 @@
                         <view:WorldMap Width="1400" Margin="0,-80,0,0" />
                     </StackPanel>
                 </ScrollViewer>
-
                 <ItemsControl
                     Grid.Row="1"
                     HorizontalAlignment="Center"
-                    Background="Black"
-                    ItemTemplateSelector="{StaticResource cardTemplateSelector}"
                     ItemsSource="{Binding Source={StaticResource playerCards}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <view:PlayingCard CardName="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
-
             </Grid>
         </DockPanel>
         <Grid>

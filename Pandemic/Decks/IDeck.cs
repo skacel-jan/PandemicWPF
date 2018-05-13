@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Pandemic.Cards;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Pandemic.Decks

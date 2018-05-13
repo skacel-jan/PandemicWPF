@@ -80,17 +80,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Cards\Events\AirliftCard.cs" />
+    <Compile Include="Cards\Events\OneQuietNightCard.cs" />
+    <Compile Include="Decks\EventCardFactory.cs" />
+    <Compile Include="GameLogic\Services\DecksService.cs" />
+    <Compile Include="Cards\Events\ResilientPopulationCard.cs" />
+    <Compile Include="Cards\Events\GovernmentGrantCard.cs" />
     <Compile Include="Characters\CharacterFactory.cs" />
     <Compile Include="Characters\Researcher.cs" />
     <Compile Include="GameLogic\Actions\BuildBehaviour.cs" />
     <Compile Include="GameLogic\Actions\ShareKnowledgeBehaviour.cs" />
+    <Compile Include="GameLogic\Services\CardSelectionService.cs" />
+    <Compile Include="GameLogic\Services\CitySelectionService.cs" />
     <Compile Include="GameLogic\Moves\MoveStrategy.cs" />
+    <Compile Include="GameLogic\Services\CharacterSelectionService.cs" />
     <Compile Include="Helpers\CircularCollection.cs" />
     <Compile Include="Decks\IDeck.cs" />
     <Compile Include="GameLogic\ActionStateMachine.cs" />
     <Compile Include="GameLogic\ActionTypes.cs" />
     <Compile Include="GameLogic\Board.cs" />
-    <Compile Include="GameLogic\IGameData.cs" />
+    <Compile Include="GameLogic\GameData.cs" />
     <Compile Include="GameLogic\EventArgs.cs" />
     <Compile Include="GameLogic\IWorldMapFactory.cs" />
     <Compile Include="GameLogic\Moves\CharterFlight.cs" />
@@ -149,6 +158,7 @@
     <Compile Include="Views\CardSelection.xaml.cs">
       <DependentUpon>CardSelection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Card\PlayingCard.cs" />
     <Compile Include="Views\ShareTypeSelection.xaml.cs">
       <DependentUpon>ShareTypeSelection.xaml</DependentUpon>
     </Compile>
@@ -199,6 +209,10 @@
     <Page Include="Views\CardsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Card\CardsDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CharacterSelection.xaml">
       <Generator>MSBuild:Compile</Generator>

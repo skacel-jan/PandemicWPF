@@ -9,18 +9,19 @@ namespace Pandemic
 {
     public class Board : ObservableObject
     {
-        public Board(WorldMap worldMap, PlayerDeck playerDeck, IGameData gameData)
+        public Board(WorldMap worldMap, GameData gameData)
         {
             WorldMap = worldMap;
-            InfectionDeck = new Deck<InfectionCard>(WorldMap.Cities.Values.Select(x => new InfectionCard(x.City)));
-            PlayerDeck = playerDeck;
+            InfectionDeck = gameData.DecksService.InfectionDeck;
+            PlayerDeck = gameData.DecksService.PlayerDeck;
 
             GameData = gameData;
 
             EventCards = new List<EventCard>();
 
-            InfectionDiscardPile = new DiscardPile<InfectionCard>();
-            PlayerDiscardPile = new DiscardPile<Card>();
+            InfectionDiscardPile = GameData.DecksService.InfectionDiscardPile;
+            PlayerDiscardPile = GameData.DecksService.PlayerDiscardPile;
+            RemovedCards = GameData.DecksService.RemovedCards;
 
             //InfectionDeck.Shuffle();
             //PlayerDeck.Shuffle();
@@ -31,13 +32,13 @@ namespace Pandemic
         }
 
         public IList<EventCard> EventCards { get; }
-        public IGameData GameData { get; }
+        public GameData GameData { get; }
         public Deck<InfectionCard> InfectionDeck { get; set; }
         public DiscardPile<InfectionCard> InfectionDiscardPile { get; private set; }
 
         public PlayerDeck PlayerDeck { get; private set; }
         public DiscardPile<Card> PlayerDiscardPile { get; private set; }
-
+        public DiscardPile<Card> RemovedCards { get; }
         public WorldMap WorldMap { get; private set; }
 
         public void AddCardToPlayerDiscardPile(Card card)

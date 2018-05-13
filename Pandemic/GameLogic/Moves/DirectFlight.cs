@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Pandemic.Cards;
+using System.Linq;
 
 namespace Pandemic
 {

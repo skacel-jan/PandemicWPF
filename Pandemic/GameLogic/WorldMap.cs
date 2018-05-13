@@ -8,11 +8,11 @@ namespace Pandemic
 {
     public class WorldMap
     {
-        public IDictionary<string, MapCity> Cities { get; private set; }
+        public IDictionary<string, MapCity> Cities { get; }
 
         public WorldMap(IDictionary<string, MapCity> cities)
         {
-            Cities = cities;
+            Cities = cities ?? throw new ArgumentNullException(nameof(cities));
         }
 
         public MapCity GetCity(string city)

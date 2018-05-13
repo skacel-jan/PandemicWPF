@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using Pandemic.Cards;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,6 @@ namespace Pandemic.ViewModels
     {
         private string _actionEvent;
         private ViewModelBase _actionViewModel;
-        private Action<MapCity> _build;
         private ViewModelBase _infoViewModel;
         private bool _isActionVisible;
         private bool _isInfoVisible;
@@ -30,6 +30,7 @@ namespace Pandemic.ViewModels
             ActionStateMachine.ActionDone += ActionStateMachine_ActionDone;
             ActionStateMachine.EventDone += ActionStateMachine_EventDone;
             ActionStateMachine.CitySelecting += ActionStateMachine_CitySelecting;
+            ActionStateMachine.GameData.DecksService.SkipInfectionPhase += (sender, e) => TurnStateMachine.SkipInfectionPhase();
 
             TurnStateMachine = turnStateMachine;
             TurnStateMachine.ActionDone += TurnStateMachine_ActionDone;
@@ -64,7 +65,7 @@ namespace Pandemic.ViewModels
 
             CancelCommand = new RelayCommand(Cancel);
 
-            EventsCommand = new RelayCommand(() => DoAction(ActionTypes.Event));
+            EventsCommand = new RelayCommand(() => DoAction(ActionTypes.Event), () => Board.EventCards.Count > 0);
 
             PlayerDiscardPileCommand = new RelayCommand(ShowPlayerDiscardPile);
             InfectionDiscardPileCommand = new RelayCommand(ShowInfectionDiscardPile);
@@ -155,15 +156,14 @@ namespace Pandemic.ViewModels
 
             ActionViewModel = new CardsSelectionViewModel(e.Cards, (Card c) =>
             {
-                e.SelectionDelegate(c);
                 HideActionViews();
+                e.SelectionDelegate(c);                
             });
         }
 
         private void ActionStateMachine_CitySelecting(object sender, CitySelectingEventArgs e)
         {
             InfoViewModel = new TextViewModel(e.Text);
-            _build = e.SelectionDelegate;
         }
 
         private void ActionStateMachine_DiseaseSelecting(object sender, EventArgs e)
@@ -176,13 +176,19 @@ namespace Pandemic.ViewModels
         {
             InfoViewModel = null;
             ActionViewModel = null;
+            _actionEvent = null;
 
             RefreshAllCommands();
         }
 
         private void ActionStateMachine_CharacterSelecting(object sender, CharacterSelectingEventArgs e)
         {
-            ActionViewModel = new CharacterSelectionViewModel(e.Characters, e.SelectionDelegate);
+            InfoViewModel = new TextViewModel(e.Text);
+            ActionViewModel = new CharacterSelectionViewModel(e.Characters, (Character c) =>
+            {
+                HideActionViews();
+                e.SelectionDelegate(c);
+            });
         }
 
         private void ActionStateMachine_MoveTypeSelecting(object sender, MoveTypeEventArgs e)
@@ -223,11 +229,6 @@ namespace Pandemic.ViewModels
 
         private void CitySelected(GenericMessage<MapCity> mapCityMessage)
         {
-            if (_build != null)
-            {
-                _build.Invoke(mapCityMessage.Content);
-            }
-
             if (!string.IsNullOrEmpty(_actionEvent))
             {
                 ActionStateMachine.DoAction(_actionEvent, mapCityMessage.Content);
@@ -282,6 +283,7 @@ namespace Pandemic.ViewModels
             MoveActionCommand.RaiseCanExecuteChanged();
             TreatActionCommand.RaiseCanExecuteChanged();
             ShareActionCommand.RaiseCanExecuteChanged();
+            EventsCommand.RaiseCanExecuteChanged();
         }
 
         private void ShowInfectionDiscardPile()

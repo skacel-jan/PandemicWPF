@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pandemic.Cards;
+using System;
 
 namespace Pandemic
 {

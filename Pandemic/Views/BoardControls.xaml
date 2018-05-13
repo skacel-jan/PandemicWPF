@@ -1,9 +1,11 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cards="clr-namespace:Pandemic.Cards"
     xmlns:converters="clr-namespace:Pandemic.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:view="clr-namespace:Pandemic.Views"
     mc:Ignorable="d">
 
     <!--  Control colors.  -->
@@ -15,6 +17,8 @@
 
     <Color x:Key="ActionEnabledColor">#226666</Color>
     <SolidColorBrush x:Key="ActionEnabledBrush" Color="{StaticResource ActionEnabledColor}" />
+
+    <converters:DiseaseToColorConverter x:Key="DiseaseToColorConverter" />
 
     <ControlTemplate x:Key="YellowVirusShape">
         <Viewbox Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
@@ -30,36 +34,6 @@
             </Path>
         </Viewbox>
     </ControlTemplate>
-
-    <Style x:Key="InfectionMarkerStyle" TargetType="{x:Type Ellipse}">
-        <Setter Property="Fill" Value="Green" />
-        <Setter Property="Stroke" Value="#FF014001" />
-        <Setter Property="StrokeThickness" Value="1" />
-    </Style>
-
-    <Style x:Key="OutbreakTrackerCellStyle" TargetType="{x:Type ContentControl}">
-        <Setter Property="Height" Value="36" />
-        <Setter Property="Width" Value="{Binding Path=Height, RelativeSource={RelativeSource Self}}" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ContentControl}">
-                    <Grid>
-                        <ContentPresenter
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Content="{TemplateBinding Content}" />
-                        <Viewbox>
-                            <Path Fill="{TemplateBinding BorderBrush}" Stretch="Fill">
-                                <Path.Data>
-                                    <PathGeometry Figures="m -26.411574 73.908004 c 1.697452 -0.87779 4.953761 -4.565794 7.481644 -8.473501 2.849604 -4.405037 6.190631 -8.07163 9.1947246 -10.090704 8.606705 -5.784632 11.218696 -8.837636 11.218696 -13.112885 0 -5.17368 -1.84128998 -7.6542 -9.546479 -12.860669 C -12.714306 26.227306 -15.765698 23.15692 -18.695428 18.671624 -23.60632 11.15325 -26.774998 8.4622642 -30.717109 8.4622642 c -4.536549 0 -6.39104 1.485157 -11.725212 9.3900578 -3.409294 5.052355 -6.645265 8.458288 -10.411066 10.957884 -7.462199 4.953126 -10.663122 8.954244 -10.663122 13.328783 0 3.912059 2.736372 7.081107 11.504223 13.323275 2.791684 1.987507 6.877995 6.402806 9.455967 10.217268 4.144496 6.132342 8.473494 9.700992 11.83947 9.759962 0.714813 0.0125 2.652187 -0.67665 4.305275 -1.53149 z m -7.809259 -2.951194 c -1.182135 -0.828 -4.173829 -4.550724 -6.648208 -8.272722 -3.339981 -5.024049 -6.323556 -8.01402 -11.582399 -11.607228 -10.948449 -7.480744 -10.765971 -11.472768 0.878366 -19.215729 5.700206 -3.790382 7.875989 -6.045714 11.606104 -12.030438 6.988064 -11.2118888 10.97959 -11.2503698 18.144261 -0.174922 2.757497 4.262655 6.320983 8.241482 9.096862 10.157146 9.0299576 6.231669 11.2093376 8.605664 11.2093376 12.210307 0 3.509474 -0.189515 3.710484 -10.9999996 11.667258 -2.475 1.821658 -6.416135 6.228033 -8.758077 9.791944 -6.072167 9.240478 -8.458128 10.617988 -12.946247 7.474384 z" FillRule="NonZero" />
-                                </Path.Data>
-                            </Path>
-                        </Viewbox>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
     <Style x:Key="ActionButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Black" />

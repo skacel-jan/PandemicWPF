@@ -2,9 +2,11 @@
     x:Class="Pandemic.Views.CardsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:componentmodel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     xmlns:converters="clr-namespace:Pandemic.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:view="clr-namespace:Pandemic.Views"
     x:Name="root"
     d:DesignHeight="100"
     d:DesignWidth="300"
@@ -13,17 +15,17 @@
         <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
     </UserControl.Resources>
     <Grid>
-        <ItemsControl Background="Black" ItemsSource="{Binding Items}">
+        <Grid.Resources>
+            <CollectionViewSource x:Key="playerCards" Source="{Binding Items}">
+                <CollectionViewSource.SortDescriptions>
+                    <componentmodel:SortDescription Direction="Ascending" />
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+        </Grid.Resources>
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Source={StaticResource playerCards}}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button
-                        Padding="7"
-                        Background="Black"
-                        BorderBrush="{Binding City.Color, Converter={StaticResource diseaseToColor}}"
-                        BorderThickness="2"
-                        Content="{Binding Mode=OneWay}"
-                        FontSize="15"
-                        Foreground="White" />
+                    <view:PlayingCard CardName="{Binding}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>

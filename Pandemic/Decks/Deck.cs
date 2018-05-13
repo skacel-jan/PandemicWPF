@@ -1,4 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
+using Pandemic.Cards;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -62,6 +64,11 @@ namespace Pandemic.Decks
                 return null;
             }
         }
+
+        public virtual void RemoveCard(T card)
+        {
+            Cards.Remove(card);
+        }
     }
 
     public class Deck<T> : BaseDeck<T>, IShuffle<T> where T : Card
@@ -103,6 +110,12 @@ namespace Pandemic.Decks
         public override void AddCard(T card)
         {
             base.AddCard(card);
+            RaisePropertyChanged(nameof(TopCard));
+        }
+
+        public override void RemoveCard(T card)
+        {
+            base.RemoveCard(card);
             RaisePropertyChanged(nameof(TopCard));
         }
     }

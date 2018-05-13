@@ -296,7 +296,7 @@ namespace Pandemic
         }
 
         private void ExecuteInfectionEvent()
-        {
+        { 
             Infections--;
             InfectionCard card = Board.DrawInfectionCard();
             if (Board.CheckCubesPile(card.City.Color))
@@ -338,6 +338,11 @@ namespace Pandemic
         {
             Board.GameData.Outbreaks++;
             Outbreak?.Invoke(this, e);
+        }
+
+        public void SkipInfectionPhase()
+        {
+            Infections = 0;
         }
     }
 }
