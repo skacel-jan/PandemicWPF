@@ -1,19 +1,14 @@
-﻿using System;
+﻿using Pandemic.GameLogic.Actions;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Pandemic.Characters
 {
     public class Researcher : Character
     {
-        public override Color Color => Colors.Brown;
+        public const string ROLE = "Researcher";
 
-        public override string Role => "Researcher";
-
-        private IEnumerable<string> _roleDescription = new List<string>()
+        private readonly IEnumerable<string> _roleDescription = new List<string>()
         {
             @"When doing the Share Knowledge action, the Researcher
               may give any City card from her hand to another player
@@ -22,6 +17,13 @@ namespace Pandemic.Characters
               player’s hand, but it can occur on either player’s turn."
         };
 
+        public Researcher()
+        {
+            Actions[ActionTypes.Share] = new ShareKnowledgeResearcherAction(this);
+        }
+
+        public override Color Color => Colors.Brown;
+        public override string Role => ROLE;
         public override IEnumerable<string> RoleDescription => _roleDescription;
     }
 }

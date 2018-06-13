@@ -17,55 +17,52 @@ namespace Pandemic.ViewModels
         private bool _isActionVisible;
         private bool _isInfoVisible;
 
-        public BoardViewModel(Board board, TurnStateMachine turnStateMachine, ActionStateMachine actionStateMachine)
+        public BoardViewModel(Game game, ActionStateMachine actionStateMachine)
         {
-            Board = board ?? throw new ArgumentNullException(nameof(board));
+            Game = game ?? throw new ArgumentNullException(nameof(game));
 
             ActionStateMachine = actionStateMachine;
-            ActionStateMachine.CardsSelecting += ActionStateMachine_CardsSelecting;
-            ActionStateMachine.DiseaseSelecting += ActionStateMachine_DiseaseSelecting;
-            ActionStateMachine.ShareTypeSelecting += ActionStateMachine_ShareTypeSelecting;
-            ActionStateMachine.CharacterSelecting += ActionStateMachine_CharacterSelecting;
             ActionStateMachine.MoveTypeSelecting += ActionStateMachine_MoveTypeSelecting;
             ActionStateMachine.ActionDone += ActionStateMachine_ActionDone;
             ActionStateMachine.EventDone += ActionStateMachine_EventDone;
             ActionStateMachine.CitySelecting += ActionStateMachine_CitySelecting;
-            ActionStateMachine.GameData.DecksService.SkipInfectionPhase += (sender, e) => TurnStateMachine.SkipInfectionPhase();
 
-            TurnStateMachine = turnStateMachine;
-            TurnStateMachine.ActionDone += TurnStateMachine_ActionDone;
-            TurnStateMachine.InfectionDone += TurnStateMachine_InfectionDone;
-            TurnStateMachine.ActionPhaseEnded += TurnStateMachine_ActionPhaseEnded;
-            TurnStateMachine.DrawingPhaseEnded += TurnStateMachine_DrawingPhaseEnded;
-            TurnStateMachine.InfectionPhaseEnded += TurnStateMachine_InfectionPhaseEnded;
-            TurnStateMachine.TurnStarted += TurnStateMachine_TurnStarted;
-            TurnStateMachine.GameLost += TurnStateMachine_GameLost;
+            Game.InfoChanged += Game_InfoChanged;
+            Game.ActionDone += Game_ActionDone;
+            Game.CharacterChanged += Game_CharacterChanged;
+            Game.DiseaseSelecting += Game_DiseaseSelecting;
+            Game.ShareTypeSelecting += Game_ShareTypeSelecting;
+            Game.CharacterSelecting += Game_CharacterSelecting;
+            Game.CardSelecting += Game_CardsSelecting;
+            //TurnStateMachine.ActionDone += TurnStateMachine_ActionDone;
+            //TurnStateMachine.InfectionDone += TurnStateMachine_InfectionDone;
+            //TurnStateMachine.ActionPhaseEnded += TurnStateMachine_ActionPhaseEnded;
+            //TurnStateMachine.DrawingPhaseEnded += TurnStateMachine_DrawingPhaseEnded;
+            //TurnStateMachine.InfectionPhaseEnded += TurnStateMachine_InfectionPhaseEnded;
+            //TurnStateMachine.TurnStarted += TurnStateMachine_TurnStarted;
+            //TurnStateMachine.GameLost += TurnStateMachine_GameLost;
 
             MoveActionCommand = new RelayCommand(OnMoveAction);
-            TreatActionCommand = new RelayCommand(() => DoAction(ActionTypes.Treat), () => CurrentCharacter.CanTreatDisease());
-            ShareActionCommand = new RelayCommand(() => DoAction(ActionTypes.Share), () =>
-            {
-                if (CurrentCharacter.CurrentMapCity.Characters.Count() < 2)
-                {
-                    return false;
-                }
-                else
-                {
-                    bool canShare = false;
-                    foreach (var character in CurrentCharacter.CurrentMapCity.Characters)
-                    {
-                        canShare = canShare || character.ShareKnowledgeBehaviour.IsPossible();
-                    }
-                    return canShare;
-                }
-            });
-            BuildActionCommand = new RelayCommand(() => DoAction(ActionTypes.Build),
-                () => CurrentCharacter.BuildBehaviour.CanBuild(CurrentCharacter.CurrentMapCity));
-            DiscoverCureActionCommand = new RelayCommand(() => DoAction(ActionTypes.Discover), () => CurrentCharacter.CanDiscoverCure());
+            TreatActionCommand = new RelayCommand(() => DoAction(ActionTypes.Treat), () => CurrentCharacter.CanTreatDisease(Game));
+            ShareActionCommand = new RelayCommand(() => DoAction(ActionTypes.Share), () => CurrentCharacter.CurrentMapCity.Characters.Any(c => c.CanShareKnowledge(Game)));
+            BuildActionCommand = new RelayCommand(() => DoAction(ActionTypes.Build), () => CurrentCharacter.CanBuild(Game));
+            DiscoverCureActionCommand = new RelayCommand(() => DoAction(ActionTypes.Discover), () => CurrentCharacter.CanDiscoverCure(Game));
 
             CancelCommand = new RelayCommand(Cancel);
 
-            EventsCommand = new RelayCommand(() => DoAction(ActionTypes.Event), () => Board.EventCards.Count > 0);
+            EventsCommand = new RelayCommand(() =>
+            {
+                if (ActionViewModel is CardsSelectionViewModel)
+                {
+                    ActionViewModel = null;
+                }
+                else
+                {
+                    DoAction(ActionTypes.Event);
+                }
+
+
+            }, () => Game.EventCards.Count > 0);
 
             PlayerDiscardPileCommand = new RelayCommand(ShowPlayerDiscardPile);
             InfectionDiscardPileCommand = new RelayCommand(ShowInfectionDiscardPile);
@@ -74,7 +71,31 @@ namespace Pandemic.ViewModels
             MessengerInstance.Register<GenericMessage<MapCity>>(this, MessageTokens.InstantMove, InstantMove);
 
             ActionStateMachine.Start();
-            TurnStateMachine.Start();
+        }
+
+        private void Game_ShareTypeSelecting(object sender, ShareTypeSelectingEventArgs e)
+        {
+            InfoViewModel = new TextViewModel(e.Text);
+            ActionViewModel = new ShareTypeSelectionViewModel(e.ShareTypes, (ShareType type) =>
+            {
+                HideActionViews();
+                e.SelectionDelegate(type);
+            });
+        }
+
+        private void Game_DiseaseSelecting(object sender, DiseaseSelectingEventArgs e)
+        {
+            InfoViewModel = new TextViewModel(e.Text);
+            ActionViewModel = new DiseaseSelectionViewModel(e.Diseases, (DiseaseColor color) =>
+            {
+                HideActionViews();
+                e.SelectionDelegate(color);
+            });
+        }
+
+        private void Game_CharacterChanged(object sender, EventArgs e)
+        {
+            RaisePropertyChanged(nameof(CurrentCharacter));
         }
 
         public ActionStateMachine ActionStateMachine { get; }
@@ -89,15 +110,13 @@ namespace Pandemic.ViewModels
             }
         }
 
-        public Board Board { get; private set; }
-
         public RelayCommand BuildActionCommand { get; }
 
         public RelayCommand CancelCommand { get; }
 
         public Character CurrentCharacter
         {
-            get { return TurnStateMachine.Characters.Current; }
+            get { return Game.Characters.Current; }
         }
 
         public RelayCommand DiscoverCureActionCommand { get; }
@@ -106,11 +125,13 @@ namespace Pandemic.ViewModels
 
         public RelayCommand EventsCommand { get; }
 
+        public Game Game { get; }
+
         public RelayCommand InfectionDiscardPileCommand { get; private set; }
 
         public string InfoText
         {
-            get { return string.Format("{0}'s turn, {1} actions left", CurrentCharacter.Role, TurnStateMachine.Actions); }
+            get { return string.Format("{0}'s turn, {1} actions left", CurrentCharacter.Role, Game.Actions); }
         }
 
         public ViewModelBase InfoViewModel
@@ -143,21 +164,19 @@ namespace Pandemic.ViewModels
 
         public RelayCommand TreatActionCommand { get; set; }
 
-        public TurnStateMachine TurnStateMachine { get; }
-
         private void ActionStateMachine_ActionDone(object sender, EventArgs e)
         {
             FinishDoingAction();
         }
 
-        private void ActionStateMachine_CardsSelecting(object sender, CardsSelectingEventArgs e)
+        private void Game_CardsSelecting(object sender, CardsSelectingEventArgs e)
         {
             InfoViewModel = new TextViewModel(e.Text);
 
             ActionViewModel = new CardsSelectionViewModel(e.Cards, (Card c) =>
             {
-                HideActionViews();
-                e.SelectionDelegate(c);                
+                //HideActionViews();
+                e.SelectionDelegate(c);
             });
         }
 
@@ -181,7 +200,7 @@ namespace Pandemic.ViewModels
             RefreshAllCommands();
         }
 
-        private void ActionStateMachine_CharacterSelecting(object sender, CharacterSelectingEventArgs e)
+        private void Game_CharacterSelecting(object sender, CharacterSelectingEventArgs e)
         {
             InfoViewModel = new TextViewModel(e.Text);
             ActionViewModel = new CharacterSelectionViewModel(e.Characters, (Character c) =>
@@ -196,35 +215,26 @@ namespace Pandemic.ViewModels
             ActionViewModel = new MoveSelectionViewModel(e.Moves, e.SelectionDelegate);
         }
 
-        private void ActionStateMachine_ShareTypeSelecting(object sender, ShareTypeEventArgs e)
+        private void ActionStateMachine_ShareTypeSelecting(object sender, ShareTypeSelectingEventArgs e)
         {
             ActionViewModel = new ShareTypeSelectionViewModel(e.ShareTypes, e.SelectionDelegate);
         }
 
         private void Cancel()
         {
-            if (TurnStateMachine.IsActionPhase())
-            {
-                InfoViewModel = null;
-                ActionViewModel = null;
-                _actionEvent = null;
-                ActionStateMachine.DoAction(ActionTypes.Cancel);
-                RefreshAllCommands();
-
-                Task.Run(() =>
-                {
-                    foreach (var city in Board.WorldMap.Cities.Values)
-                    {
-                        city.IsSelectable = false;
-                    }
-                });
-            }
-        }
-
-        private void HideActionViews()
-        {
             InfoViewModel = null;
             ActionViewModel = null;
+            _actionEvent = null;
+            ActionStateMachine.DoAction(ActionTypes.Cancel);
+            RefreshAllCommands();
+
+            Task.Run(() =>
+            {
+                foreach (var city in Game.WorldMap.Cities.Values)
+                {
+                    city.IsSelectable = false;
+                }
+            });
         }
 
         private void CitySelected(GenericMessage<MapCity> mapCityMessage)
@@ -237,20 +247,16 @@ namespace Pandemic.ViewModels
 
         private void DoAction(string actionString)
         {
-            if (TurnStateMachine.IsActionPhase())
-            {
-                _actionEvent = actionString;
-                ActionStateMachine.DoAction(_actionEvent);
-            }
+            _actionEvent = actionString;
+            ActionStateMachine.DoAction(_actionEvent);
+            Game.DoAction(actionString);
         }
 
         private void DoAction(string actionString, object parameter)
         {
-            if (TurnStateMachine.IsActionPhase())
-            {
-                _actionEvent = actionString;
-                ActionStateMachine.DoAction(actionString, parameter);
-            }
+            _actionEvent = actionString;
+            ActionStateMachine.DoAction(actionString, parameter);
+            Game.DoAction(actionString);
         }
 
         private void FinishDoingAction()
@@ -258,8 +264,31 @@ namespace Pandemic.ViewModels
             _actionEvent = null;
             InfoViewModel = null;
             ActionViewModel = null;
-            TurnStateMachine.DoAction();
+
             RefreshAllCommands();
+        }
+
+        private void Game_ActionDone(object sender, EventArgs e)
+        {
+            RefreshAllCommands();
+        }
+
+        private void Game_InfoChanged(object sender, EventArgs e)
+        {
+            if (Game.Info == null)
+            {
+                InfoViewModel = null;
+            }
+            else
+            {
+                InfoViewModel = new TextViewModel(Game.Info.Text, Game.Info.Action, Game.Info.ButtonText);
+            }
+        }
+
+        private void HideActionViews()
+        {
+            InfoViewModel = null;
+            ActionViewModel = null;
         }
 
         private void InstantMove(GenericMessage<MapCity> mapCityMessage)
@@ -269,11 +298,8 @@ namespace Pandemic.ViewModels
 
         private void OnMoveAction()
         {
-            if (TurnStateMachine.IsActionPhase())
-            {
-                InfoViewModel = new TextViewModel("Select city where do you want to move");
-                DoAction(ActionTypes.Move);
-            }
+            InfoViewModel = new TextViewModel("Select city where do you want to move");
+            DoAction(ActionTypes.Move);
         }
 
         private void RefreshAllCommands()
@@ -284,6 +310,8 @@ namespace Pandemic.ViewModels
             TreatActionCommand.RaiseCanExecuteChanged();
             ShareActionCommand.RaiseCanExecuteChanged();
             EventsCommand.RaiseCanExecuteChanged();
+
+            RaisePropertyChanged(nameof(InfoText));
         }
 
         private void ShowInfectionDiscardPile()
@@ -294,7 +322,7 @@ namespace Pandemic.ViewModels
             }
             else
             {
-                InfoViewModel = new CardsViewModel("Infection", Board.InfectionDiscardPile.Cards);
+                InfoViewModel = new CardsViewModel("Infection", Game.InfectionDiscardPile.Cards);
             }
         }
 
@@ -306,56 +334,7 @@ namespace Pandemic.ViewModels
             }
             else
             {
-                InfoViewModel = new CardsViewModel("Player", Board.PlayerDiscardPile.Cards);
-            }
-        }
-
-        private void TurnStateMachine_ActionDone(object sender, EventArgs e)
-        {
-            RaisePropertyChanged(nameof(InfoText));
-        }
-
-        private void TurnStateMachine_ActionPhaseEnded(object sender, EventArgs e)
-        {
-            InfoViewModel = new TextViewModel("Action phase has ended.", new RelayCommand(() => TurnStateMachine.DoAction()),
-                "Continue to drawing phase");
-        }
-
-        private void TurnStateMachine_DrawingPhaseEnded(object sender, EventArgs e)
-        {
-            if (CurrentCharacter.HasMoreCardsThenLimit)
-            {
-                InfoViewModel = new TextViewModel(string.Format("Drawn cards: {0} and {1}.{2}Player has more cards then his hand limit. Card has to be discarded.",
-                    CurrentCharacter.Cards[CurrentCharacter.Cards.Count - 1].Name,
-                    CurrentCharacter.Cards[CurrentCharacter.Cards.Count - 2].Name, Environment.NewLine));
-                IList<Card> selectedCards = new List<Card>(2);
-                ActionViewModel = new CardsSelectionViewModel(CurrentCharacter.Cards, (Card card) =>
-                {
-                    if (selectedCards.Contains(card))
-                    {
-                        selectedCards.Remove(card);
-                    }
-                    else
-                    {
-                        selectedCards.Add(card);
-                    }
-
-                    if (CurrentCharacter.CardsLimit == (CurrentCharacter.Cards.Count - selectedCards.Count))
-                    {
-                        foreach (var playerCard in selectedCards)
-                        {
-                            CurrentCharacter.RemoveCard(playerCard);
-                            TurnStateMachine.DoAction();
-                        }
-                    }
-                });
-            }
-            else
-            {
-                InfoViewModel = new TextViewModel(string.Format("Drawn cards: {0} and {1}",
-                        CurrentCharacter.Cards[CurrentCharacter.Cards.Count - 1].Name,
-                        CurrentCharacter.Cards[CurrentCharacter.Cards.Count - 2].Name),
-                    new RelayCommand(() => TurnStateMachine.DoAction()), "Go to Infection phase");
+                InfoViewModel = new CardsViewModel("Player", Game.PlayerDiscardPile.Cards);
             }
         }
 
@@ -363,28 +342,6 @@ namespace Pandemic.ViewModels
         {
             ActionViewModel = null;
             InfoViewModel = new TextViewModel(e.EventData);
-        }
-
-        private void TurnStateMachine_InfectionDone(object sender, InfectionEventArgs e)
-        {
-            InfoViewModel = new TextViewModel(string.Format("Infected city: {0}", e.City),
-                new RelayCommand(() => TurnStateMachine.DoAction()), "Next infected city");
-        }
-
-        private void TurnStateMachine_InfectionPhaseEnded(object sender, EventArgs e)
-        {
-            var textViewModel = InfoViewModel as TextViewModel;
-            textViewModel.CommandText = "Next player";
-        }
-
-        private void TurnStateMachine_TurnStarted(object sender, EventArgs e)
-        {
-            ActionStateMachine.CurrentCharacter = TurnStateMachine.Characters.Current;
-            InfoViewModel = null;
-            ActionViewModel = null;
-            RaisePropertyChanged(nameof(InfoText));
-            RaisePropertyChanged(nameof(CurrentCharacter));
-            RefreshAllCommands();
         }
     }
 }

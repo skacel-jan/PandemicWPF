@@ -37,6 +37,17 @@
         Foreground="Yellow" />
 
     <Label
+        x:Key="OneQuietNight"
+        Padding="10"
+        x:Shared="false"
+        Background="Black"
+        BorderBrush="Orange"
+        BorderThickness="2"
+        Content="{Binding Name}"
+        FontSize="12"
+        Foreground="Yellow" />
+
+    <Label
         x:Key="CityCard"
         Padding="10"
         x:Shared="False"
@@ -78,6 +89,9 @@
                         </Trigger>
                         <Trigger Property="CardName" Value="Resilient population">
                             <Setter TargetName="faceRect" Property="Content" Value="{StaticResource ResilientPopulation}" />
+                        </Trigger>
+                        <Trigger Property="CardName" Value="One Quiet Night">
+                            <Setter TargetName="faceRect" Property="Content" Value="{StaticResource OneQuietNight}" />
                         </Trigger>
                         <EventTrigger RoutedEvent="Mouse.MouseEnter" SourceName="TheCard">
                             <BeginStoryboard>

@@ -1,15 +1,11 @@
 ﻿
 using Pandemic.Cards;
+using Pandemic.GameLogic;
 using System;
 
 namespace Pandemic.Characters
 {
-    public interface ICharacterFactory
-    {
-        Character GetCharacter();
-    }
-
-    public abstract class CharacterFactory : ICharacterFactory
+    public class CharacterFactory
     {
         public CharacterFactory(MapCity startingCity)
         {
@@ -18,60 +14,25 @@ namespace Pandemic.Characters
 
         public MapCity StartingCity { get; }
 
-        public abstract Character GetCharacter();
-    }
-
-    public class MedicFactory : CharacterFactory
-    {
-        public MedicFactory(MapCity startingCity) : base(startingCity)
+        public Character GetCharacter(string role)
         {
-        }
-
-        public override Character GetCharacter()
-        {
-            var medic = new Medic()
+            Character character;
+            switch (role)
             {
-                CurrentMapCity = StartingCity
-            };
-            medic.ShareKnowledgeBehaviour = new ShareKnowledgeBehaviour(medic);
-            medic.BuildBehaviour = new BuildBehaviour(medic);
-            return medic;
-        }
-    }
+                case Medic.ROLE:
+                    character = new Medic() { CurrentMapCity = StartingCity };
+                    break;
+                case OperationsExpert.ROLE:
+                    character = new OperationsExpert() { CurrentMapCity = StartingCity };
+                    break;
+                case Researcher.ROLE:
+                    character = new Researcher() { CurrentMapCity = StartingCity };
+                    break;
+                default:
+                    throw new ArgumentException("Unknwon role", nameof(role));
+            }
 
-    public class ResearcherFactory : CharacterFactory
-    {
-        public ResearcherFactory(MapCity startingCity) : base(startingCity)
-        {
-        }
-
-        public override Character GetCharacter()
-        {
-            var researcher = new Researcher()
-            {
-                CurrentMapCity = StartingCity
-            };
-            researcher.ShareKnowledgeBehaviour = new ResearcherShareKnowledgeBehaviour(researcher);
-            researcher.BuildBehaviour = new BuildBehaviour(researcher);
-            return researcher;
-        }
-    }
-
-    public class OperationsExpertFactory : CharacterFactory
-    {
-        public OperationsExpertFactory(MapCity startingCity) : base(startingCity)
-        {
-        }
-
-        public override Character GetCharacter()
-        {
-            var opExpert = new OperationsExpert()
-            {
-                CurrentMapCity = StartingCity
-            };
-            opExpert.ShareKnowledgeBehaviour = new ShareKnowledgeBehaviour(opExpert);
-            opExpert.BuildBehaviour = new OperationsExpertBuildBehaviour(opExpert);
-            return opExpert;
+            return character;
         }
     }
 }

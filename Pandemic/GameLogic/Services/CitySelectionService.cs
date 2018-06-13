@@ -30,8 +30,16 @@ namespace Pandemic.GameLogic
         public event EventHandler<CitySelectingEventArgs> CitySelecting;
         public event EventHandler CitySelected;
 
-        public void SelectCity(string text, Action<MapCity> action)
+        public void SelectCity(IEnumerable<MapCity> cities, Action<MapCity> action, string text)
         {
+            Task.Run(() =>
+            {
+                foreach (var city in cities)
+                {
+                    city.IsSelectable = true;
+                }
+            });
+
             CitySelectedAction = action;
             OnCitySelecting(new CitySelectingEventArgs(text));
         }

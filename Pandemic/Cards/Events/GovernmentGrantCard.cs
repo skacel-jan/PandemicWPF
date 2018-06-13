@@ -14,17 +14,11 @@ namespace Pandemic.Cards
 
         public CitySelectionService CitySelectionService { get; }
 
-        public override void PlayEvent()
+        public override void PlayEvent(Game game)
         {
-            foreach (var city in CitySelectionService.Cities.Where(x => !x.HasResearchStation))
-            {
-                city.IsSelectable = true;
-            }
-
             var action = new Action<MapCity>((MapCity mapCity) =>
             {
                 mapCity.HasResearchStation = true;
-                Character.RemoveCard(this);
 
                 Task.Run(() =>
                 {
@@ -34,10 +28,10 @@ namespace Pandemic.Cards
                     }
                 });
 
-                OnEventFinished(EventArgs.Empty);
+                OnEventFinished(EventArgs.Empty, game);
             });
 
-            CitySelectionService.SelectCity("Select city", action);
+            CitySelectionService.SelectCity(CitySelectionService.Cities.Where(x => !x.HasResearchStation), action, "Select city");
         }
     }
 }

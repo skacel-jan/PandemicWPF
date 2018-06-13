@@ -9,7 +9,8 @@ namespace Pandemic.Characters
 {
     public class OperationsExpert : Character
     {
-        public override string Role => "Operations expert";
+        public const string ROLE = "Operations expert";
+        public override string Role => ROLE;
 
         private IEnumerable<string> _roleDescription = new List<string>()
         {

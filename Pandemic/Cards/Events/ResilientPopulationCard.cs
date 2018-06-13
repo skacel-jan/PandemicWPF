@@ -8,29 +8,24 @@ namespace Pandemic.Cards
 {
     public class ResilientPopulationCard : EventCard
     {
-        public ResilientPopulationCard(CardSelectionService cardSelectionService, DecksService decksService) : base("Resilient population")
+        public ResilientPopulationCard() : base("Resilient population")
         {
-            CardSelectionService = cardSelectionService ?? throw new ArgumentNullException(nameof(cardSelectionService));
-            DecksService = decksService ?? throw new ArgumentNullException(nameof(decksService));
         }
 
-        public CardSelectionService CardSelectionService { get; }
-        public DecksService DecksService { get; }
-
-        public override void PlayEvent()
+        public override void PlayEvent(Game game)
         {
             var action = new Action<Card>((Card card) =>
             {
                 if (card is InfectionCard infectionCard)
                 {
-                    DecksService.RemoveCard(infectionCard);
-                    Character.RemoveCard(this);
-                }
+                    game.InfectionDiscardPile.RemoveCard(infectionCard);
+                    game.RemovedCards.AddCard(card);
 
-                OnEventFinished(EventArgs.Empty);
+                    OnEventFinished(EventArgs.Empty, game);
+                }
             });
 
-            CardSelectionService.SelectCard(DecksService.InfectionDiscardPile.Cards, "Select infection card", action);
+            game.SelectCard(game.InfectionDiscardPile.Cards, action, "Select infection card");
         }
     }
 }

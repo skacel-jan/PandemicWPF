@@ -4,21 +4,10 @@ using System.Linq;
 
 namespace Pandemic.Decks
 {
-
-
     public class PlayerDeck : Deck<Card>
     {
         public PlayerDeck(IEnumerable<City> cities) : base(cities.Select(city => new PlayerCard(city)))
         {
-            
-        }
-
-        public void AddEventCards(IEnumerable<EventCard> eventCards)
-        {
-            foreach (var card in eventCards)
-            {
-                Cards.Insert(0, card);
-            }
         }
 
         public void AddEpidemicCards(int epidemicCount)
@@ -43,5 +32,17 @@ namespace Pandemic.Decks
                 Cards.Add(card);
             }
         }
+
+        public void AddEventCards(IEnumerable<EventCard> eventCards)
+        {
+            foreach (var card in eventCards)
+            {
+                Cards.Insert(0, card);
+            }
+        }
+
+        public IEnumerable<EventCard> EventCars => Cards.OfType<EventCard>();
+
+        public EventCardFactory EventCardFactory { get; }
     }
 }

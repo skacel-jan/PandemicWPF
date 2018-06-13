@@ -6,32 +6,20 @@ namespace Pandemic.Cards
 {
     public class AirliftCard : EventCard
     {
-        public AirliftCard(CharacterSelectionService characterSelectionService, CitySelectionService citySelectionService) : base("Airlift")
+        public AirliftCard(CitySelectionService citySelectionService) : base("Airlift")
         {
-            CharacterSelectionService = characterSelectionService ?? throw new ArgumentNullException(nameof(characterSelectionService));
             CitySelectionService = citySelectionService ?? throw new ArgumentNullException(nameof(citySelectionService));
         }
 
         public CitySelectionService CitySelectionService { get; }
-        public CharacterSelectionService CharacterSelectionService { get; }
 
-        public override void PlayEvent()
+        public override void PlayEvent(Game game)
         {
             var selectCharacterAction = new Action<Character>((Character character) =>
-            {
-                Task.Run(() =>
-                {
-                    foreach (var city in CitySelectionService.Cities)
-                    {
-                        city.IsSelectable = true;
-                    }
-                });
-
+            {               
                 var selectCityAction = new Action<MapCity>((MapCity city) =>
                 {
                     character.CurrentMapCity = city;
-
-                    Character.RemoveCard(this);
 
                     Task.Run(() =>
                     {
@@ -41,14 +29,13 @@ namespace Pandemic.Cards
                         }
                     });
 
-                    OnEventFinished(EventArgs.Empty);
+                    OnEventFinished(EventArgs.Empty, game);
                 });
 
-
-                CitySelectionService.SelectCity("Select city", selectCityAction);
+                CitySelectionService.SelectCity(CitySelectionService.Cities, selectCityAction, "Select city");
             });
 
-            CharacterSelectionService.SelectCharacter("Select character", CharacterSelectionService.Characters, selectCharacterAction);
+            game.SelectCharacter(game.Characters, selectCharacterAction, "Select character");
         }
     }
 }

@@ -17,10 +17,5 @@ namespace Pandemic.Characters
         };
 
         public override IEnumerable<string> RoleDescription => _roleDescription;
-
-        public override bool CanDiscoverCure(DiseaseColor disease)
-        {
-            return CurrentMapCity.HasResearchStation && ColorCardsCount(disease) >= CardsForCure;
-        }
     }
 }

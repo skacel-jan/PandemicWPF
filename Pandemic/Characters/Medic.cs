@@ -10,9 +10,11 @@ namespace Pandemic.Characters
 {
     public class Medic : Character
     {
-        public override string Role => "Medic";
+        public const string ROLE = "Medic";
 
-        private IEnumerable<string> _roleDescription = new List<string>()
+        public override string Role => ROLE;
+
+        private readonly IEnumerable<string> _roleDescription = new List<string>()
         {
             "Remove all cubes of one color when doing Treat Disease",
             "Automatically remove cubes of cured diseases from a city you are in (and prevent them from being placed there)."
@@ -24,14 +26,14 @@ namespace Pandemic.Characters
 
         public override bool Move(string moveType, MapCity city)
         {
-            bool result = base.Move(moveType, city);
+            bool moveSucessfull = base.Move(moveType, city);
 
-            if (result)
+            if (moveSucessfull)
             {
                 SpecialTreatDisease();
             }
 
-            return result;
+            return moveSucessfull;
         }
 
         public override int TreatDisease(DiseaseColor diseaseColor)
@@ -39,21 +41,20 @@ namespace Pandemic.Characters
             return CurrentMapCity.RemoveInfection(diseaseColor);
         }
 
-        protected virtual void SpecialTreatDisease()
+        public virtual void SpecialTreatDisease()
         {
-            CurrentMapCity.RemoveCuredInfections();
+            foreach (var disease in CurrentMapCity.Diseases.Values)
+            {
+                if (disease.IsCured)
+                {
+                    CurrentMapCity.RemoveInfection(disease.Color);
+                }
+            }
         }
 
         public override bool CanPreventInfection(MapCity city, DiseaseColor color)
         {
             return city.Diseases[color].IsCured;
-        }
-
-        public override void RegisterSpecialActions(SpecialActions actions)
-        {
-            base.RegisterSpecialActions(actions);
-
-            actions.DiseaseCuredActions.Add((color) => SpecialTreatDisease());
         }
     }
 }

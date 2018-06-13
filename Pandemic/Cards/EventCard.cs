@@ -14,12 +14,14 @@ namespace Pandemic.Cards
 
         public Character Character { get; set; }
 
-        public abstract void PlayEvent();
+        public abstract void PlayEvent(Game game);
 
         public event EventHandler EventFinished;
 
-        protected virtual void OnEventFinished(EventArgs e)
+        protected virtual void OnEventFinished(EventArgs e, Game game)
         {
+            Character.RemoveCard(this);
+            game.AddCardToPlayerDiscardPile(this);
             EventFinished?.Invoke(this, e);
         }
     }

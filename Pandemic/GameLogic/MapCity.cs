@@ -12,19 +12,9 @@ namespace Pandemic
     {
         private City _city;
         private ICommand _cityCommand;
-        private IList<DiseaseColor> _diseasesToTreat;
         private bool _hasResearchStation;
         private ICommand _instantMoveCommand;
         private bool _isSelectable = false;
-
-        private int _population;
-
-        public event EventHandler CitySelected;
-
-        protected virtual void OnCitySelected(EventArgs e)
-        {
-            CitySelected?.Invoke(this, e);
-        }
 
         public MapCity(City city, IDictionary<DiseaseColor, Disease> diseases)
         {
@@ -40,12 +30,14 @@ namespace Pandemic
                 {DiseaseColor.Yellow, 0 }
             };
 
-            _diseasesToTreat = new List<DiseaseColor>();
+            DiseasesToTreat = new List<DiseaseColor>();
 
             ConnectedCities = new List<MapCity>();
         }
 
-        public double Area { get; private set; }
+        public event EventHandler CitySelected;
+
+        public double Area { get; }
 
         public int BlackInfection
         {
@@ -68,10 +60,11 @@ namespace Pandemic
             get => _cityCommand ?? (_cityCommand = new RelayCommand(() => MapCitySelected()));
         }
 
-        public IList<MapCity> ConnectedCities { get; set; }
-        public IDictionary<DiseaseColor, Disease> Diseases { get; private set; }
+        public IList<MapCity> ConnectedCities { get; }
 
-        public IList<DiseaseColor> DiseasesToTreat => _diseasesToTreat;
+        public IDictionary<DiseaseColor, Disease> Diseases { get; }
+
+        public IList<DiseaseColor> DiseasesToTreat { get; }
 
         public bool HasResearchStation
         {
@@ -94,11 +87,7 @@ namespace Pandemic
             set => Set(ref _isSelectable, value);
         }
 
-        public int Population
-        {
-            get => _population;
-            private set => Set(ref _population, value);
-        }
+        public int Population { get; }
 
         public int RedInfection
         {
@@ -153,11 +142,6 @@ namespace Pandemic
             return Math.Abs(oldInfections - Infections[color]);
         }
 
-        public void CharactersChanged()
-        {
-            RaisePropertyChanged(nameof(Characters));
-        }
-
         public bool IsCityConnected(MapCity toCity)
         {
             return ConnectedCities.Contains(toCity);
@@ -173,17 +157,6 @@ namespace Pandemic
             return City.ToString();
         }
 
-        internal void RemoveCuredInfections()
-        {
-            foreach (var disease in Diseases.Values)
-            {
-                if (disease.IsCured)
-                {
-                    RemoveInfection(disease.Color);
-                }
-            }
-        }
-
         internal int TreatDisease(DiseaseColor diseaseColor)
         {
             if (Diseases[diseaseColor].IsCured)
@@ -194,6 +167,11 @@ namespace Pandemic
             {
                 return ChangeInfection(diseaseColor, -1);
             }
+        }
+
+        protected virtual void OnCitySelected(EventArgs e)
+        {
+            CitySelected?.Invoke(this, e);
         }
 
         private int CoerceInfection(int infection)

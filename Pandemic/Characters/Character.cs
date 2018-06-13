@@ -1,6 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using Pandemic.Cards;
-using System;
+using Pandemic.GameLogic.Actions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,8 +16,6 @@ namespace Pandemic
 
         private MapCity _currentMapCity;
         private bool _isActive;
-        private DiseaseColor _mostCardsColor;
-        private int _mostCardsColorCount;
 
         protected Character()
         {
@@ -25,21 +23,22 @@ namespace Pandemic
             Cards.CollectionChanged += Cards_CollectionChanged;
 
             MoveStrategy = new MoveStrategy(this);
+            Actions = new Dictionary<string, IGameAction>
+            {
+                { ActionTypes.Treat, new TreatAction(this) },
+                { ActionTypes.Build, new BuildAction(this) },
+                { ActionTypes.Share, new ShareKnowledgeAction(this) },
+                { ActionTypes.Discover, new DiscoverCureAction(this) }
+            };
         }
 
-        public ShareKnowledgeBehaviour ShareKnowledgeBehaviour { get; set; }
-        public BuildBehaviour BuildBehaviour { get; set; }
-
-        public event EventHandler<CardDiscardedEventArgs> CardDiscarded;
-
+        public IDictionary<string, IGameAction> Actions { get; }
         public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
 
-        public IEnumerable<PlayerCard> CityCards { get => Cards.OfType<PlayerCard>(); }
-
-        public ObservableCollection<Card> Cards { get;  }
-
+        public ObservableCollection<Card> Cards { get; }
         public virtual int CardsForCure { get => STANDARD_CARDS_FOR_CURE; }
         public virtual int CardsLimit { get => STANDARD_CARDS_LIMIT; }
+        public IEnumerable<PlayerCard> CityCards { get => Cards.OfType<PlayerCard>(); }
 
         public abstract Color Color { get; }
 
@@ -62,24 +61,15 @@ namespace Pandemic
         public bool IsActive
         {
             get => _isActive;
-            set
-            {
-                Set(ref _isActive, value);
-                CurrentMapCity.CharactersChanged();
-            }
+            set => Set(ref _isActive, value);
         }
 
-        public DiseaseColor MostCardsColor
-        {
-            get => _mostCardsColor;
-        }
+        public DiseaseColor MostCardsColor { get; private set; }
 
-        public int MostCardsColorCount
-        {
-            get => _mostCardsColorCount;
-        }
+        public int MostCardsColorCount { get; private set; }
 
         public MoveStrategy MoveStrategy { get; set; }
+
         public abstract string Role { get; }
 
         public abstract IEnumerable<string> RoleDescription { get; }
@@ -93,14 +83,14 @@ namespace Pandemic
             }
         }
 
-        public virtual bool CanDiscoverCure()
+        public bool CanBuild(Game game)
         {
-            return CanDiscoverCure(MostCardsColor);
+            return Actions[ActionTypes.Build].CanExecute(game);
         }
 
-        public virtual bool CanDiscoverCure(DiseaseColor diseaseColor)
+        public bool CanDiscoverCure(Game game)
         {
-            return CurrentMapCity.HasResearchStation && ColorCardsCount(diseaseColor) >= CardsForCure;
+            return Actions[ActionTypes.Discover].CanExecute(game);
         }
 
         public virtual bool CanMove(MapCity destinationCity)
@@ -129,14 +119,24 @@ namespace Pandemic
             return false;
         }
 
-        public bool CanTreatDisease()
+        public bool CanShareKnowledge(Game game)
         {
-            return CurrentMapCity.DiseasesToTreat.Count > 0;
+            return Actions[ActionTypes.Share].CanExecute(game);
+        }
+
+        public bool CanTreatDisease(Game game)
+        {
+            return Actions[ActionTypes.Treat].CanExecute(game);
         }
 
         public int ColorCardsCount(DiseaseColor diseaseColor)
         {
             return CityCards.Count(x => x.City.Color == diseaseColor);
+        }
+
+        public virtual IEnumerable<IMoveCardAction> GetPossibleCardMoves(MapCity destinationCity)
+        {
+            return MoveStrategy.GetPossibleCardMoves();
         }
 
         public virtual IEnumerable<MapCity> GetPossibleDestinationCities(IEnumerable<MapCity> cities)
@@ -164,11 +164,6 @@ namespace Pandemic
             return MoveStrategy.GetPossibleMoves();
         }
 
-        public virtual IEnumerable<IMoveCardAction> GetPossibleCardMoves(MapCity destinationCity)
-        {
-            return MoveStrategy.GetPossibleCardMoves();
-        }
-
         public bool HasCityCard(City city)
         {
             return CityCards.Any(card => card.City == city);
@@ -184,17 +179,9 @@ namespace Pandemic
             return MoveStrategy.GetCardMoveAction(moveType).Move(city, card);
         }
 
-        public virtual void RegisterSpecialActions(SpecialActions actions)
-        { }
-
         public void RemoveCard(Card card)
         {
             Cards.Remove(card);
-            if (card is EventCard eventCard)
-            {
-                eventCard.Character = null;
-            }
-            OnCardDiscarded(new CardDiscardedEventArgs(card));
         }
 
         public void RemoveCard(City city)
@@ -217,18 +204,13 @@ namespace Pandemic
         {
             if (Cards.Count > 0)
             {
-                _mostCardsColor = CityCards.GroupBy(x => x.City.Color).OrderByDescending(gb => gb.Count()).Select(y => y.Key).FirstOrDefault();
-                _mostCardsColorCount = ColorCardsCount(_mostCardsColor);
+                MostCardsColor = CityCards.GroupBy(x => x.City.Color).OrderByDescending(gb => gb.Count()).Select(y => y.Key).FirstOrDefault();
+                MostCardsColorCount = ColorCardsCount(MostCardsColor);
             }
             else
             {
-                _mostCardsColor = default;
+                MostCardsColor = default;
             }
-        }
-
-        private void OnCardDiscarded(CardDiscardedEventArgs e)
-        {
-            CardDiscarded?.Invoke(this, e);
         }
     }
 }

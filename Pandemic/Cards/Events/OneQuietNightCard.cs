@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Pandemic.GameLogic;
+using System;
 
 namespace Pandemic.Cards
 {
@@ -12,13 +9,11 @@ namespace Pandemic.Cards
         {
         }
 
-        public event EventHandler SkipInfectionPhase;
-        
-        public override void PlayEvent()
+        public override void PlayEvent(Game game)
         {
-            SkipInfectionPhase?.Invoke(this, EventArgs.Empty);
+            game.Infection.Actual = 0;
 
-            OnEventFinished(EventArgs.Empty);
+            OnEventFinished(EventArgs.Empty, game);
         }
     }
 }

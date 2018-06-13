@@ -1,0 +1,118 @@
+﻿using Pandemic.Cards;
+using System;
+using System.Collections.Generic;
+
+namespace Pandemic.GameLogic
+{
+    public class InfectionPhase : IGamePhase
+    {
+        public Game Game { get; }
+
+        public InfectionPhase(Game game)
+        {
+            Game = game ?? throw new ArgumentNullException(nameof(game));
+        }
+
+        public void Action(string actionType)
+        {
+            if (Game.Infection.Actual == 0)
+            {
+                Game.Info = null;
+                Game.GamePhase = new ActionPhase(Game);
+                return;
+            }
+
+            Game.Infection.Actual--;
+
+            InfectionCard card = Game.InfectionDeck.DrawTop();
+            Game.InfectionDiscardPile.Cards.Add(card);
+
+            if (Game.CheckCubesPile(card.City.Color))
+            {
+                GameOver();
+            }
+            else
+            {
+                if (CanRaiseInfection(Game.WorldMap.Cities[card.City.Name], card.City.Color))
+                {
+                    var isOutbreak = Game.RaiseInfection(card.City, card.City.Color);
+                    if (isOutbreak)
+                    {
+                        DoOutbreak(card.City, card.City.Color);
+                    }
+
+                    if (Game.Infection.Actual == 0)
+                    {
+                        Game.Info = new GameInfo($"Infected city {card.City.Name}", $"Next {(Game.Infection.Actual == 0 ? "Player" : "Infection")}",
+                            () => Game.DoAction("Next"));
+                    }                        
+                }
+            }
+        }
+
+        public void End()
+        {
+            Game.Characters.Next();
+        }
+
+        public void Start()
+        {
+            Game.Infection.Reset();
+        }
+
+        protected void OnOutbreak(OutbreakEventArgs outbreakEventArgs)
+        {
+            Game.Outbreaks++;
+        }
+
+        private bool CanRaiseInfection(MapCity city, DiseaseColor color)
+        {
+            bool result = true;
+
+            foreach (var character in Game.Characters)
+            {
+                result = result && !character.CanPreventInfection(city, color);
+            }
+
+            return result;
+        }
+
+        private void DoOutbreak(City city, DiseaseColor diseaseColor)
+        {
+            var citiesToOutbreak = new Queue<City>(1);
+            var alreadyOutbreakedCities = new List<City>();
+            citiesToOutbreak.Enqueue(city);
+
+            OnOutbreak(new OutbreakEventArgs(city));
+
+            while (citiesToOutbreak.Count > 0)
+            {
+                var outbreakCity = citiesToOutbreak.Dequeue();
+                alreadyOutbreakedCities.Add(outbreakCity);
+
+                foreach (var connectedCity in Game.WorldMap.Cities[outbreakCity.Name].ConnectedCities)
+                {
+                    if (CanRaiseInfection(connectedCity, diseaseColor))
+                    {
+                        bool isOutbreak = Game.RaiseInfection(connectedCity.City, diseaseColor);
+                        if (Game.CheckCubesPile(city.Color))
+                        {
+                            GameOver();
+                        }
+
+                        if (isOutbreak && !alreadyOutbreakedCities.Contains(connectedCity.City) && !citiesToOutbreak.Contains(connectedCity.City))
+                        {
+                            citiesToOutbreak.Enqueue(connectedCity.City);
+                            OnOutbreak(new OutbreakEventArgs(connectedCity.City));
+                        }
+                    }
+                }
+            }
+        }
+
+        private void GameOver()
+        {
+            Game.GamePhase = new GameOverState();
+        }
+    }
+}

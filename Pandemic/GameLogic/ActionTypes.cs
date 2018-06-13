@@ -21,5 +21,6 @@ namespace Pandemic
         public static readonly string OperationsExpertSpecialMove = "Operations Expert Special Move";
 
         public static readonly string Event = "Event";
+        public static readonly string Give = "Give";
     }
 }
