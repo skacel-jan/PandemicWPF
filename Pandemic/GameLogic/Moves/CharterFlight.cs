@@ -1,8 +1,10 @@
-﻿using Pandemic.Cards;
+﻿using System;
+using System.Linq;
+using Pandemic.Cards;
 
 namespace Pandemic
 {
-    public class CharterFlight : IMoveCardAction
+    public class CharterFlight : IMoveAction
     {
         public CharterFlight(Character character)
         {
@@ -12,23 +14,28 @@ namespace Pandemic
         public Character Character { get; set; }
         public string MoveType { get => ActionTypes.CharterFlight; }
 
+        public bool IsCardRequired => true;
+
         public bool IsPossible(MapCity city)
         {
             return Character.HasCityCard(Character.CurrentMapCity.City);
         }
 
-        public bool Move(MapCity city, PlayerCard card)
+        public void Move(Game game, MapCity city, Action moveActionCallback)
         {
-            if (Character.CurrentMapCity.City == card.City)
+            game.SelectCard(Character.Cards.OfType<CityCard>(), (Card card) =>
             {
-                Character.CurrentMapCity = city;
-                Character.RemoveCard(card);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+                if (card is CityCard cityCard)
+                {
+                    if (Character.CurrentMapCity.City == cityCard.City)
+                    {
+                        Character.CurrentMapCity = city;
+                        Character.RemoveCard(card);
+                        game.AddCardToPlayerDiscardPile(card);
+                        moveActionCallback();
+                    }
+                }
+            }, "Select card of a current city");
         }
     }
 }

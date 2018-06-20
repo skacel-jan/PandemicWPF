@@ -11,21 +11,14 @@ namespace Pandemic.ViewModels
 {
     public class BoardViewModel : ViewModelBase
     {
-        private string _actionEvent;
         private ViewModelBase _actionViewModel;
         private ViewModelBase _infoViewModel;
         private bool _isActionVisible;
         private bool _isInfoVisible;
 
-        public BoardViewModel(Game game, ActionStateMachine actionStateMachine)
+        public BoardViewModel(Game game)
         {
             Game = game ?? throw new ArgumentNullException(nameof(game));
-
-            ActionStateMachine = actionStateMachine;
-            ActionStateMachine.MoveTypeSelecting += ActionStateMachine_MoveTypeSelecting;
-            ActionStateMachine.ActionDone += ActionStateMachine_ActionDone;
-            ActionStateMachine.EventDone += ActionStateMachine_EventDone;
-            ActionStateMachine.CitySelecting += ActionStateMachine_CitySelecting;
 
             Game.InfoChanged += Game_InfoChanged;
             Game.ActionDone += Game_ActionDone;
@@ -34,13 +27,6 @@ namespace Pandemic.ViewModels
             Game.ShareTypeSelecting += Game_ShareTypeSelecting;
             Game.CharacterSelecting += Game_CharacterSelecting;
             Game.CardSelecting += Game_CardsSelecting;
-            //TurnStateMachine.ActionDone += TurnStateMachine_ActionDone;
-            //TurnStateMachine.InfectionDone += TurnStateMachine_InfectionDone;
-            //TurnStateMachine.ActionPhaseEnded += TurnStateMachine_ActionPhaseEnded;
-            //TurnStateMachine.DrawingPhaseEnded += TurnStateMachine_DrawingPhaseEnded;
-            //TurnStateMachine.InfectionPhaseEnded += TurnStateMachine_InfectionPhaseEnded;
-            //TurnStateMachine.TurnStarted += TurnStateMachine_TurnStarted;
-            //TurnStateMachine.GameLost += TurnStateMachine_GameLost;
 
             MoveActionCommand = new RelayCommand(OnMoveAction);
             TreatActionCommand = new RelayCommand(() => DoAction(ActionTypes.Treat), () => CurrentCharacter.CanTreatDisease(Game));
@@ -67,10 +53,8 @@ namespace Pandemic.ViewModels
             PlayerDiscardPileCommand = new RelayCommand(ShowPlayerDiscardPile);
             InfectionDiscardPileCommand = new RelayCommand(ShowInfectionDiscardPile);
 
-            MessengerInstance.Register<GenericMessage<MapCity>>(this, MessageTokens.CitySelected, CitySelected);
+            //MessengerInstance.Register<GenericMessage<MapCity>>(this, MessageTokens.CitySelected, CitySelected);
             MessengerInstance.Register<GenericMessage<MapCity>>(this, MessageTokens.InstantMove, InstantMove);
-
-            ActionStateMachine.Start();
         }
 
         private void Game_ShareTypeSelecting(object sender, ShareTypeSelectingEventArgs e)
@@ -97,8 +81,6 @@ namespace Pandemic.ViewModels
         {
             RaisePropertyChanged(nameof(CurrentCharacter));
         }
-
-        public ActionStateMachine ActionStateMachine { get; }
 
         public ViewModelBase ActionViewModel
         {
@@ -164,11 +146,6 @@ namespace Pandemic.ViewModels
 
         public RelayCommand TreatActionCommand { get; set; }
 
-        private void ActionStateMachine_ActionDone(object sender, EventArgs e)
-        {
-            FinishDoingAction();
-        }
-
         private void Game_CardsSelecting(object sender, CardsSelectingEventArgs e)
         {
             InfoViewModel = new TextViewModel(e.Text);
@@ -185,21 +162,6 @@ namespace Pandemic.ViewModels
             InfoViewModel = new TextViewModel(e.Text);
         }
 
-        private void ActionStateMachine_DiseaseSelecting(object sender, EventArgs e)
-        {
-            ActionViewModel = new DiseaseSelectionViewModel(new List<DiseaseColor>(CurrentCharacter.CurrentMapCity.DiseasesToTreat),
-                (disease) => ActionStateMachine.DoAction(_actionEvent, disease));
-        }
-
-        private void ActionStateMachine_EventDone(object sender, EventArgs e)
-        {
-            InfoViewModel = null;
-            ActionViewModel = null;
-            _actionEvent = null;
-
-            RefreshAllCommands();
-        }
-
         private void Game_CharacterSelecting(object sender, CharacterSelectingEventArgs e)
         {
             InfoViewModel = new TextViewModel(e.Text);
@@ -210,22 +172,10 @@ namespace Pandemic.ViewModels
             });
         }
 
-        private void ActionStateMachine_MoveTypeSelecting(object sender, MoveTypeEventArgs e)
-        {
-            ActionViewModel = new MoveSelectionViewModel(e.Moves, e.SelectionDelegate);
-        }
-
-        private void ActionStateMachine_ShareTypeSelecting(object sender, ShareTypeSelectingEventArgs e)
-        {
-            ActionViewModel = new ShareTypeSelectionViewModel(e.ShareTypes, e.SelectionDelegate);
-        }
-
         private void Cancel()
         {
             InfoViewModel = null;
             ActionViewModel = null;
-            _actionEvent = null;
-            ActionStateMachine.DoAction(ActionTypes.Cancel);
             RefreshAllCommands();
 
             Task.Run(() =>
@@ -237,31 +187,13 @@ namespace Pandemic.ViewModels
             });
         }
 
-        private void CitySelected(GenericMessage<MapCity> mapCityMessage)
-        {
-            if (!string.IsNullOrEmpty(_actionEvent))
-            {
-                ActionStateMachine.DoAction(_actionEvent, mapCityMessage.Content);
-            }
-        }
-
         private void DoAction(string actionString)
         {
-            _actionEvent = actionString;
-            ActionStateMachine.DoAction(_actionEvent);
-            Game.DoAction(actionString);
-        }
-
-        private void DoAction(string actionString, object parameter)
-        {
-            _actionEvent = actionString;
-            ActionStateMachine.DoAction(actionString, parameter);
             Game.DoAction(actionString);
         }
 
         private void FinishDoingAction()
         {
-            _actionEvent = null;
             InfoViewModel = null;
             ActionViewModel = null;
 
@@ -293,7 +225,7 @@ namespace Pandemic.ViewModels
 
         private void InstantMove(GenericMessage<MapCity> mapCityMessage)
         {
-            DoAction(ActionTypes.DriveOrFerry, mapCityMessage.Content);
+            //Game.CurrentCharacter.Actions[ActionTypes.DriveOrFerry]., mapCityMessage.Content);
         }
 
         private void OnMoveAction()

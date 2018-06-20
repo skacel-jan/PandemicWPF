@@ -1,28 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Windows.Media.Imaging;
+﻿using Pandemic.GameLogic.Actions;
+using System;
 
 namespace Pandemic.Cards
 {
-
-    public abstract class EventCard : Card
+    public class EventCard : Card
     {
-        public EventCard(string name) : base(name)
-        { }
+        private Game _game;
 
-        public Character Character { get; set; }
-
-        public abstract void PlayEvent(Game game);
+        public EventCard(string name, Func<EventAction> factoryMethod) : base(name)
+        {
+            FactoryMethod = factoryMethod ?? throw new ArgumentNullException(nameof(factoryMethod));
+        }
 
         public event EventHandler EventFinished;
 
-        protected virtual void OnEventFinished(EventArgs e, Game game)
+        public Func<EventAction> FactoryMethod { get; }
+        public Character Character { get; set; }
+
+        public void PlayEvent(Game game)
+        {
+            _game = game;
+            FactoryMethod().Execute(game, FinishEvent);
+        }
+
+        protected virtual void OnEventFinished(EventArgs e)
+        {
+            EventFinished?.Invoke(this, e);
+        }
+
+        private void FinishEvent()
         {
             Character.RemoveCard(this);
-            game.AddCardToPlayerDiscardPile(this);
-            EventFinished?.Invoke(this, e);
+            _game.AddCardToPlayerDiscardPile(this);
+            OnEventFinished(EventArgs.Empty);
         }
     }
 }

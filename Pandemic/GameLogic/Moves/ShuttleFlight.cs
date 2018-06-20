@@ -1,4 +1,6 @@
-﻿namespace Pandemic
+﻿using System;
+
+namespace Pandemic
 {
     public class ShuttleFlight : IMoveAction
     {
@@ -8,18 +10,19 @@
         }
 
         public Character Character { get; set; }
-        public bool IsCardNeeded => false;
-        public string MoveType { get => ActionTypes.ShuttleFlight; }
+        public string MoveType => ActionTypes.ShuttleFlight;
+
+        public bool IsCardRequired => false;
 
         public bool IsPossible(MapCity city)
         {
             return Character.CurrentMapCity.HasResearchStation && city.HasResearchStation;
         }
 
-        public bool Move(MapCity city)
+        public void Move(Game game, MapCity city, Action finishAction)
         {
             Character.CurrentMapCity = city;
-            return true;
+            finishAction();
         }
     }
 }

@@ -28,15 +28,12 @@ namespace Pandemic.ViewModels
             SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<IWorldMapFactory>().WorldMap);
             SimpleIoc.Default.Register<EventCardFactory>();
             SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<EventCardFactory>().GetEventCards());
-            //SimpleIoc.Default.Register(() => SimpleIoc.Default.GetInstance<IEventCardFactory>().GetEventCards());
             SimpleIoc.Default.Register<Infection>();
-            SimpleIoc.Default.Register<CitySelectionService>();
             SimpleIoc.Default.Register<IEnumerable<City>>(() => SimpleIoc.Default.GetInstance<IWorldMapFactory>().Cities);
-            SimpleIoc.Default.Register<IEnumerable<MapCity>>(() => SimpleIoc.Default.GetInstance<IWorldMapFactory>().MapCities.Values);
+            SimpleIoc.Default.Register<IDictionary<string, MapCity>>(() => SimpleIoc.Default.GetInstance<IWorldMapFactory>().MapCities);
             SimpleIoc.Default.Register<PlayerDeck>();
             SimpleIoc.Default.Register(() => new Deck<InfectionCard>(SimpleIoc.Default.GetInstance<WorldMap>()
                 .Cities.Values.Select(x => new InfectionCard(x.City))));
-            SimpleIoc.Default.Register<ActionStateMachine>();
             SimpleIoc.Default.Register<IEnumerable<Character>>(() =>
             {
                 var startingCity = SimpleIoc.Default.GetInstance<IWorldMapFactory>().MapCities[City.Atlanta];

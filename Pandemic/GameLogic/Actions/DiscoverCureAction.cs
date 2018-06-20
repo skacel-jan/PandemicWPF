@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Pandemic.GameLogic.Actions
 {
-    public class DiscoverCureAction : GameAction
+    public class DiscoverCureAction : CharacterAction
     {
         public DiscoverCureAction(Character character) : base(character)
         {

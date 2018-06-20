@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Pandemic.GameLogic.Actions
 {
-    public class ShareKnowledgeAction : GameAction
+    public class ShareKnowledgeAction : CharacterAction
     {
         public ShareKnowledgeAction(Character character) : base(character)
         {

@@ -41,9 +41,6 @@
     <ApplicationIcon>Resources\PandemicIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Appccelerate.StateMachine, Version=4.4.0.0, Culture=neutral, PublicKeyToken=917bca444d1f2b4c, processorArchitecture=MSIL">
-      <HintPath>..\packages\Appccelerate.StateMachine.4.4.0\lib\netstandard1.0\Appccelerate.StateMachine.dll</HintPath>
-    </Reference>
     <Reference Include="CommonServiceLocator, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.2.0.3\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
@@ -80,22 +77,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Cards\Events\AirliftCard.cs" />
-    <Compile Include="Cards\Events\OneQuietNightCard.cs" />
-    <Compile Include="Cards\Events\EventCardFactory.cs" />
-    <Compile Include="GameLogic\Actions\DiscoverCureAction.cs" />
+    <Compile Include="Cards\EventCardFactory.cs" />
+    <Compile Include="GameLogic\Actions\AirliftAction.cs" />
+    <Compile Include="GameLogic\Actions\GovernmentGrantAction.cs" />
+    <Compile Include="GameLogic\Actions\OneQuietNightAction.cs" />
+    <Compile Include="GameLogic\Actions\ResilientPopulationAction.cs" />
     <Compile Include="GameLogic\Actions\EventAction.cs" />
+    <Compile Include="GameLogic\Actions\DiscoverCureAction.cs" />
     <Compile Include="GameLogic\Infection.cs" />
-    <Compile Include="Cards\Events\ResilientPopulationCard.cs" />
-    <Compile Include="Cards\Events\GovernmentGrantCard.cs" />
     <Compile Include="Characters\CharacterFactory.cs" />
     <Compile Include="Characters\Researcher.cs" />
     <Compile Include="GameLogic\Actions\BuildAction.cs" />
     <Compile Include="GameLogic\Actions\ShareKnowledgeAction.cs" />
-    <Compile Include="GameLogic\Actions\GameAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterAction.cs" />
     <Compile Include="GameLogic\Phase\InitialPhase.cs" />
     <Compile Include="GameLogic\Actions\TreatAction.cs" />
-    <Compile Include="GameLogic\Services\CitySelectionService.cs" />
     <Compile Include="GameLogic\Moves\MoveStrategy.cs" />
     <Compile Include="GameLogic\Phase\ActionPhase.cs" />
     <Compile Include="GameLogic\Phase\DrawPhase.cs" />
@@ -104,7 +100,6 @@
     <Compile Include="GameLogic\Phase\InfectionPhase.cs" />
     <Compile Include="Helpers\CircularCollection.cs" />
     <Compile Include="Decks\IDeck.cs" />
-    <Compile Include="GameLogic\ActionStateMachine.cs" />
     <Compile Include="GameLogic\ActionTypes.cs" />
     <Compile Include="GameLogic\Game.cs" />
     <Compile Include="GameLogic\EventArgs.cs" />
@@ -282,7 +277,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -66,16 +66,18 @@ namespace Pandemic
         public string Text { get; }
     }
 
-    public class MoveTypeEventArgs : EventArgs
+    public class MoveTypeSelectingEventArgs : EventArgs
     {
-        public MoveTypeEventArgs(IEnumerable<IMoveCardAction> moves, Action<IMoveCardAction> selectionDelegate)
+        public MoveTypeSelectingEventArgs(IEnumerable<IMoveAction> moves, Action<IMoveAction> selectionDelegate, string text)
         {
-            Moves = moves;
-            SelectionDelegate = selectionDelegate;
+            Moves = moves ?? throw new ArgumentNullException(nameof(moves));
+            SelectionDelegate = selectionDelegate ?? throw new ArgumentNullException(nameof(selectionDelegate));
+            Text = text ?? throw new ArgumentNullException(nameof(text));
         }
 
-        public IEnumerable<IMoveCardAction> Moves { get; }
-        public Action<IMoveCardAction> SelectionDelegate { get; }
+        public IEnumerable<IMoveAction> Moves { get; }
+        public Action<IMoveAction> SelectionDelegate { get; }
+        public string Text { get; }
     }
 
     public class OutbreakEventArgs : EventArgs

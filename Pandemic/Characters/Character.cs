@@ -22,13 +22,13 @@ namespace Pandemic
             Cards = new ObservableCollection<Card>();
             Cards.CollectionChanged += Cards_CollectionChanged;
 
-            MoveStrategy = new MoveStrategy(this);
             Actions = new Dictionary<string, IGameAction>
             {
                 { ActionTypes.Treat, new TreatAction(this) },
                 { ActionTypes.Build, new BuildAction(this) },
                 { ActionTypes.Share, new ShareKnowledgeAction(this) },
-                { ActionTypes.Discover, new DiscoverCureAction(this) }
+                { ActionTypes.Discover, new DiscoverCureAction(this) },
+                { ActionTypes.Move, new MoveAction(this) }
             };
         }
 
@@ -68,8 +68,6 @@ namespace Pandemic
 
         public int MostCardsColorCount { get; private set; }
 
-        public MoveStrategy MoveStrategy { get; set; }
-
         public abstract string Role { get; }
 
         public abstract IEnumerable<string> RoleDescription { get; }
@@ -93,25 +91,9 @@ namespace Pandemic
             return Actions[ActionTypes.Discover].CanExecute(game);
         }
 
-        public virtual bool CanMove(MapCity destinationCity)
+        public virtual bool CanMove(Game game)
         {
-            foreach (var action in MoveStrategy.GetPossibleMoves())
-            {
-                if (action.IsPossible(destinationCity))
-                {
-                    return true;
-                }
-            }
-
-            foreach (var action in MoveStrategy.GetPossibleCardMoves())
-            {
-                if (action.IsPossible(destinationCity))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return Actions[ActionTypes.Move].CanExecute(game);
         }
 
         public virtual bool CanPreventInfection(MapCity city, DiseaseColor color)
@@ -134,49 +116,9 @@ namespace Pandemic
             return CityCards.Count(x => x.City.Color == diseaseColor);
         }
 
-        public virtual IEnumerable<IMoveCardAction> GetPossibleCardMoves(MapCity destinationCity)
-        {
-            return MoveStrategy.GetPossibleCardMoves();
-        }
-
-        public virtual IEnumerable<MapCity> GetPossibleDestinationCities(IEnumerable<MapCity> cities)
-        {
-            var canCharterFlight = HasCityCard(CurrentMapCity.City);
-
-            foreach (var city in cities)
-            {
-                if (canCharterFlight)
-                {
-                    yield return city;
-                }
-                else if (city != CurrentMapCity)
-                {
-                    if (CanMove(city))
-                    {
-                        yield return city;
-                    }
-                }
-            }
-        }
-
-        public virtual IEnumerable<IMoveAction> GetPossibleMoves(MapCity destinationCity)
-        {
-            return MoveStrategy.GetPossibleMoves();
-        }
-
         public bool HasCityCard(City city)
         {
             return CityCards.Any(card => card.City == city);
-        }
-
-        public virtual bool Move(string moveType, MapCity city)
-        {
-            return MoveStrategy.GetMoveAction(moveType).Move(city);
-        }
-
-        public virtual bool Move(string moveType, MapCity city, PlayerCard card)
-        {
-            return MoveStrategy.GetCardMoveAction(moveType).Move(city, card);
         }
 
         public void RemoveCard(Card card)

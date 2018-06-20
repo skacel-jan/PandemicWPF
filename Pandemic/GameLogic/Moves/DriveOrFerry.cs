@@ -1,4 +1,6 @@
-﻿namespace Pandemic
+﻿using System;
+
+namespace Pandemic
 {
     public class DriveOrFerry : IMoveAction
     {
@@ -8,19 +10,20 @@
         }
 
         public Character Character { get; set; }
+
         public string MoveType { get => ActionTypes.DriveOrFerry; }
 
-        public bool IsCardNeeded { get => false; }
+        public bool IsCardRequired => false;
 
         public bool IsPossible(MapCity city)
         {
             return Character.CurrentMapCity.IsCityConnected(city);
         }
 
-        public bool Move(MapCity city)
+        public void Move(Game game, MapCity city, Action finishAction)
         {
             Character.CurrentMapCity = city;
-            return true;
+            finishAction();
         }
     }
 }

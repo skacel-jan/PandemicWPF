@@ -1,8 +1,8 @@
-﻿using Pandemic.Cards;
+﻿using System;
 
 namespace Pandemic
 {
-    public class OperationsExpertSpecialMove : IMoveCardAction
+    public class OperationsExpertSpecialMove : IMoveAction
     {
         public OperationsExpertSpecialMove(Character character)
         {
@@ -10,18 +10,18 @@ namespace Pandemic
         }
 
         public Character Character { get; set; }
-        public string MoveType { get => ActionTypes.OperationsExpertSpecialMove; }
+        public bool IsCardRequired => true;
+        public string MoveType => ActionTypes.OperationsExpertSpecialMove;
 
         public bool IsPossible(MapCity city)
         {
             return Character.CurrentMapCity.HasResearchStation && Character.Cards.Count > 0;
         }
 
-        public bool Move(MapCity city, PlayerCard card)
-        {            
+        public void Move(Game game, MapCity city, Action finishAction)
+        {
             Character.CurrentMapCity = city;
-            Character.RemoveCard(card);
-            return true;
+            //Character.RemoveCard(card);
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using Pandemic.Cards;
+using System;
 using System.Linq;
 
 namespace Pandemic
 {
-    public class DirectFlight : IMoveCardAction
+    public class DirectFlight : IMoveAction
     {
         public DirectFlight(Character character)
         {
@@ -11,26 +12,30 @@ namespace Pandemic
         }
 
         public Character Character { get; set; }
-        public string MoveType { get => ActionTypes.DirectFlight; }
+        public string MoveType => ActionTypes.DirectFlight;
+
+        public bool IsCardRequired => true;
 
         public bool IsPossible(MapCity city)
         {
             return Character.CityCards.Any(card => card.City == city.City);
         }
 
-        public bool Move(MapCity city, PlayerCard card)
+        public void Move(Game game, MapCity city, Action moveActionCallback)
         {
-            if (city.City == card.City)
+            game.SelectCard(Character.Cards.OfType<CityCard>(), (Card card) =>
             {
-                Character.CurrentMapCity = city;
-                Character.RemoveCard(card);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-            
+                if (card is CityCard cityCard)
+                {
+                    if (city.City == cityCard.City)
+                    {
+                        Character.CurrentMapCity = city;
+                        Character.RemoveCard(card);
+                        game.AddCardToPlayerDiscardPile(card);
+                        moveActionCallback();
+                    }
+                }
+            }, "Select card of a destination city");
         }
     }
 }

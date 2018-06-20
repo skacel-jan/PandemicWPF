@@ -4,7 +4,7 @@ namespace Pandemic
 {
     public interface IWorldMapFactory
     {
-        IList<City> Cities { get; }
+        IEnumerable<City> Cities { get; }
         IDictionary<string, MapCity> MapCities { get; }
         WorldMap WorldMap { get; }
     }

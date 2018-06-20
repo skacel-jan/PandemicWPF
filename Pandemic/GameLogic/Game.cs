@@ -9,13 +9,13 @@ namespace Pandemic
 {
     public class Game : ObservableObject
     {
+        private int _actions;
         private IGamePhase _gamePhase;
 
         private GameInfo _info;
         private int _outbreaks;
 
         private int _researchStationPile;
-        private int _actions;
 
         public Game(WorldMap worldMap, DiseaseFactory diseaseFactory, CircularCollection<Character> characters,
                     Infection infection, IEnumerable<EventCard> eventCards, PlayerDeck playerDeck, Deck<InfectionCard> infectionDeck)
@@ -27,7 +27,6 @@ namespace Pandemic
 
             PlayerDeck = playerDeck ?? throw new ArgumentNullException(nameof(playerDeck));
             InfectionDeck = infectionDeck ?? throw new ArgumentNullException(nameof(infectionDeck));
-            CitySelectionService = new CitySelectionService(WorldMap.Cities.Values);
             InfectionDiscardPile = new DiscardPile<InfectionCard>();
             PlayerDiscardPile = new DiscardPile<Card>();
             RemovedCards = new DiscardPile<Card>();
@@ -63,6 +62,8 @@ namespace Pandemic
 
         public event EventHandler InfoChanged;
 
+        public event EventHandler<MoveTypeSelectingEventArgs> MoveTypeSelecting;
+
         public event EventHandler<ShareTypeSelectingEventArgs> ShareTypeSelecting;
 
         public int Actions
@@ -73,11 +74,9 @@ namespace Pandemic
                 if (Set(ref _actions, value))
                 {
                     ActionDone?.Invoke(this, EventArgs.Empty);
-                }                
+                }
             }
         }
-
-        public CitySelectionService CitySelectionService { get; }
 
         public Character CurrentCharacter { get; set; }
 
@@ -193,7 +192,7 @@ namespace Pandemic
 
         public void SelectCity(IEnumerable<MapCity> cities, Action<MapCity> action, string text)
         {
-            CitySelectionService.SelectCity(cities, action, text);
+            WorldMap.SelectCity(cities, action, text);
         }
 
         public void SelectDisease(IEnumerable<DiseaseColor> diseases, Action<DiseaseColor> action, string text)
@@ -206,9 +205,14 @@ namespace Pandemic
             CharacterSelecting?.Invoke(this, new CharacterSelectingEventArgs(characters, action, text));
         }
 
-        internal void SelectShareType(IEnumerable<ShareType> shareTypes, Action<ShareType> action, string text)
+        public void SelectShareType(IEnumerable<ShareType> shareTypes, Action<ShareType> action, string text)
         {
             ShareTypeSelecting?.Invoke(this, new ShareTypeSelectingEventArgs(shareTypes, action, text));
+        }
+
+        internal void SelectMove(IEnumerable<IMoveAction> possibleCardMoves, Action<IMoveAction> action, string text)
+        {
+            MoveTypeSelecting?.Invoke(this, new MoveTypeSelectingEventArgs(possibleCardMoves, action, text));
         }
 
         private void Characters_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

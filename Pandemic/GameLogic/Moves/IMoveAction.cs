@@ -8,17 +8,10 @@ namespace Pandemic
     {
         string MoveType { get; }
 
-        bool IsPossible(MapCity city);
-
-        bool Move(MapCity city);
-    }
-
-    public interface IMoveCardAction
-    {
-        string MoveType { get; }
+        bool IsCardRequired { get; }
 
         bool IsPossible(MapCity city);
 
-        bool Move(MapCity city, PlayerCard card);
+        void Move(Game game, MapCity city, Action finishAction);
     }
 }

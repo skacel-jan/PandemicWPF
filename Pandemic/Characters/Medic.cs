@@ -20,21 +20,14 @@ namespace Pandemic.Characters
             "Automatically remove cubes of cured diseases from a city you are in (and prevent them from being placed there)."
         };
 
+        public Medic()
+        {
+            Actions[ActionTypes.Move] = new MedicMoveAction(this);
+        }
+
         public override IEnumerable<string> RoleDescription => _roleDescription;
 
         public override Color Color => Colors.Orange;
-
-        public override bool Move(string moveType, MapCity city)
-        {
-            bool moveSucessfull = base.Move(moveType, city);
-
-            if (moveSucessfull)
-            {
-                SpecialTreatDisease();
-            }
-
-            return moveSucessfull;
-        }
 
         public override int TreatDisease(DiseaseColor diseaseColor)
         {

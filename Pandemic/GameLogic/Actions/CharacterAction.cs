@@ -8,21 +8,21 @@ namespace Pandemic.GameLogic.Actions
         void Execute(Game game, Action callbackAction);
     }
 
-    public abstract class GameAction : IGameAction
+    public abstract class CharacterAction : IGameAction
     {
         protected Game _game;
-        protected Action _actionCallback;
+        protected Action _actionFinishedCallback;
 
         public Character Character { get; protected set; }
 
-        public GameAction(Character character)
+        public CharacterAction(Character character)
         {
             Character = character ?? throw new ArgumentNullException(nameof(character));
         }
 
         public void Execute(Game game, Action callbackAction)
         {
-            _actionCallback = callbackAction;
+            _actionFinishedCallback = callbackAction;
             _game = game;
 
             Execute();
@@ -33,8 +33,8 @@ namespace Pandemic.GameLogic.Actions
 
         protected virtual void FinishAction()
         {
-            _actionCallback?.Invoke();
-            _actionCallback = null;
+            _actionFinishedCallback?.Invoke();
+            _actionFinishedCallback = null;
             _game = null;
         }
     }

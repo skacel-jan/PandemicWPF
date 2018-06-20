@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Pandemic.GameLogic.Actions
 {
-    public class BuildAction : GameAction
+    public class BuildAction : CharacterAction
     {
         public BuildAction(Character character) : base(character)
         {

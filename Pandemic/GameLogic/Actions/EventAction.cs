@@ -1,21 +1,30 @@
-﻿using Pandemic.Cards;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Pandemic.GameLogic.Actions
 {
-    public class EventAction : IGameAction
+    public abstract class EventAction : IGameAction
     {
-        public bool CanExecute(Game game)
-        {
-            return game.EventCards.Count > 0;
-        }
+        protected Action _actionCallback;
+
+        protected Game _game;
+
+        public bool CanExecute(Game game) => true;
 
         public void Execute(Game game, Action callbackAction)
         {
-        }        
+            _actionCallback = callbackAction;
+            _game = game;
+
+            Execute();
+        }
+
+        protected abstract void Execute();
+
+        protected virtual void FinishAction()
+        {
+            _actionCallback?.Invoke();
+            _actionCallback = null;
+            _game = null;
+        }
     }
 }

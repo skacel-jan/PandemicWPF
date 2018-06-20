@@ -36,29 +36,32 @@ namespace Pandemic
                 cityNodes = doc.SelectNodes("/world/cities/city");
             }
 
-            Cities = new List<City>(cityNodes.Count);
+            var cities = new List<City>(cityNodes.Count);
             foreach (XmlNode cityNode in cityNodes)
             {
                 string name = cityNode.Attributes["name"].Value;
                 DiseaseColor color = (DiseaseColor)Enum.Parse(typeof(DiseaseColor), cityNode.Attributes["color"].Value, true);
-                Cities.Add(new City(name, color));
+                cities.Add(new City(name, color));
             }
 
-            MapCities = new Dictionary<string, MapCity>(Cities.ToDictionary(x => x.Name, x => new MapCity(x, Diseases)));
+            Cities = cities;
+
+            var mapCities = new Dictionary<string, MapCity>(Cities.ToDictionary(x => x.Name, x => new MapCity(x, Diseases)));
 
             foreach (XmlNode cityNode in cityNodes)
             {
                 var neighbors = cityNode.SelectNodes(".//schema:neighbor", namespaceManager);
                 foreach (XmlNode neighbor in neighbors)
                 {
-                    MapCities[cityNode.Attributes["name"].Value].AddConnectedCity(MapCities[neighbor.InnerText]);
+                    mapCities[cityNode.Attributes["name"].Value].AddConnectedCity(mapCities[neighbor.InnerText]);
                 }
             }
 
+            MapCities = mapCities;
             WorldMap = new WorldMap(MapCities);
         }
 
-        public IList<City> Cities { get; private set; }
+        public IEnumerable<City> Cities { get; private set; }
 
         public WorldMap WorldMap { get; private set; }
 
