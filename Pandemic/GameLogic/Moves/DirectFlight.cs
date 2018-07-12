@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Pandemic
+namespace Pandemic.GameLogic.Actions
 {
     public class DirectFlight : IMoveAction
     {
@@ -12,9 +12,8 @@ namespace Pandemic
         }
 
         public Character Character { get; set; }
-        public string MoveType => ActionTypes.DirectFlight;
-
         public bool IsCardRequired => true;
+        public string MoveType => ActionTypes.DirectFlight;
 
         public bool IsPossible(MapCity city)
         {
@@ -29,7 +28,7 @@ namespace Pandemic
                 {
                     if (city.City == cityCard.City)
                     {
-                        Character.CurrentMapCity = city;
+                        game.MoveCharacter(Character, city);
                         Character.RemoveCard(card);
                         game.AddCardToPlayerDiscardPile(card);
                         moveActionCallback();

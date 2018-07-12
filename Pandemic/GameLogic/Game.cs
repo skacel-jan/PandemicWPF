@@ -2,6 +2,7 @@
 using Pandemic.Cards;
 using Pandemic.Decks;
 using Pandemic.GameLogic;
+using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
 
@@ -17,7 +18,7 @@ namespace Pandemic
 
         private int _researchStationPile;
 
-        public Game(WorldMap worldMap, DiseaseFactory diseaseFactory, CircularCollection<Character> characters,
+        public Game(WorldMap worldMap, IDictionary<DiseaseColor, Disease> diseases, CircularCollection<Character> characters,
                     Infection infection, IEnumerable<EventCard> eventCards, PlayerDeck playerDeck, Deck<InfectionCard> infectionDeck)
         {
             WorldMap = worldMap;
@@ -31,7 +32,7 @@ namespace Pandemic
             PlayerDiscardPile = new DiscardPile<Card>();
             RemovedCards = new DiscardPile<Card>();
 
-            Diseases = diseaseFactory.GetDiseases();
+            Diseases = diseases;
 
             EventCards = new List<EventCard>();
 
@@ -46,6 +47,11 @@ namespace Pandemic
 
             GamePhase = new InitialPhase(this);
             WorldMap.GetCity("Atlanta").ChangeInfection(DiseaseColor.Black, 2);
+        }
+
+        public void EndGame()
+        {
+            GameEnd?.Invoke(this, EventArgs.Empty);
         }
 
         public event EventHandler ActionDone;
@@ -66,6 +72,8 @@ namespace Pandemic
 
         public event EventHandler<ShareTypeSelectingEventArgs> ShareTypeSelecting;
 
+        public event EventHandler GameEnd;
+
         public int Actions
         {
             get => _actions;
@@ -78,7 +86,7 @@ namespace Pandemic
             }
         }
 
-        public Character CurrentCharacter { get; set; }
+        public Character CurrentCharacter { get => Characters.Current; }
 
         public IDictionary<DiseaseColor, Disease> Diseases { get; }
 
@@ -168,7 +176,7 @@ namespace Pandemic
             Diseases[color].Cubes += cubesCount;
         }
 
-        public bool RaiseInfection(City city, DiseaseColor color)
+        public bool IncreaseInfection(City city, DiseaseColor color)
         {
             if (!Diseases[color].IsEradicated)
             {
@@ -185,6 +193,11 @@ namespace Pandemic
             }
         }
 
+        public void MoveCharacter(Character character, MapCity city)
+        {
+            character.CurrentMapCity = city;
+        }
+
         public void SelectCard(IEnumerable<Card> cards, Action<Card> action, string text)
         {
             CardSelecting?.Invoke(this, new CardsSelectingEventArgs(cards, action, text));
@@ -195,24 +208,24 @@ namespace Pandemic
             WorldMap.SelectCity(cities, action, text);
         }
 
-        public void SelectDisease(IEnumerable<DiseaseColor> diseases, Action<DiseaseColor> action, string text)
+        public void SelectDisease(IEnumerable<DiseaseColor> diseases, string text, Action<DiseaseColor> action)
         {
             DiseaseSelecting?.Invoke(this, new DiseaseSelectingEventArgs(diseases, action, text));
         }
 
-        public void SelectCharacter(IEnumerable<Character> characters, Action<Character> action, string text)
+        public void SelectCharacter(IEnumerable<Character> characters, string text, Action<Character> action)
         {
             CharacterSelecting?.Invoke(this, new CharacterSelectingEventArgs(characters, action, text));
         }
 
-        public void SelectShareType(IEnumerable<ShareType> shareTypes, Action<ShareType> action, string text)
-        {
-            ShareTypeSelecting?.Invoke(this, new ShareTypeSelectingEventArgs(shareTypes, action, text));
-        }
-
-        internal void SelectMove(IEnumerable<IMoveAction> possibleCardMoves, Action<IMoveAction> action, string text)
+        public void SelectMove(IEnumerable<IMoveAction> possibleCardMoves, string text, Action<IMoveAction> action)
         {
             MoveTypeSelecting?.Invoke(this, new MoveTypeSelectingEventArgs(possibleCardMoves, action, text));
+        }
+
+        public void SelectShareType(IEnumerable<ShareType> shareTypes, string text, Action<ShareType> action)
+        {
+            ShareTypeSelecting?.Invoke(this, new ShareTypeSelectingEventArgs(shareTypes, action, text));
         }
 
         private void Characters_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

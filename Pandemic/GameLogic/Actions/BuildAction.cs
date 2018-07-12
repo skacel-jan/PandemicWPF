@@ -5,6 +5,8 @@ namespace Pandemic.GameLogic.Actions
 {
     public class BuildAction : CharacterAction
     {
+        public override string Name => ActionTypes.Build;
+
         public BuildAction(Character character) : base(character)
         {
         }
@@ -16,20 +18,20 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void Execute()
         {
-            if (_game.ResearchStationsPile > 0)
+            if (Game.ResearchStationsPile > 0)
             {
                 BuildStation();
             }
             else
             {
-                _game.SelectCity(_game.WorldMap.Cities.Values.Where(c => c.HasResearchStation), DestroyStation, "Select city with research station");
+                Game.SelectCity(Game.WorldMap.Cities.Values.Where(c => c.HasResearchStation), DestroyStation, "Select city with research station");
             }
         }
 
         private void DestroyStation(MapCity city)
         {
             city.HasResearchStation = false;
-            _game.ResearchStationsPile++;
+            Game.ResearchStationsPile++;
 
             BuildStation();
         }
@@ -39,7 +41,7 @@ namespace Pandemic.GameLogic.Actions
             Character.CurrentMapCity.HasResearchStation = true;
             Character.RemoveCard(Character.CurrentMapCity.City);
 
-            _game.ResearchStationsPile--;
+            Game.ResearchStationsPile--;
 
             FinishAction();
         }
@@ -59,7 +61,7 @@ namespace Pandemic.GameLogic.Actions
         protected override void Execute()
         {
             Character.CurrentMapCity.HasResearchStation = true;
-            _game.ResearchStationsPile--;
+            Game.ResearchStationsPile--;
 
             FinishAction();
         }

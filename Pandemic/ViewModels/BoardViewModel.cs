@@ -2,6 +2,8 @@
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using Pandemic.Cards;
+using Pandemic.GameLogic;
+using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +17,16 @@ namespace Pandemic.ViewModels
         private ViewModelBase _infoViewModel;
         private bool _isActionVisible;
         private bool _isInfoVisible;
+        private Character _currentCharacter;
+        private IList<Tuple<RelayCommand, IGameAction>> _actions;
+        private bool _isPlayerHandVisible = true;
+
+        public IList<Tuple<RelayCommand, IGameAction>> Actions { get => _actions; set => Set(ref _actions, value); }
 
         public BoardViewModel(Game game)
         {
             Game = game ?? throw new ArgumentNullException(nameof(game));
+            CurrentCharacter = Game.CurrentCharacter;
 
             Game.InfoChanged += Game_InfoChanged;
             Game.ActionDone += Game_ActionDone;
@@ -27,12 +35,7 @@ namespace Pandemic.ViewModels
             Game.ShareTypeSelecting += Game_ShareTypeSelecting;
             Game.CharacterSelecting += Game_CharacterSelecting;
             Game.CardSelecting += Game_CardsSelecting;
-
-            MoveActionCommand = new RelayCommand(OnMoveAction);
-            TreatActionCommand = new RelayCommand(() => DoAction(ActionTypes.Treat), () => CurrentCharacter.CanTreatDisease(Game));
-            ShareActionCommand = new RelayCommand(() => DoAction(ActionTypes.Share), () => CurrentCharacter.CurrentMapCity.Characters.Any(c => c.CanShareKnowledge(Game)));
-            BuildActionCommand = new RelayCommand(() => DoAction(ActionTypes.Build), () => CurrentCharacter.CanBuild(Game));
-            DiscoverCureActionCommand = new RelayCommand(() => DoAction(ActionTypes.Discover), () => CurrentCharacter.CanDiscoverCure(Game));
+            Game.GameEnd += Game_GameEnd;
 
             CancelCommand = new RelayCommand(Cancel);
 
@@ -52,9 +55,11 @@ namespace Pandemic.ViewModels
 
             PlayerDiscardPileCommand = new RelayCommand(ShowPlayerDiscardPile);
             InfectionDiscardPileCommand = new RelayCommand(ShowInfectionDiscardPile);
+        }
 
-            //MessengerInstance.Register<GenericMessage<MapCity>>(this, MessageTokens.CitySelected, CitySelected);
-            MessengerInstance.Register<GenericMessage<MapCity>>(this, MessageTokens.InstantMove, InstantMove);
+        private void Game_GameEnd(object sender, EventArgs e)
+        {
+            MessengerInstance.Send(new NavigateToViewModelMessage(MessageTokens.EndGame));
         }
 
         private void Game_ShareTypeSelecting(object sender, ShareTypeSelectingEventArgs e)
@@ -79,7 +84,7 @@ namespace Pandemic.ViewModels
 
         private void Game_CharacterChanged(object sender, EventArgs e)
         {
-            RaisePropertyChanged(nameof(CurrentCharacter));
+            CurrentCharacter = Game.CurrentCharacter;
         }
 
         public ViewModelBase ActionViewModel
@@ -98,7 +103,17 @@ namespace Pandemic.ViewModels
 
         public Character CurrentCharacter
         {
-            get { return Game.Characters.Current; }
+            get => _currentCharacter;
+            set
+            {
+                if (Set(ref _currentCharacter, value))
+                {
+                    Actions = _currentCharacter.Actions.Select(a =>
+                    new Tuple<RelayCommand, IGameAction>(new RelayCommand(
+                        () => DoAction(a.Key),
+                        () => CanExecuteAction(a.Key), true), _currentCharacter.Actions[a.Key])).ToList();
+                }
+            }
         }
 
         public RelayCommand DiscoverCureActionCommand { get; }
@@ -138,6 +153,12 @@ namespace Pandemic.ViewModels
             set { Set(ref _isInfoVisible, value); }
         }
 
+        public bool IsPlayerHandVisible
+        {
+            get { return _isPlayerHandVisible; }
+            set { Set(ref _isPlayerHandVisible, value); }
+        }
+
         public RelayCommand MoveActionCommand { get; set; }
 
         public RelayCommand PlayerDiscardPileCommand { get; set; }
@@ -150,16 +171,12 @@ namespace Pandemic.ViewModels
         {
             InfoViewModel = new TextViewModel(e.Text);
 
+            IsPlayerHandVisible = false;
             ActionViewModel = new CardsSelectionViewModel(e.Cards, (Card c) =>
             {
                 //HideActionViews();
                 e.SelectionDelegate(c);
             });
-        }
-
-        private void ActionStateMachine_CitySelecting(object sender, CitySelectingEventArgs e)
-        {
-            InfoViewModel = new TextViewModel(e.Text);
         }
 
         private void Game_CharacterSelecting(object sender, CharacterSelectingEventArgs e)
@@ -178,13 +195,10 @@ namespace Pandemic.ViewModels
             ActionViewModel = null;
             RefreshAllCommands();
 
-            Task.Run(() =>
+            foreach (var city in Game.WorldMap.Cities.Values)
             {
-                foreach (var city in Game.WorldMap.Cities.Values)
-                {
-                    city.IsSelectable = false;
-                }
-            });
+                city.IsSelectable = false;
+            }
         }
 
         private void DoAction(string actionString)
@@ -192,16 +206,9 @@ namespace Pandemic.ViewModels
             Game.DoAction(actionString);
         }
 
-        private void FinishDoingAction()
-        {
-            InfoViewModel = null;
-            ActionViewModel = null;
-
-            RefreshAllCommands();
-        }
-
         private void Game_ActionDone(object sender, EventArgs e)
         {
+            IsPlayerHandVisible = true;
             RefreshAllCommands();
         }
 
@@ -236,14 +243,25 @@ namespace Pandemic.ViewModels
 
         private void RefreshAllCommands()
         {
-            BuildActionCommand.RaiseCanExecuteChanged();
-            DiscoverCureActionCommand.RaiseCanExecuteChanged();
-            MoveActionCommand.RaiseCanExecuteChanged();
-            TreatActionCommand.RaiseCanExecuteChanged();
-            ShareActionCommand.RaiseCanExecuteChanged();
+            foreach (var action in Actions)
+            {
+                action.Item1.RaiseCanExecuteChanged();
+            }
             EventsCommand.RaiseCanExecuteChanged();
 
             RaisePropertyChanged(nameof(InfoText));
+        }
+
+        private bool CanExecuteAction(string key)
+        {
+            if (key != null && CurrentCharacter.Actions.TryGetValue(key, out IGameAction gameAction))
+            {
+                return gameAction.CanExecute(Game);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void ShowInfectionDiscardPile()
@@ -268,12 +286,6 @@ namespace Pandemic.ViewModels
             {
                 InfoViewModel = new CardsViewModel("Player", Game.PlayerDiscardPile.Cards);
             }
-        }
-
-        private void TurnStateMachine_GameLost(object sender, GenericEventArgs<string> e)
-        {
-            ActionViewModel = null;
-            InfoViewModel = new TextViewModel(e.EventData);
         }
     }
 }

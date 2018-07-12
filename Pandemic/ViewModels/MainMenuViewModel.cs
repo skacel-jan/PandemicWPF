@@ -16,20 +16,16 @@ namespace Pandemic.ViewModels
         private ICommand _startGameCommand;
         public ICommand StartGameCommand
         {
-            get
-            {
-                return _startGameCommand ?? (_startGameCommand = new RelayCommand(() =>
-                    MessengerInstance.Send(new NavigateToViewModelMessage(MessageTokens.StartNewGame))));
-            }
+            get => _startGameCommand ?? (_startGameCommand = new RelayCommand(() =>
+                MessengerInstance.Send(new NavigateToViewModelMessage(MessageTokens.StartNewGame))));
+
         }
 
         private ICommand _exitCommand;
         public ICommand ExitCommand
         {
-            get
-            {
-                return _exitCommand ?? (_exitCommand = new RelayCommand(() => Application.Current.Shutdown()));
-            }
+            get => _exitCommand ?? (_exitCommand = new RelayCommand(() => Application.Current.Shutdown()));
+
         }
     }
 }

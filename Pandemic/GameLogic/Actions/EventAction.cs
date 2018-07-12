@@ -4,16 +4,17 @@ namespace Pandemic.GameLogic.Actions
 {
     public abstract class EventAction : IGameAction
     {
-        protected Action _actionCallback;
+        public string Name => ActionTypes.Event;
 
-        protected Game _game;
+        protected Action ActionCallback { get; set; }
+        protected Game Game { get; set; }
 
         public bool CanExecute(Game game) => true;
 
         public void Execute(Game game, Action callbackAction)
         {
-            _actionCallback = callbackAction;
-            _game = game;
+            ActionCallback = callbackAction;
+            Game = game;
 
             Execute();
         }
@@ -22,9 +23,9 @@ namespace Pandemic.GameLogic.Actions
 
         protected virtual void FinishAction()
         {
-            _actionCallback?.Invoke();
-            _actionCallback = null;
-            _game = null;
+            ActionCallback?.Invoke();
+            ActionCallback = null;
+            Game = null;
         }
     }
 }

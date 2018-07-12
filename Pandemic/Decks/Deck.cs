@@ -31,6 +31,11 @@ namespace Pandemic.Decks
 
         public virtual void AddCards(IEnumerable<T> cards)
         {
+            if (cards == null)
+            {
+                throw new ArgumentNullException(nameof(cards));
+            }
+
             foreach (var card in cards)
             {
                 AddCard(card);

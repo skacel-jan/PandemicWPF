@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using Pandemic.Cards;
+using Pandemic.GameLogic;
 using Pandemic.GameLogic.Actions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,13 +23,13 @@ namespace Pandemic
             Cards = new ObservableCollection<Card>();
             Cards.CollectionChanged += Cards_CollectionChanged;
 
-            Actions = new Dictionary<string, IGameAction>
+            Actions = new KeyExtractorDictionary<string, IGameAction>((IGameAction a) => a.Name)
             {
-                { ActionTypes.Treat, new TreatAction(this) },
-                { ActionTypes.Build, new BuildAction(this) },
-                { ActionTypes.Share, new ShareKnowledgeAction(this) },
-                { ActionTypes.Discover, new DiscoverCureAction(this) },
-                { ActionTypes.Move, new MoveAction(this) }
+                { new MoveAction(this) },
+                { new TreatAction(this) },
+                { new BuildAction(this) },
+                { new ShareKnowledgeAction(this) },
+                { new DiscoverCureAction(this) }                
             };
         }
 
@@ -81,34 +82,9 @@ namespace Pandemic
             }
         }
 
-        public bool CanBuild(Game game)
-        {
-            return Actions[ActionTypes.Build].CanExecute(game);
-        }
-
-        public bool CanDiscoverCure(Game game)
-        {
-            return Actions[ActionTypes.Discover].CanExecute(game);
-        }
-
-        public virtual bool CanMove(Game game)
-        {
-            return Actions[ActionTypes.Move].CanExecute(game);
-        }
-
         public virtual bool CanPreventInfection(MapCity city, DiseaseColor color)
         {
             return false;
-        }
-
-        public bool CanShareKnowledge(Game game)
-        {
-            return Actions[ActionTypes.Share].CanExecute(game);
-        }
-
-        public bool CanTreatDisease(Game game)
-        {
-            return Actions[ActionTypes.Treat].CanExecute(game);
         }
 
         public int ColorCardsCount(DiseaseColor diseaseColor)

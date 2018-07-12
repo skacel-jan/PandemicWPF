@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using Pandemic.GameLogic;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,6 +37,7 @@ namespace Pandemic
         }
 
         public event EventHandler CitySelected;
+        public event EventHandler MovedToCity;
 
         public double Area { get; }
 
@@ -74,7 +76,7 @@ namespace Pandemic
 
         public ObservableCollection<Character> Characters { get; }
 
-        public IDictionary<DiseaseColor, int> Infections { get; set; }
+        public IDictionary<DiseaseColor, int> Infections { get; }
 
         public ICommand InstantMoveCommand
         {
@@ -204,13 +206,17 @@ namespace Pandemic
 
         private void InstantMove()
         {
-            MessengerInstance.Send(new GenericMessage<MapCity>(this), MessageTokens.InstantMove);
+            OnMovedToCity(EventArgs.Empty);
+        }
+
+        private protected virtual void OnMovedToCity(EventArgs e)
+        {
+            MovedToCity?.Invoke(this, e);
         }
 
         private void MapCitySelected()
         {
             OnCitySelected(EventArgs.Empty);
-            MessengerInstance.Send(new GenericMessage<MapCity>(this), MessageTokens.CitySelected);
         }
     }
 }

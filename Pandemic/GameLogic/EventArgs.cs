@@ -1,4 +1,6 @@
 ﻿using Pandemic.Cards;
+using Pandemic.GameLogic;
+using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
 

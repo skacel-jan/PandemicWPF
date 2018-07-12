@@ -7,22 +7,25 @@ namespace Pandemic.GameLogic.Actions
     {
         protected override void Execute()
         {
-            _game.SelectCity(_game.WorldMap.Cities.Values.Where(x => !x.HasResearchStation), SetCity, "Select city");
+            Game.SelectCity(Game.WorldMap.Cities.Values.Where(x => !x.HasResearchStation), SetCity, "Select city");
         }
 
         private void SetCity(MapCity city)
         {
-            city.HasResearchStation = true;
-
-            Task.Run(() =>
-            {
-                foreach (var mapCity in _game.WorldMap.Cities.Values)
-                {
-                    mapCity.IsSelectable = false;
-                }
-            });
+            city.HasResearchStation = true;            
 
             FinishAction();
         }
+
+        protected override void FinishAction()
+        {
+            foreach (var mapCity in Game.WorldMap.Cities.Values)
+            {
+                mapCity.IsSelectable = false;
+            }
+
+            base.FinishAction();
+        }
+
     }
 }

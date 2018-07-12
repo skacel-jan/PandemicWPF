@@ -8,20 +8,12 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void Execute()
         {
-            _game.SelectCharacter(_game.Characters, SetCharacter, "Select character");
+            Game.SelectCharacter(Game.Characters, "Select character", SetCharacter);
         }
 
         private void SetCity(MapCity city)
         {
             _character.CurrentMapCity = city;
-
-            Task.Run(() =>
-            {
-                foreach (var mapCity in _game.WorldMap.Cities.Values)
-                {
-                    mapCity.IsSelectable = false;
-                }
-            });
 
             FinishAction();
         }
@@ -30,7 +22,17 @@ namespace Pandemic.GameLogic.Actions
         {
             _character = character;
 
-            _game.SelectCity(_game.WorldMap.Cities.Values, SetCity, "Select city");
+            Game.SelectCity(Game.WorldMap.Cities.Values, SetCity, "Select city");
+        }
+
+        protected override void FinishAction()
+        {
+            foreach (var mapCity in Game.WorldMap.Cities.Values)
+            {
+                mapCity.IsSelectable = false;
+            }
+
+            base.FinishAction();
         }
     }
 }

@@ -9,6 +9,14 @@ namespace Pandemic.GameLogic
         public ActionPhase(Game game)
         {
             Game = game ?? throw new ArgumentNullException(nameof(game));
+
+            game.WorldMap.MovedToCity += WorldMap_MovedToCity;            
+        }
+
+        private void WorldMap_MovedToCity(object sender, EventArgs e)
+        {
+            Game.MoveCharacter(Game.CurrentCharacter, sender as MapCity);
+            FinishAction();
         }
 
         public Game Game { get; }
@@ -21,7 +29,7 @@ namespace Pandemic.GameLogic
             }
             else if (Game.CurrentCharacter.Actions.TryGetValue(actionType, out IGameAction gameAction))
             {
-                gameAction.Execute(Game, ActionFinished);
+                gameAction.Execute(Game, FinishAction);
             }
         }
 
@@ -34,17 +42,18 @@ namespace Pandemic.GameLogic
         public void Start()
         {
             Game.Characters.Current.IsActive = true;
-            Game.CurrentCharacter = Game.Characters.Current;
             Game.Actions = Game.Characters.Current.ActionsCount;
             Game.Info = null;
         }
 
-        private void ActionFinished()
+        private void FinishAction()
         {
             Game.Actions--;
+            Game.Info = null;
 
             if (Game.Actions == 0)
             {
+                Game.WorldMap.MovedToCity -= WorldMap_MovedToCity;
                 Game.GamePhase = new DrawPhase(Game);
             }
         }

@@ -12,6 +12,8 @@ namespace Pandemic.GameLogic.Actions
         {
         }
 
+        public override string Name => ActionTypes.Discover;
+
         public override bool CanExecute(Game game)
         {
             return Character.CurrentMapCity.HasResearchStation && Character.ColorCardsCount(Character.MostCardsColor) >= Character.CardsForCure;
@@ -31,14 +33,14 @@ namespace Pandemic.GameLogic.Actions
 
         private void DiscoverCure(IEnumerable<CityCard> cards, DiseaseColor color)
         {
-            _game.DiscoverCure(color);
+            Game.DiscoverCure(color);
             foreach (var card in new List<CityCard>(cards))
             {
                 Character.RemoveCard(card);
-                _game.AddCardToPlayerDiscardPile(card);
+                Game.AddCardToPlayerDiscardPile(card);
             }
 
-            _game.Characters.OfType<Medic>().SingleOrDefault()?.SpecialTreatDisease();
+            Game.Characters.OfType<Medic>().SingleOrDefault()?.SpecialTreatDisease();
 
             FinishAction();
         }
@@ -67,7 +69,7 @@ namespace Pandemic.GameLogic.Actions
                 }
             });
 
-            _game.SelectCard(Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
+            Game.SelectCard(Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
                 action, $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure");
         }
     }

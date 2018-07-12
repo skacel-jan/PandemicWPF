@@ -21,7 +21,7 @@ namespace Pandemic.ViewModels
             CommandText = commandText ?? throw new ArgumentNullException(nameof(commandText));
         }
 
-        public bool BackButtonVisible => false;
+        //public bool BackButtonVisible => false;
 
         public ICommand BackCommand { get; }
 

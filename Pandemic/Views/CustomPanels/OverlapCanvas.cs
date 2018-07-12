@@ -21,7 +21,7 @@ namespace Pandemic.Views.CustomPanels
           FrameworkPropertyMetadataOptions.AffectsArrange));
 
 
-        public static readonly DependencyProperty ReverseZIdnexProperty =
+        public static readonly DependencyProperty ReverseZIndexProperty =
           DependencyProperty.Register("ReverseZIdnex", typeof(bool),
           typeof(OverlapCanvas), new FrameworkPropertyMetadata(false,
           FrameworkPropertyMetadataOptions.AffectsArrange));
@@ -40,8 +40,8 @@ namespace Pandemic.Views.CustomPanels
 
         public bool ReverseZIdnex
         {
-            get { return (bool)GetValue(ReverseZIdnexProperty); }
-            set { SetValue(ReverseZIdnexProperty, value); }
+            get { return (bool)GetValue(ReverseZIndexProperty); }
+            set { SetValue(ReverseZIndexProperty, value); }
         }
 
         protected override Size MeasureOverride(Size availableSize)

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Pandemic
+namespace Pandemic.GameLogic.Actions
 {
     public class ShuttleFlight : IMoveAction
     {
@@ -19,10 +19,10 @@ namespace Pandemic
             return Character.CurrentMapCity.HasResearchStation && city.HasResearchStation;
         }
 
-        public void Move(Game game, MapCity city, Action finishAction)
+        public void Move(Game game, MapCity city, Action moveActionCallback)
         {
-            Character.CurrentMapCity = city;
-            finishAction();
+            game.MoveCharacter(Character, city);
+            moveActionCallback();
         }
     }
 }

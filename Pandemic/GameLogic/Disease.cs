@@ -1,7 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using System.Collections.Generic;
 
-namespace Pandemic
+namespace Pandemic.GameLogic
 {
     public enum DiseaseColor
     {

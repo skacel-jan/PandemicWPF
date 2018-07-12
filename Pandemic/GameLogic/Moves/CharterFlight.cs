@@ -2,7 +2,7 @@
 using System.Linq;
 using Pandemic.Cards;
 
-namespace Pandemic
+namespace Pandemic.GameLogic.Actions
 {
     public class CharterFlight : IMoveAction
     {
@@ -12,7 +12,7 @@ namespace Pandemic
         }
 
         public Character Character { get; set; }
-        public string MoveType { get => ActionTypes.CharterFlight; }
+        public string MoveType => ActionTypes.CharterFlight;
 
         public bool IsCardRequired => true;
 
@@ -29,7 +29,7 @@ namespace Pandemic
                 {
                     if (Character.CurrentMapCity.City == cityCard.City)
                     {
-                        Character.CurrentMapCity = city;
+                        game.MoveCharacter(Character, city);
                         Character.RemoveCard(card);
                         game.AddCardToPlayerDiscardPile(card);
                         moveActionCallback();

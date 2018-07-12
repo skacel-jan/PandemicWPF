@@ -1,38 +1,42 @@
-﻿
-using Pandemic.Cards;
-using Pandemic.GameLogic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Pandemic.Characters
 {
     public class CharacterFactory
     {
-        public CharacterFactory(MapCity startingCity)
-        {
-            StartingCity = startingCity ?? throw new ArgumentNullException(nameof(startingCity));
-        }
-
-        public MapCity StartingCity { get; }
+        public MapCity StartingCity { get; set; }
 
         public Character GetCharacter(string role)
         {
             Character character;
             switch (role)
             {
-                case Medic.ROLE:
+                case Medic.MEDIC:
                     character = new Medic() { CurrentMapCity = StartingCity };
                     break;
-                case OperationsExpert.ROLE:
+
+                case OperationsExpert.OPERATIONS_EXPERT:
                     character = new OperationsExpert() { CurrentMapCity = StartingCity };
                     break;
-                case Researcher.ROLE:
+
+                case Researcher.RESEARCHER:
                     character = new Researcher() { CurrentMapCity = StartingCity };
                     break;
+
                 default:
                     throw new ArgumentException("Unknwon role", nameof(role));
             }
 
             return character;
+        }
+
+        public IEnumerable<Character> GetCharacters(IEnumerable<string> roles)
+        {
+            foreach (string role in roles)
+            {
+                yield return GetCharacter(role);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pandemic.GameLogic.Actions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +10,8 @@ namespace Pandemic.Characters
 {
     public class OperationsExpert : Character
     {
-        public const string ROLE = "Operations expert";
-        public override string Role => ROLE;
+        public const string OPERATIONS_EXPERT = "Operations expert";
+        public override string Role => OPERATIONS_EXPERT;
 
         private readonly IEnumerable<string> _roleDescription = new List<string>()
         {
@@ -25,6 +26,7 @@ namespace Pandemic.Characters
         public OperationsExpert() : base()
         {
             Actions[ActionTypes.Move] = new OperationsExpertMoveAction(this);
+            Actions[ActionTypes.Build] = new OperationsExpertBuildAction(this);
         }
     }
 }

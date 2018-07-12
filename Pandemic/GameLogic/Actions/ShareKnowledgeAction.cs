@@ -11,6 +11,8 @@ namespace Pandemic.GameLogic.Actions
         {
         }
 
+        public override string Name => ActionTypes.Share;
+
         public override bool CanExecute(Game game)
         {
             if (game.CurrentCharacter.Equals(Character))
@@ -23,14 +25,9 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
-        protected virtual ShareKnowledeGive GetGiveAction(Character from, Character to)
-        {
-            return new ShareKnowledeGive(from, to);
-        }
-
         protected override void Execute()
         {
-            var possibleActions = _game.Characters.Where(c => !c.Equals(Character) && c.CanShareKnowledge(_game))
+            var possibleActions = Game.Characters.Where(c => !c.Equals(Character) && c.Actions[ActionTypes.Share].CanExecute(Game))
                 .Select(c => c.Actions[ActionTypes.Share]).Cast<ShareKnowledgeAction>();
 
             if (possibleActions.Count() > 1)
@@ -44,7 +41,7 @@ namespace Pandemic.GameLogic.Actions
                             SelectCharacterToGive();
                         }
                     });
-                    _game.SelectShareType(Enum.GetValues(typeof(ShareType)).Cast<ShareType>(), action, "Select share type");
+                    Game.SelectShareType(Enum.GetValues(typeof(ShareType)).Cast<ShareType>(), "Select share type", action);
                 }
                 else
                 {
@@ -64,19 +61,24 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
+        protected virtual ShareKnowledgeGive GetGiveAction(Character characterFrom, Character characterTo)
+        {
+            return new ShareKnowledgeGive(characterFrom, characterTo);
+        }
+
         protected virtual void SelectCharacterToGive()
         {
             if (Character.CurrentMapCity.Characters.Count > 2)
             {
                 var action = new Action<Character>((Character character) =>
                 {
-                    GetGiveAction(Character, character).Execute(_game, FinishAction);
+                    GetGiveAction(Character, character).Execute(Game, FinishAction);
                 });
-                _game.SelectCharacter(Character.CurrentMapCity.Characters.Where(c => c != Character), action, "Select character to which you will give the card");
+                Game.SelectCharacter(Character.CurrentMapCity.Characters.Where(c => c != Character), "Select character to which you will give the card", action);
             }
             else
             {
-                GetGiveAction(Character, Character.CurrentMapCity.Characters.Single(c => !c.Equals(Character))).Execute(_game, FinishAction);
+                GetGiveAction(Character, Character.CurrentMapCity.Characters.Single(c => !c.Equals(Character))).Execute(Game, FinishAction);
             }
         }
 
@@ -85,18 +87,20 @@ namespace Pandemic.GameLogic.Actions
             var action = new Action<Character>((Character character) =>
             {
                 var shareAction = possibleActions.Single(a => a.Character.Equals(character));
-                shareAction.GetGiveAction(character, Character).Execute(_game, FinishAction);
+                shareAction.GetGiveAction(character, Character).Execute(Game, FinishAction);
             });
-            _game.SelectCharacter(Character.CurrentMapCity.Characters.Where(c => c != Character), action, "Select character from which you will take card");
+            Game.SelectCharacter(Character.CurrentMapCity.Characters.Where(c => c != Character), "Select character from which you will take card", action);
         }
     }
 
-    public class ShareKnowledeGive
+    #region Share knowledge give
+
+    public class ShareKnowledgeGive
     {
         private Action _callback;
         private Game _game;
 
-        public ShareKnowledeGive(Character characterFrom, Character characterTo)
+        public ShareKnowledgeGive(Character characterFrom, Character characterTo)
         {
             CharacterFrom = characterFrom;
             CharacterTo = characterTo;
@@ -139,9 +143,11 @@ namespace Pandemic.GameLogic.Actions
         }
     }
 
+    #endregion Share knowledge give
+
     #region Researcher share knowledge
 
-    public class ShareKnowledgeGiveResearcher : ShareKnowledeGive
+    public class ShareKnowledgeGiveResearcher : ShareKnowledgeGive
     {
         public ShareKnowledgeGiveResearcher(Character characterFrom, Character characterTo) : base(characterFrom, characterTo)
         {
@@ -171,7 +177,7 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
-        protected override ShareKnowledeGive GetGiveAction(Character from, Character to)
+        protected override ShareKnowledgeGive GetGiveAction(Character from, Character to)
         {
             return new ShareKnowledgeGiveResearcher(from, to);
         }

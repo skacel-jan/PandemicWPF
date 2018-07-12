@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Pandemic.GameLogic.Actions
 {
@@ -8,6 +7,8 @@ namespace Pandemic.GameLogic.Actions
         public TreatAction(Character character) : base(character)
         {
         }
+
+        public override string Name => ActionTypes.Treat;
 
         public override bool CanExecute(Game game)
         {
@@ -18,7 +19,7 @@ namespace Pandemic.GameLogic.Actions
         {
             if (Character.CurrentMapCity.DiseasesToTreat.Count > 1)
             {
-                _game.SelectDisease(Character.CurrentMapCity.DiseasesToTreat, TreatDisease, "Select disease");
+                Game.SelectDisease(Character.CurrentMapCity.DiseasesToTreat, "Select disease", TreatDisease);
             }
             else if (Character.CurrentMapCity.DiseasesToTreat.Count == 1)
             {
@@ -29,7 +30,7 @@ namespace Pandemic.GameLogic.Actions
         private void TreatDisease(DiseaseColor color)
         {
             var cubesRemoved = Character.TreatDisease(color);
-            _game.IncreaseCubePile(color, cubesRemoved);
+            Game.IncreaseCubePile(color, cubesRemoved);
 
             FinishAction();
         }

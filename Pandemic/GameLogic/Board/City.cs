@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pandemic.GameLogic;
+using System;
 
 namespace Pandemic
 {
@@ -13,14 +14,24 @@ namespace Pandemic
         public DiseaseColor Color { get; private set; }
         public string Name { get; private set; }
 
-        public static bool operator !=(City c1, City c2)
+        public static bool operator !=(City left, City right)
         {
-            return !c1.Equals(c2);
+            return !left.Equals(right);
         }
 
-        public static bool operator ==(City c1, City c2)
+        public static bool operator ==(City left, City right)
         {
-            return c1.Equals(c2);
+            return left.Equals(right);
+        }
+
+        public static bool operator <(City left, City right)
+        {
+            return Compare(left, right) < 0;
+        }
+
+        public static bool operator >(City left, City right)
+        {
+            return Compare(left, right) > 0;
         }
 
         public int CompareTo(City other)
@@ -28,7 +39,7 @@ namespace Pandemic
             int result = Color.CompareTo(other.Color);
             if (result == 0)
             {
-                result = Name.CompareTo(other.Name);
+                result = string.Compare(Name, other.Name, StringComparison.OrdinalIgnoreCase);
             }
             return result;
         }
@@ -36,8 +47,8 @@ namespace Pandemic
         public override bool Equals(object other)
         {
             // other could be a reference type, the is operator will return false if null
-            if (other is City)
-                return Equals((City)other);
+            if (other is City city)
+                return Equals(city);
             else
                 return false;
         }
@@ -54,7 +65,20 @@ namespace Pandemic
 
         public override string ToString()
         {
-            return string.Format("{0} - {1}", Name, Color);
+            return $"{Name} - {Color}";
+        }
+
+        public static int Compare(City left, City right)
+        {
+            if (ReferenceEquals(left, right))
+            {
+                return 0;
+            }
+            if (left is null)
+            {
+                return -1;
+            }
+            return left.CompareTo(right);
         }
 
         #region Cities strings

@@ -35,8 +35,7 @@ namespace Pandemic
 
         static void IsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var target = d as ScrollViewer;
-            if (target == null) return;
+            if (!(d is ScrollViewer target)) return;
 
             if ((bool)e.NewValue)
             {
@@ -52,8 +51,7 @@ namespace Pandemic
         {
             System.Diagnostics.Debug.WriteLine("Target Unloaded");
 
-            var target = sender as ScrollViewer;
-            if (target == null) return;
+            if (!(sender is ScrollViewer target)) return;
 
             _captures.Remove(sender);
 
@@ -67,8 +65,7 @@ namespace Pandemic
 
         static void target_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var target = sender as ScrollViewer;
-            if (target == null) return;
+            if (!(sender is ScrollViewer target)) return;
 
             _captures[sender] = new MouseCapture
             {
@@ -79,8 +76,7 @@ namespace Pandemic
 
         static void target_Loaded(object sender, RoutedEventArgs e)
         {
-            var target = sender as ScrollViewer;
-            if (target == null) return;
+            if (!(sender is ScrollViewer target)) return;
 
             System.Diagnostics.Debug.WriteLine("Target Loaded");
 
@@ -93,8 +89,7 @@ namespace Pandemic
 
         static void target_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            var target = sender as ScrollViewer;
-            if (target == null) return;
+            if (!(sender is ScrollViewer target)) return;
 
             target.ReleaseMouseCapture();
 
@@ -122,8 +117,7 @@ namespace Pandemic
                 return;
             }
 
-            var target = sender as ScrollViewer;
-            if (target == null) return;
+            if (!(sender is ScrollViewer target)) return;
 
             var capture = _captures[sender];
 

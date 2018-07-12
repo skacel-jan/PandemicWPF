@@ -1,18 +1,13 @@
-﻿using GalaSoft.MvvmLight.Messaging;
-using System;
+﻿using Pandemic.GameLogic;
+using Pandemic.GameLogic.Actions;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace Pandemic.Characters
 {
     public class Medic : Character
     {
-        public const string ROLE = "Medic";
-
-        public override string Role => ROLE;
+        public const string MEDIC = "Medic";
 
         private readonly IEnumerable<string> _roleDescription = new List<string>()
         {
@@ -25,13 +20,13 @@ namespace Pandemic.Characters
             Actions[ActionTypes.Move] = new MedicMoveAction(this);
         }
 
+        public override Color Color => Colors.Orange;
+        public override string Role => MEDIC;
         public override IEnumerable<string> RoleDescription => _roleDescription;
 
-        public override Color Color => Colors.Orange;
-
-        public override int TreatDisease(DiseaseColor diseaseColor)
+        public override bool CanPreventInfection(MapCity city, DiseaseColor color)
         {
-            return CurrentMapCity.RemoveInfection(diseaseColor);
+            return city.Diseases[color].IsCured;
         }
 
         public virtual void SpecialTreatDisease()
@@ -45,9 +40,9 @@ namespace Pandemic.Characters
             }
         }
 
-        public override bool CanPreventInfection(MapCity city, DiseaseColor color)
+        public override int TreatDisease(DiseaseColor diseaseColor)
         {
-            return city.Diseases[color].IsCured;
+            return CurrentMapCity.RemoveInfection(diseaseColor);
         }
     }
 }

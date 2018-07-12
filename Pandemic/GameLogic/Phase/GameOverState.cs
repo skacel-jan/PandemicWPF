@@ -6,21 +6,26 @@ using System.Threading.Tasks;
 
 namespace Pandemic.GameLogic
 {
-    public class GameOverState : IGamePhase
+    public class GameOverPhase : IGamePhase
     {
+        public Game Game { get; }
+
+        public GameOverPhase(Game game)
+        {
+            Game = game ?? throw new ArgumentNullException(nameof(game));
+        }
+
         public void Action(string actionType)
         {
-            throw new NotImplementedException();
         }
 
         public void End()
         {
-            throw new NotImplementedException();
         }
 
         public void Start()
         {
-            throw new NotImplementedException();
+            Game.Info = new GameInfo("Game over", "Main Menu", () => { Game.EndGame() ; });
         }
     }
 }

@@ -21,12 +21,21 @@ namespace Pandemic
                     CitySelectedAction = null;
                     OnCitySelected(s, e);
                 };
+
+                city.MovedToCity += City_MovedToCity;
             }
+        }
+
+        private void City_MovedToCity(object sender, EventArgs e)
+        {
+            OnMovedToCity(sender, e);
         }
 
         public event EventHandler CitySelected;
 
         public event EventHandler<CitySelectingEventArgs> CitySelecting;
+
+        public event EventHandler MovedToCity;
 
         public IDictionary<string, MapCity> Cities { get; }
 
@@ -54,6 +63,11 @@ namespace Pandemic
         protected virtual void OnCitySelecting(CitySelectingEventArgs e)
         {
             CitySelecting?.Invoke(this, e);
+        }
+
+        protected virtual void OnMovedToCity(object sender, EventArgs e)
+        {
+            MovedToCity?.Invoke(sender, e);
         }
     }
 }

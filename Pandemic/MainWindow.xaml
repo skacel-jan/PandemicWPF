@@ -1,18 +1,19 @@
-﻿<Window x:Class="Pandemic.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
-        xmlns:views="clr-namespace:Pandemic.Views"
-        Title="Pandemic Legacy"
-        Width="1920"
-        Height="1080"
-        TextOptions.TextFormattingMode="Display"
-        WindowState="Maximized"
-        mc:Ignorable="d">
+﻿<Window
+    x:Class="Pandemic.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
+    xmlns:views="clr-namespace:Pandemic.Views"
+    Title="Pandemic Legacy"
+    Width="1920"
+    Height="1080"
+    TextOptions.TextFormattingMode="Display"
+    WindowState="Maximized"
+    mc:Ignorable="d">
     <Window.DataContext>
-        <viewModels:MainViewModel />
+        <viewModels:ViewModelLocator />
     </Window.DataContext>
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModels:BoardViewModel}">

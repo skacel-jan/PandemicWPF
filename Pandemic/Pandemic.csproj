@@ -26,6 +26,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
     <LangVersion>latest</LangVersion>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -39,6 +40,16 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\PandemicIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Pandemic.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommonServiceLocator, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
@@ -84,6 +95,7 @@
     <Compile Include="GameLogic\Actions\ResilientPopulationAction.cs" />
     <Compile Include="GameLogic\Actions\EventAction.cs" />
     <Compile Include="GameLogic\Actions\DiscoverCureAction.cs" />
+    <Compile Include="GameLogic\GameFactory.cs" />
     <Compile Include="GameLogic\Infection.cs" />
     <Compile Include="Characters\CharacterFactory.cs" />
     <Compile Include="Characters\Researcher.cs" />
@@ -92,7 +104,7 @@
     <Compile Include="GameLogic\Actions\CharacterAction.cs" />
     <Compile Include="GameLogic\Phase\InitialPhase.cs" />
     <Compile Include="GameLogic\Actions\TreatAction.cs" />
-    <Compile Include="GameLogic\Moves\MoveStrategy.cs" />
+    <Compile Include="GameLogic\Moves\MoveAction.cs" />
     <Compile Include="GameLogic\Phase\ActionPhase.cs" />
     <Compile Include="GameLogic\Phase\DrawPhase.cs" />
     <Compile Include="GameLogic\Phase\GameOverState.cs" />
@@ -103,7 +115,7 @@
     <Compile Include="GameLogic\ActionTypes.cs" />
     <Compile Include="GameLogic\Game.cs" />
     <Compile Include="GameLogic\EventArgs.cs" />
-    <Compile Include="GameLogic\IWorldMapFactory.cs" />
+    <Compile Include="GameLogic\Board\IWorldMapFactory.cs" />
     <Compile Include="GameLogic\Moves\CharterFlight.cs" />
     <Compile Include="GameLogic\Moves\DirectFlight.cs" />
     <Compile Include="GameLogic\Moves\IMoveAction.cs" />
@@ -116,9 +128,11 @@
     <Compile Include="Characters\OperationsExpert.cs" />
     <Compile Include="Characters\QuarantineSpecialist.cs" />
     <Compile Include="Characters\Scientist.cs" />
+    <Compile Include="Helpers\Converters\ColorToSolidColorBrushConverter.cs" />
     <Compile Include="Helpers\Converters\MovePointToCenter.cs" />
     <Compile Include="Helpers\Converters\BooleanToZindex.cs" />
     <Compile Include="Helpers\GenericEventArgs.cs" />
+    <Compile Include="Helpers\KeyExtractorDictionary.cs" />
     <Compile Include="Helpers\MessageTokens.cs" />
     <Compile Include="Helpers\MultiClickBehavior.cs" />
     <Compile Include="Helpers\TouchScrolling.cs" />
@@ -126,13 +140,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\CharacterSelectionViewModel.cs" />
+    <Compile Include="GameLogic\Board\MockWorldMapFactory.cs" />
     <Compile Include="ViewModels\SelectionViewModel.cs" />
     <Compile Include="ViewModels\ShareTypeSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseTemplateSelector.cs" />
     <Compile Include="ViewModels\BoardViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
     <Compile Include="ViewModels\CardsSelectionViewModel.cs" />
     <Compile Include="ViewModels\NavigateToViewModelMessage.cs" />
@@ -142,7 +157,7 @@
     <Compile Include="Cards\CityCard.cs" />
     <Compile Include="Characters\Character.cs" />
     <Compile Include="Characters\Medic.cs" />
-    <Compile Include="GameLogic\MapCity.cs" />
+    <Compile Include="GameLogic\Board\MapCity.cs" />
     <Compile Include="Decks\PlayerDeck.cs" />
     <Compile Include="GameLogic\Disease.cs" />
     <Compile Include="Cards\EpidemicCard.cs" />
@@ -186,8 +201,8 @@
     <Compile Include="Views\WorldMapBackground.xaml.cs">
       <DependentUpon>WorldMapBackground.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GameLogic\WorldMap.cs" />
-    <Compile Include="GameLogic\XmlWorldMapFactory.cs" />
+    <Compile Include="GameLogic\Board\WorldMap.cs" />
+    <Compile Include="GameLogic\Board\XmlWorldMapFactory.cs" />
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -205,7 +220,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Cards\Card.cs" />
-    <Compile Include="GameLogic\City.cs" />
+    <Compile Include="GameLogic\Board\City.cs" />
     <Compile Include="Decks\Deck.cs" />
     <Compile Include="Cards\InfectionCard.cs" />
     <Page Include="Views\CardsView.xaml">
@@ -300,9 +315,7 @@
   <ItemGroup>
     <Resource Include="Resources\PandemicIcon.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\DataSources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Configuration\CitiesConfiguration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -4,38 +4,42 @@ namespace Pandemic.GameLogic.Actions
 {
     public interface IGameAction
     {
+        string Name { get; }
+
         bool CanExecute(Game game);
+
         void Execute(Game game, Action callbackAction);
     }
 
     public abstract class CharacterAction : IGameAction
     {
-        protected Game _game;
-        protected Action _actionFinishedCallback;
-
-        public Character Character { get; protected set; }
-
-        public CharacterAction(Character character)
+        protected CharacterAction(Character character)
         {
             Character = character ?? throw new ArgumentNullException(nameof(character));
         }
 
+        public Character Character { get; protected set; }
+        public abstract string Name { get; }
+        protected Action ActionFinishedCallback { get; set; }
+        protected Game Game { get; set; }
+
+        public abstract bool CanExecute(Game game);
+
         public void Execute(Game game, Action callbackAction)
         {
-            _actionFinishedCallback = callbackAction;
-            _game = game;
+            ActionFinishedCallback = callbackAction;
+            Game = game;
 
             Execute();
         }
 
         protected abstract void Execute();
-        public abstract bool CanExecute(Game game);
 
         protected virtual void FinishAction()
         {
-            _actionFinishedCallback?.Invoke();
-            _actionFinishedCallback = null;
-            _game = null;
+            ActionFinishedCallback?.Invoke();
+            ActionFinishedCallback = null;
+            Game = null;
         }
     }
 }

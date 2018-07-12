@@ -2,12 +2,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace Pandemic
+namespace Pandemic.GameLogic.Actions
 {
     public interface IMoveAction
     {
-        string MoveType { get; }
-
         bool IsCardRequired { get; }
 
         bool IsPossible(MapCity city);

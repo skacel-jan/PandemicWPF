@@ -35,17 +35,15 @@ namespace Pandemic.GameLogic
             {
                 if (CanRaiseInfection(Game.WorldMap.GetCity(card.City.Name), card.City.Color))
                 {
-                    var isOutbreak = Game.RaiseInfection(card.City, card.City.Color);
+                    Game.Info = new GameInfo($"Infected city {card.City.Name}", $"Next {(Game.Infection.Actual == 0 ? "Player" : "Infection")}",
+                        () => Game.DoAction("Next"));
+
+                    var isOutbreak = Game.IncreaseInfection(card.City, card.City.Color);
                     if (isOutbreak)
                     {
                         DoOutbreak(card.City, card.City.Color);
-                    }
+                    }                   
 
-                    if (Game.Infection.Actual == 0)
-                    {
-                        Game.Info = new GameInfo($"Infected city {card.City.Name}", $"Next {(Game.Infection.Actual == 0 ? "Player" : "Infection")}",
-                            () => Game.DoAction("Next"));
-                    }                        
                 }
             }
         }
@@ -60,9 +58,10 @@ namespace Pandemic.GameLogic
             Game.Infection.Reset();
         }
 
-        protected void OnOutbreak(OutbreakEventArgs outbreakEventArgs)
+        protected void OnOutbreak(OutbreakEventArgs e)
         {
             Game.Outbreaks++;
+            Game.Info = new GameInfo(Game.Info.Text + $"\r\nOutbreak in city: {e.City.Name}", Game.Info.ButtonText, Game.Info.Action);
         }
 
         private bool CanRaiseInfection(MapCity city, DiseaseColor color)
@@ -94,7 +93,7 @@ namespace Pandemic.GameLogic
                 {
                     if (CanRaiseInfection(connectedCity, diseaseColor))
                     {
-                        bool isOutbreak = Game.RaiseInfection(connectedCity.City, diseaseColor);
+                        bool isOutbreak = Game.IncreaseInfection(connectedCity.City, diseaseColor);
                         if (Game.CheckCubesPile(city.Color))
                         {
                             GameOver();
@@ -112,7 +111,10 @@ namespace Pandemic.GameLogic
 
         private void GameOver()
         {
-            Game.GamePhase = new GameOverState();
+            if (!(Game.GamePhase is GameOverPhase))
+            {
+                Game.GamePhase = new GameOverPhase(Game);
+            }            
         }
     }
 }

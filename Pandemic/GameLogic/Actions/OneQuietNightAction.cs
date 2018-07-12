@@ -4,7 +4,7 @@
     {
         protected override void Execute()
         {
-            _game.Infection.Actual = 0;
+            Game.Infection.Actual = 0;
 
             FinishAction();
         }

@@ -6,7 +6,7 @@ namespace Pandemic.Characters
 {
     public class Researcher : Character
     {
-        public const string ROLE = "Researcher";
+        public const string RESEARCHER = "Researcher";
 
         private readonly IEnumerable<string> _roleDescription = new List<string>()
         {
@@ -23,7 +23,7 @@ namespace Pandemic.Characters
         }
 
         public override Color Color => Colors.Brown;
-        public override string Role => ROLE;
+        public override string Role => RESEARCHER;
         public override IEnumerable<string> RoleDescription => _roleDescription;
     }
 }

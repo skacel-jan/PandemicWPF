@@ -20,6 +20,9 @@
 
     <converters:DiseaseToColorConverter x:Key="DiseaseToColorConverter" />
 
+    <converters:ColorToSolidColorBrushConverter x:Key="ColorToSolidColorBrushConverter" />
+
+
     <ControlTemplate x:Key="YellowVirusShape">
         <Viewbox Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
             <Path

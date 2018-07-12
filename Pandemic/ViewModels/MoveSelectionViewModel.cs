@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
