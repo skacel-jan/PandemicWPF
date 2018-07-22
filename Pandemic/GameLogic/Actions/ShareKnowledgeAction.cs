@@ -124,14 +124,16 @@ namespace Pandemic.GameLogic.Actions
 
         private void SelectCard()
         {
-            var action = new Action<Card>((Card card) =>
+            var callback = new Func<Card, bool>((Card card) =>
             {
                 if (ValidateSelectedCard(card))
                 {
                     ShareKnowledge(card);
+                    return true;
                 }
+                return false;
             });
-            _game.SelectCard(CharacterFrom.Cards.OfType<PlayerCard>(), action, "Select card to share");
+            _game.SelectCard(CharacterFrom.Cards.OfType<PlayerCard>(), callback, "Select card to share");
         }
 
         private void ShareKnowledge(Card card)

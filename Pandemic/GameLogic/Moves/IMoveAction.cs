@@ -8,7 +8,7 @@ namespace Pandemic.GameLogic.Actions
     {
         bool IsCardRequired { get; }
 
-        bool IsPossible(MapCity city);
+        bool IsPossible(Game game, MapCity city);
 
         void Move(Game game, MapCity city, Action finishAction);
     }

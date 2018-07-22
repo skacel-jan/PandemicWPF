@@ -15,7 +15,7 @@
         <BitmapCache
             EnableClearType="False"
             RenderAtScale="2"
-            SnapsToDevicePixels="False" />
+            SnapsToDevicePixels="True" />
     </UserControl.CacheMode>
     <UserControl.Resources>
 
@@ -27,7 +27,7 @@
             x:Key="cacheMode"
             EnableClearType="False"
             RenderAtScale="1"
-            SnapsToDevicePixels="False" />
+            SnapsToDevicePixels="True" />
 
         <Style TargetType="{x:Type local:MapCityControl}">
             <Setter Property="Height" Value="60" />

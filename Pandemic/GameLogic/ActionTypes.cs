@@ -19,6 +19,7 @@ namespace Pandemic
         public static readonly string ShuttleFlight = "Shuttle Flight";
         public static readonly string Treat = "Treat";
         public static readonly string InstantMove = "InstantMove";
+        public static readonly string ContingencyPlannerAction = "Special action";
 
         public static readonly string Event = "Event";
     }

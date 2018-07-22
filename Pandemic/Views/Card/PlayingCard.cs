@@ -19,10 +19,6 @@ namespace Pandemic.Views
             // Register CardName dependency property
             CardNameProperty = DependencyProperty.Register("CardName",
                 typeof(string), typeof(PlayingCard));
-
-            // Register Face dependency property
-            IsSelectableProperty = DependencyProperty.Register("IsSelectable",
-                typeof(bool), typeof(PlayingCard), new FrameworkPropertyMetadata(false));
         }
 
         public string CardName
@@ -31,13 +27,6 @@ namespace Pandemic.Views
             set { SetValue(CardNameProperty, value); }
         }
 
-        public bool IsSelectable
-        {
-            get { return (bool)GetValue(IsSelectableProperty); }
-            set { SetValue(IsSelectableProperty, value); }
-        }
-
-        public static DependencyProperty IsSelectableProperty;
         public static DependencyProperty CardNameProperty;
     }
 }

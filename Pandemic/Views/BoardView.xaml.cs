@@ -47,5 +47,13 @@ namespace Pandemic.Views
 
             thumb.Margin = m;
         }
+
+        private void ActionPanel_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (ActionOverlay.Visibility == Visibility.Visible)
+            {
+                e.Handled = true;
+            }
+        }
     }
 }

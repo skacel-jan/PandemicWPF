@@ -24,6 +24,10 @@ namespace Pandemic.Characters
                     character = new Researcher() { CurrentMapCity = StartingCity };
                     break;
 
+                case ContingencyPlanner.CONTINGENCY_PLANNER:
+                    character = new ContingencyPlanner() { CurrentMapCity = StartingCity };
+                    break;
+
                 default:
                     throw new ArgumentException("Unknwon role", nameof(role));
             }

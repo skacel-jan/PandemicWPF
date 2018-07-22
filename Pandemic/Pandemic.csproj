@@ -90,6 +90,7 @@
     </ApplicationDefinition>
     <Compile Include="Cards\EventCardFactory.cs" />
     <Compile Include="GameLogic\Actions\AirliftAction.cs" />
+    <Compile Include="GameLogic\Actions\ContingencyPlannerAction.cs" />
     <Compile Include="GameLogic\Actions\GovernmentGrantAction.cs" />
     <Compile Include="GameLogic\Actions\OneQuietNightAction.cs" />
     <Compile Include="GameLogic\Actions\ResilientPopulationAction.cs" />
@@ -130,7 +131,6 @@
     <Compile Include="Characters\Scientist.cs" />
     <Compile Include="Helpers\Converters\ColorToSolidColorBrushConverter.cs" />
     <Compile Include="Helpers\Converters\MovePointToCenter.cs" />
-    <Compile Include="Helpers\Converters\BooleanToZindex.cs" />
     <Compile Include="Helpers\GenericEventArgs.cs" />
     <Compile Include="Helpers\KeyExtractorDictionary.cs" />
     <Compile Include="Helpers\MessageTokens.cs" />
@@ -141,6 +141,8 @@
     </Compile>
     <Compile Include="ViewModels\CharacterSelectionViewModel.cs" />
     <Compile Include="GameLogic\Board\MockWorldMapFactory.cs" />
+    <Compile Include="ViewModels\EventsViewModel.cs" />
+    <Compile Include="ViewModels\NewGameViewModel.cs" />
     <Compile Include="ViewModels\SelectionViewModel.cs" />
     <Compile Include="ViewModels\ShareTypeSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
@@ -161,13 +163,13 @@
     <Compile Include="Decks\PlayerDeck.cs" />
     <Compile Include="GameLogic\Disease.cs" />
     <Compile Include="Cards\EpidemicCard.cs" />
-    <Compile Include="Characters\Generalist.cs" />
     <Compile Include="Helpers\ThreadSafeRandom.cs" />
     <Compile Include="Helpers\Converters\DiseaseToColorConverter.cs" />
     <Compile Include="Views\CardsView.xaml.cs">
       <DependentUpon>CardsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CardTemplateSelector.cs" />
+    <Compile Include="Views\CustomPanels\OverlapPanel.cs" />
+    <Compile Include="Views\DataTempateSelectors\CardTemplateSelector.cs" />
     <Compile Include="Views\CharacterSelection.xaml.cs">
       <DependentUpon>CharacterSelection.xaml</DependentUpon>
     </Compile>
@@ -176,6 +178,12 @@
     </Compile>
     <Compile Include="Views\Card\PlayingCard.cs" />
     <Compile Include="Views\CustomPanels\OverlapCanvas.cs" />
+    <Compile Include="Views\Disease.xaml.cs">
+      <DependentUpon>Disease.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EventCardsView.xaml.cs">
+      <DependentUpon>EventCardsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ShareTypeSelection.xaml.cs">
       <DependentUpon>ShareTypeSelection.xaml</DependentUpon>
     </Compile>
@@ -238,6 +246,14 @@
     <Page Include="Views\CardSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Disease.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\EventCardsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ShareTypeSelection.xaml">
       <Generator>MSBuild:Compile</Generator>

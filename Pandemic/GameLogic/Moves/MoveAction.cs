@@ -8,7 +8,7 @@ namespace Pandemic.GameLogic.Actions
 {
     public class MoveAction : CharacterAction
     {
-        protected ICollection<IMoveAction> AllMoveActions { get; }
+        public IEnumerable<IMoveAction> AllMoveActions => MoveActions.Concat(MoveCardActions);
 
         protected ICollection<IMoveAction> MoveActions { get; }
 
@@ -27,8 +27,6 @@ namespace Pandemic.GameLogic.Actions
                 new DirectFlight(character),
                 new CharterFlight(character)
             };
-
-            AllMoveActions = new List<IMoveAction>(MoveActions.Concat(MoveCardActions));
         }
 
         public override string Name => ActionTypes.Move;
@@ -58,7 +56,7 @@ namespace Pandemic.GameLogic.Actions
         {
             foreach (var city in cities.Where(c => !c.Equals(Character.CurrentMapCity)))
             {
-                if (AllMoveActions.Any(a => a.IsPossible(city)))
+                if (AllMoveActions.Any(a => a.IsPossible(Game, city)))
                 {
                     yield return city;
                 }
@@ -67,14 +65,14 @@ namespace Pandemic.GameLogic.Actions
 
         private void SelectCityCallBack(MapCity city)
         {
-            var possibleMove = MoveActions.FirstOrDefault(x => x.IsPossible(city));
+            var possibleMove = MoveActions.FirstOrDefault(x => x.IsPossible(Game, city));
             if (possibleMove != null)
             {
                 possibleMove.Move(Game, city, FinishAction);
                 return;
             }
 
-            var possibleCardMoves = MoveCardActions.Where(x => x.IsPossible(city));
+            var possibleCardMoves = MoveCardActions.Where(x => x.IsPossible(Game, city));
 
             if (possibleCardMoves.Count() > 1)
             {

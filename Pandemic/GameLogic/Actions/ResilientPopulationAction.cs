@@ -6,10 +6,10 @@ namespace Pandemic.GameLogic.Actions
     {
         protected override void Execute()
         {
-            Game.SelectCard(Game.InfectionDiscardPile.Cards, SetCard, "Select infection card");
+            Game.SelectCard(Game.InfectionDiscardPile.Cards, SelectCardCallback, "Select infection card");
         }
 
-        private void SetCard(Card card)
+        private bool SelectCardCallback(Card card)
         {
             if (card is InfectionCard infectionCard)
             {
@@ -17,7 +17,9 @@ namespace Pandemic.GameLogic.Actions
                 Game.RemovedCards.AddCard(card);
 
                 FinishAction();
+                return true;
             }
+            return false;
         }
     }
 }

@@ -37,9 +37,7 @@ namespace Pandemic.GameLogic.Actions
 
         protected virtual void FinishAction()
         {
-            ActionFinishedCallback?.Invoke();
-            ActionFinishedCallback = null;
-            Game = null;
+            ActionFinishedCallback();
         }
     }
 }

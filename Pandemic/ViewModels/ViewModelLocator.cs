@@ -2,11 +2,8 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Pandemic.Cards;
-using Pandemic.Characters;
-using Pandemic.Decks;
 using Pandemic.GameLogic;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Pandemic.ViewModels
 {
@@ -33,15 +30,13 @@ namespace Pandemic.ViewModels
                 SimpleIoc.Default.Register<IWorldMapFactory, XmlWorldMapFactory>();
             }
 
-            
             SimpleIoc.Default.Register<EventCardFactory>();
 
             if (!SimpleIoc.Default.IsRegistered<Game>())
             {
                 SimpleIoc.Default.Register<GameFactory>();
                 SimpleIoc.Default.Register<Game>(() => SimpleIoc.Default.GetInstanceWithoutCaching<GameFactory>().CreateGame());
-            }     
-            
+            }
 
             MessengerInstance.Register<NavigateToViewModelMessage>(this, NavigateTo);
 
@@ -54,19 +49,21 @@ namespace Pandemic.ViewModels
             set => Set(ref _currentViewModel, value);
         }
 
-        public MainMenuViewModel MainMenu
-        {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<MainMenuViewModel>();
-            }
-        }
+        public EventsViewModel EventsViewModel => new EventsViewModel(SimpleIoc.Default.GetInstance<EventCardFactory>().GetEventCards(), SimpleIoc.Default.GetInstance<Game>());
 
         public BoardViewModel Game
         {
             get
             {
                 return SimpleIoc.Default.GetInstanceWithoutCaching<BoardViewModel>();
+            }
+        }
+
+        public MainMenuViewModel MainMenu
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<MainMenuViewModel>();
             }
         }
 
@@ -77,6 +74,7 @@ namespace Pandemic.ViewModels
                 case MessageTokens.StartNewGame:
                     CurrentViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<BoardViewModel>();
                     break;
+
                 case MessageTokens.EndGame:
                     CurrentViewModel = SimpleIoc.Default.GetInstance<MainMenuViewModel>();
                     break;

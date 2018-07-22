@@ -18,7 +18,7 @@ namespace Pandemic
 
     public class CardsSelectingEventArgs : EventArgs
     {
-        public CardsSelectingEventArgs(IEnumerable<Card> cards, Action<Card> selectionDelegate, string text)
+        public CardsSelectingEventArgs(IEnumerable<Card> cards, Func<Card, bool> selectionDelegate, string text)
         {
             Cards = cards;
             Text = text;
@@ -26,7 +26,7 @@ namespace Pandemic
         }
 
         public IEnumerable<Card> Cards { get; }
-        public Action<Card> SelectionDelegate { get; }
+        public Func<Card, bool> SelectionDelegate { get; }
         public string Text { get; }
     }
 
@@ -110,5 +110,17 @@ namespace Pandemic
     {
         Give,
         Take
+    }
+
+    public class GamePhaseChangedEventArgs : EventArgs
+    {
+        public GamePhaseChangedEventArgs(IGamePhase previousPhase, IGamePhase actualPhase)
+        {
+            PreviousPhase = previousPhase;
+            ActualPhase = actualPhase ?? throw new ArgumentNullException(nameof(actualPhase));
+        }
+
+        public IGamePhase PreviousPhase { get; }
+        public IGamePhase ActualPhase { get; }
     }
 }

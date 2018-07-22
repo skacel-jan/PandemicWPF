@@ -32,7 +32,8 @@ namespace Pandemic.GameLogic
             var worldMap = WorldMapFactory.CreateWorldMap(diseases);
             var infectionCards = worldMap.Cities.Values.Select(c => new InfectionCard(c.City));
             CharacterFactory.StartingCity = worldMap.GetCity(City.Atlanta);
-            var characters = CharacterFactory.GetCharacters(new string[] { OperationsExpert.OPERATIONS_EXPERT, Medic.MEDIC, Researcher.RESEARCHER });
+            var characters = CharacterFactory.GetCharacters(new string[] { ContingencyPlanner.CONTINGENCY_PLANNER,
+                OperationsExpert.OPERATIONS_EXPERT, Medic.MEDIC, Researcher.RESEARCHER });
 
             return new Game(worldMap, diseases, new CircularCollection<Character>(characters), new Infection(),
                 EventCardFactory.GetEventCards(), new PlayerDeck(worldMap.Cities.Values.Select(c => c.City)), new Deck<InfectionCard>(infectionCards));

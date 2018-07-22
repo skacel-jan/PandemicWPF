@@ -15,7 +15,7 @@ namespace Pandemic.GameLogic.Actions
 
         public bool IsCardRequired => false;
 
-        public bool IsPossible(MapCity city)
+        public bool IsPossible(Game game, MapCity city)
         {
             return Character.CurrentMapCity.IsCityConnected(city);
         }
@@ -24,6 +24,11 @@ namespace Pandemic.GameLogic.Actions
         {
             game.MoveCharacter(Character, city);
             moveActionCallback();
+        }
+
+        public override string ToString()
+        {
+            return MoveType;
         }
     }
 }

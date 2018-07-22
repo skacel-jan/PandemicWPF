@@ -1,0 +1,33 @@
+﻿<UserControl
+    x:Class="Pandemic.Views.Disease"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Pandemic.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <Viewbox>
+        <Canvas Width="100" Height="100">
+            <Ellipse
+                Width="100"
+                Height="100"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Stroke="White"
+                StrokeThickness="5" />
+            <Path
+                Canvas.Left="15"
+                Canvas.Top="15"
+                Width="70"
+                Height="70"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Data="M363.75,254.75 L431.5,192.25"
+                Stretch="Fill"
+                Stroke="White"
+                StrokeThickness="5" />
+
+        </Canvas>
+    </Viewbox>
+
+</UserControl>

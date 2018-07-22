@@ -15,9 +15,8 @@ namespace Pandemic.GameLogic
     {
         public static readonly int STARTING_CUBES_COUNT = 24;
 
-        private bool _isCured;
-        private bool _isEradicated;
         private int _cubes;
+        private State _status;
 
         public Disease(DiseaseColor color)
         {
@@ -25,30 +24,38 @@ namespace Pandemic.GameLogic
             Cubes = STARTING_CUBES_COUNT;
         }
 
+        public enum State
+        {
+            NotCured = 0,
+            Cured,
+            Eradicated
+        }
+
         public DiseaseColor Color { get; private set; }
-
-        public bool IsCured
-        {
-            get => _isCured;
-            set => Set(ref _isCured, value);
-        }
-
-        public bool IsEradicated
-        {
-            get => _isEradicated;
-            set => Set(ref _isEradicated, value);
-        }
 
         public int Cubes
         {
             get => _cubes;
-            set => Set(ref _cubes, value);
+            set
+            {
+                if (Set(ref _cubes, value))
+                {
+                    if (Status == State.Cured && _cubes == STARTING_CUBES_COUNT)
+                    {
+                        Status = State.Eradicated;
+                    }
+                }
+            }
+
         }
+
+        public State Status { get => _status; set => Set(ref _status, value); }
     }
 
     public class DiseaseFactory
     {
         private IDictionary<DiseaseColor, Disease> _diseases;
+
         public IDictionary<DiseaseColor, Disease> GetDiseases()
         {
             return _diseases ?? (_diseases = new Dictionary<DiseaseColor, Disease>()

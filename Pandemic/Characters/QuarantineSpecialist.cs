@@ -10,7 +10,8 @@ namespace Pandemic.Characters
 {
     public class QuarantineSpecialist : Character
     {
-        public override string Role => "Quarantine specialist";
+        public const string QUARANTINE_SPECIALIST = "Quarantine specialist";
+        public override string Role => QUARANTINE_SPECIALIST;
 
         public override IEnumerable<string> RoleDescription => new List<string>()
         {

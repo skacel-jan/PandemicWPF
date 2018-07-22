@@ -10,13 +10,17 @@ namespace Pandemic.GameLogic
         {
             Game = game ?? throw new ArgumentNullException(nameof(game));
 
-            game.WorldMap.MovedToCity += WorldMap_MovedToCity;            
+            game.WorldMap.CityDoubleClicked += WorldMap_CityDoubleClicked;
         }
 
-        private void WorldMap_MovedToCity(object sender, EventArgs e)
+        private void WorldMap_CityDoubleClicked(object sender, EventArgs e)
         {
-            Game.MoveCharacter(Game.CurrentCharacter, sender as MapCity);
-            FinishAction();
+            var city = sender as MapCity;
+            if (Game.CurrentCharacter.CanMoveToCity(Game, city))
+            {
+                Game.MoveCharacter(Game.CurrentCharacter, city);
+                FinishAction();
+            }            
         }
 
         public Game Game { get; }
@@ -41,6 +45,7 @@ namespace Pandemic.GameLogic
 
         public void Start()
         {
+            Game.Turn++;
             Game.Characters.Current.IsActive = true;
             Game.Actions = Game.Characters.Current.ActionsCount;
             Game.Info = null;
@@ -49,25 +54,25 @@ namespace Pandemic.GameLogic
         private void FinishAction()
         {
             Game.Actions--;
-            Game.Info = null;
 
             if (Game.Actions == 0)
             {
-                Game.WorldMap.MovedToCity -= WorldMap_MovedToCity;
-                Game.GamePhase = new DrawPhase(Game);
+                Game.WorldMap.CityDoubleClicked -= WorldMap_CityDoubleClicked;
+                Game.ChangeGamePhase(new DrawPhase(Game));
             }
         }
 
         private void SelectEventCard(Game game)
         {
-            var action = new Action<Card>(c =>
+            var callback = new Func<Card, bool>(c =>
             {
                 var eventCard = c as EventCard;
 
                 eventCard.PlayEvent(game);
+                return true;
             });
 
-            game.SelectCard(game.EventCards, action, "Select event card");
+            game.SelectCard(game.EventCards, callback, "Select event card");
         }
     }
 }

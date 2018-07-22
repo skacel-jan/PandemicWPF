@@ -45,11 +45,13 @@ namespace Pandemic
             //InfectionDeck.Shuffle();
             //PlayerDeck.Shuffle();
 
-            GamePhase = new InitialPhase(this);
+            Diseases[DiseaseColor.Blue].Status = Disease.State.Cured;
+
+            ChangeGamePhase(new InitialPhase(this));            
             WorldMap.GetCity("Atlanta").ChangeInfection(DiseaseColor.Black, 2);
         }
 
-        public void EndGame()
+        internal void EndGame()
         {
             GameEnd?.Invoke(this, EventArgs.Empty);
         }
@@ -71,6 +73,8 @@ namespace Pandemic
         public event EventHandler<MoveTypeSelectingEventArgs> MoveTypeSelecting;
 
         public event EventHandler<ShareTypeSelectingEventArgs> ShareTypeSelecting;
+
+        public event EventHandler<GamePhaseChangedEventArgs> GamePhaseChanged;
 
         public event EventHandler GameEnd;
 
@@ -95,12 +99,23 @@ namespace Pandemic
         public IGamePhase GamePhase
         {
             get => _gamePhase;
-            set
+            private set
             {
-                _gamePhase?.End();
                 Set(ref _gamePhase, value);
-                _gamePhase?.Start();
             }
+        }
+
+        public bool ChangeGamePhase(IGamePhase gamePhase)
+        {
+            var eventArgs = new GamePhaseChangedEventArgs(GamePhase, gamePhase);
+
+            GamePhase?.End();            
+            GamePhase = gamePhase;
+            GamePhase?.Start();
+
+            GamePhaseChanged?.Invoke(this, eventArgs);
+
+            return true;            
         }
 
         public CircularCollection<Character> Characters { get; }
@@ -140,6 +155,7 @@ namespace Pandemic
         }
 
         public WorldMap WorldMap { get; private set; }
+        public int Turn { get; internal set; }
 
         public void AddCardToPlayerDiscardPile(Card card)
         {
@@ -158,7 +174,14 @@ namespace Pandemic
 
         public void DiscoverCure(DiseaseColor color)
         {
-            Diseases[color].IsCured = true;
+            if (Diseases[color].Cubes == Disease.STARTING_CUBES_COUNT)
+            {
+                Diseases[color].Status = Disease.State.Eradicated;
+            }
+            else
+            {
+                Diseases[color].Status = Disease.State.Cured;
+            }            
         }
 
         public void DoAction(string actionType)
@@ -166,7 +189,7 @@ namespace Pandemic
             GamePhase.Action(actionType);
         }
 
-        public bool CheckCubesPile(DiseaseColor color)
+        public bool IsCubePileEmpty(DiseaseColor color)
         {
             return Diseases[color].Cubes <= 0;
         }
@@ -178,7 +201,7 @@ namespace Pandemic
 
         public bool IncreaseInfection(City city, DiseaseColor color)
         {
-            if (!Diseases[color].IsEradicated)
+            if (Diseases[color].Status < Disease.State.Eradicated)
             {
                 int addedInfections = WorldMap.GetCity(city.Name).ChangeInfection(color, 1);
                 if (addedInfections > 0)
@@ -198,7 +221,7 @@ namespace Pandemic
             character.CurrentMapCity = city;
         }
 
-        public void SelectCard(IEnumerable<Card> cards, Action<Card> action, string text)
+        public void SelectCard(IEnumerable<Card> cards, Func<Card, bool> action, string text)
         {
             CardSelecting?.Invoke(this, new CardsSelectingEventArgs(cards, action, text));
         }

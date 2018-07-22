@@ -15,7 +15,7 @@ namespace Pandemic.GameLogic.Actions
         public bool IsCardRequired => true;
         public string MoveType => ActionTypes.DirectFlight;
 
-        public bool IsPossible(MapCity city)
+        public bool IsPossible(Game game, MapCity city)
         {
             return Character.CityCards.Any(card => card.City == city.City);
         }
@@ -32,9 +32,16 @@ namespace Pandemic.GameLogic.Actions
                         Character.RemoveCard(card);
                         game.AddCardToPlayerDiscardPile(card);
                         moveActionCallback();
+                        return true;
                     }
                 }
+                return false;
             }, "Select card of a destination city");
+        }
+
+        public override string ToString()
+        {
+            return MoveType;
         }
     }
 }

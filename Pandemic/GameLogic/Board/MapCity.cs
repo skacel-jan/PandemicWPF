@@ -37,7 +37,7 @@ namespace Pandemic
         }
 
         public event EventHandler CitySelected;
-        public event EventHandler MovedToCity;
+        public event EventHandler CityDoubleClicked;
 
         public double Area { get; }
 
@@ -161,7 +161,7 @@ namespace Pandemic
 
         internal int TreatDisease(DiseaseColor diseaseColor)
         {
-            if (Diseases[diseaseColor].IsCured)
+            if (Diseases[diseaseColor].Status > Disease.State.NotCured)
             {
                 return RemoveInfection(diseaseColor);
             }
@@ -211,7 +211,7 @@ namespace Pandemic
 
         private protected virtual void OnMovedToCity(EventArgs e)
         {
-            MovedToCity?.Invoke(this, e);
+            CityDoubleClicked?.Invoke(this, e);
         }
 
         private void MapCitySelected()

@@ -49,7 +49,7 @@ namespace Pandemic.GameLogic.Actions
         {
             var selectedCards = new List<CityCard>();
 
-            var action = new Action<Card>((Card card) =>
+            var callback = new Func<Card, bool>((Card card) =>
             {
                 if (card is CityCard cityCard)
                 {
@@ -65,12 +65,15 @@ namespace Pandemic.GameLogic.Actions
                     if (Character.CardsForCure == selectedCards.Count)
                     {
                         DiscoverCure(selectedCards, Character.MostCardsColor);
+                        return true;
                     }
                 }
+
+                return false;
             });
 
             Game.SelectCard(Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
-                action, $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure");
+                callback, $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure");
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Pandemic.GameLogic.Actions
 
         public bool IsCardRequired => true;
 
-        public bool IsPossible(MapCity city)
+        public bool IsPossible(Game game, MapCity city)
         {
             return Character.HasCityCard(Character.CurrentMapCity.City);
         }
@@ -33,9 +33,17 @@ namespace Pandemic.GameLogic.Actions
                         Character.RemoveCard(card);
                         game.AddCardToPlayerDiscardPile(card);
                         moveActionCallback();
+
+                        return true;
                     }
                 }
+                return false;
             }, "Select card of a current city");
+        }
+
+        public override string ToString()
+        {
+            return MoveType;
         }
     }
 }

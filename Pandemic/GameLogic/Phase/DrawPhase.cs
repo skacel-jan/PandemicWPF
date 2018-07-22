@@ -36,7 +36,7 @@ namespace Pandemic.GameLogic
             if (Game.CurrentCharacter.HasMoreCardsThenLimit)
             {
                 var selectedCards = new List<Card>();
-                var action = new Action<Card>((Card card) =>
+                var callback = new Func<Card, bool>((Card card) =>
                 {
                     if (selectedCards.Contains(card))
                     {
@@ -60,9 +60,10 @@ namespace Pandemic.GameLogic
 
                         NextPhase();
                     }
+                    return false;
                 });                
 
-                Game.SelectCard(Game.CurrentCharacter.Cards, action, $"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.{Environment.NewLine}" +
+                Game.SelectCard(Game.CurrentCharacter.Cards, callback, $"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.{Environment.NewLine}" +
                         $"Player has more cards then his hand limit. Card has to be discarded.");
             }
             else
@@ -108,7 +109,7 @@ namespace Pandemic.GameLogic
             InfectionCard card = Game.InfectionDeck.DrawBottom();
             Game.InfectionDiscardPile.Cards.Add(card);
 
-            if (Game.CheckCubesPile(card.City.Color))
+            if (Game.IsCubePileEmpty(card.City.Color))
             {
                 GameOver();
             }
@@ -145,7 +146,7 @@ namespace Pandemic.GameLogic
                     if (CanRaiseInfection(connectedCity, diseaseColor))
                     {
                         bool isOutbreak = Game.IncreaseInfection(connectedCity.City, diseaseColor);
-                        if (Game.CheckCubesPile(city.Color))
+                        if (Game.IsCubePileEmpty(city.Color))
                         {
                             GameOver();
                         }
@@ -162,12 +163,12 @@ namespace Pandemic.GameLogic
 
         private void GameOver()
         {
-            Game.GamePhase = new GameOverPhase(Game);
+            Game.ChangeGamePhase(new GameOverPhase(Game));
         }
 
         private void NextPhase()
         {
-            Game.GamePhase = new InfectionPhase(Game);
+            Game.ChangeGamePhase(new InfectionPhase(Game));
         }
 
         private void ShuffleInfectionDiscardPileBack()

@@ -87,6 +87,11 @@ namespace Pandemic
             return false;
         }
 
+        public bool CanMoveToCity(Game game, MapCity city)
+        {
+            return ((MoveAction)Actions[ActionTypes.Move]).AllMoveActions.OfType<DriveOrFerry>().Single().IsPossible(game, city);
+        }
+
         public int ColorCardsCount(DiseaseColor diseaseColor)
         {
             return CityCards.Count(x => x.City.Color == diseaseColor);

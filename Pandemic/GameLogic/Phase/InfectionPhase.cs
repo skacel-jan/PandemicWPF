@@ -18,7 +18,7 @@ namespace Pandemic.GameLogic
             if (Game.Infection.Actual == 0)
             {
                 Game.Info = null;
-                Game.GamePhase = new ActionPhase(Game);
+                Game.ChangeGamePhase(new ActionPhase(Game));
                 return;
             }
 
@@ -27,7 +27,7 @@ namespace Pandemic.GameLogic
             InfectionCard card = Game.InfectionDeck.DrawTop();
             Game.InfectionDiscardPile.Cards.Add(card);
 
-            if (Game.CheckCubesPile(card.City.Color))
+            if (Game.IsCubePileEmpty(card.City.Color))
             {
                 GameOver();
             }
@@ -94,7 +94,7 @@ namespace Pandemic.GameLogic
                     if (CanRaiseInfection(connectedCity, diseaseColor))
                     {
                         bool isOutbreak = Game.IncreaseInfection(connectedCity.City, diseaseColor);
-                        if (Game.CheckCubesPile(city.Color))
+                        if (Game.IsCubePileEmpty(city.Color))
                         {
                             GameOver();
                         }
@@ -113,7 +113,7 @@ namespace Pandemic.GameLogic
         {
             if (!(Game.GamePhase is GameOverPhase))
             {
-                Game.GamePhase = new GameOverPhase(Game);
+                Game.ChangeGamePhase(new GameOverPhase(Game));
             }            
         }
     }

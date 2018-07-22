@@ -33,7 +33,7 @@ namespace Pandemic.GameLogic
             InitialDraw();
             AddEpidemicCards(5);
 
-            Game.GamePhase = new ActionPhase(Game);
+            Game.ChangeGamePhase(new ActionPhase(Game));
         }
 
         private void AddEpidemicCards(int epidemicCardsCount)

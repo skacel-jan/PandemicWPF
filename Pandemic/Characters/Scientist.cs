@@ -6,10 +6,12 @@ namespace Pandemic.Characters
 {
     public class Scientist : Character
     {
+        public const string SCIENTIST = "Scientist";
+
         public override int CardsForCure { get => 4; }
 
         public override Color Color => Colors.White;
-        public override string Role => "Scientist";
+        public override string Role => SCIENTIST;
 
         private IEnumerable<string> _roleDescription = new List<string>()
         {

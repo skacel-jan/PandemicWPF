@@ -12,8 +12,6 @@
     xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
     x:Name="Board"
     d:DataContext="{Binding Path=Game, Source={StaticResource Locator}}"
-    d:DesignHeight="800"
-    d:DesignWidth="1400"
     FontFamily="Calibri"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -68,13 +66,13 @@
         </DataTemplate>
 
         <Style x:Key="PileBorder" TargetType="{x:Type Border}">
-            <Setter Property="BorderThickness" Value="3" />
+            <Setter Property="BorderThickness" Value="2.5" />
             <Setter Property="Margin" Value="1" />
         </Style>
 
         <Style x:Key="PileLabel" TargetType="{x:Type Label}">
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="17" />
+            <Setter Property="FontSize" Value="15" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -87,7 +85,6 @@
             Grid.RowSpan="3"
             Grid.ColumnSpan="3"
             Background="Black">
-
             <Label
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Bottom"
@@ -96,27 +93,10 @@
                 DockPanel.Dock="Bottom"
                 FontSize="14"
                 Foreground="White" />
-            <Grid
-                x:Name="PlayerGrid"
-                Width="1400"
-                Panel.ZIndex="1"
-                DockPanel.Dock="Bottom">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="7*" />
-                    <ColumnDefinition Width="15*" />
-                    <ColumnDefinition Width="7*" />
-                </Grid.ColumnDefinitions>
-                <Grid
-                    x:Name="ActionsGrid"
-                    Grid.Column="1"
-                    HorizontalAlignment="Center">
+            <Grid x:Name="PlayerGrid" DockPanel.Dock="Bottom">
+                <Grid x:Name="ActionsGrid" HorizontalAlignment="Center">
                     <Grid.ColumnDefinitions>
-                        <!--<ColumnDefinition SharedSizeGroup="A" />
-                        <ColumnDefinition SharedSizeGroup="A" />
-                        <ColumnDefinition SharedSizeGroup="A" />
-                        <ColumnDefinition SharedSizeGroup="A" />-->
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <ItemsControl
@@ -131,6 +111,7 @@
                                     </Grid.ColumnDefinitions>
                                     <Button
                                         Grid.Column="0"
+                                        Padding="10"
                                         Command="{Binding Item1}"
                                         CommandParameter="{Binding Item2.Name}"
                                         Content="{Binding Item2.Name}"
@@ -172,181 +153,24 @@
 
                     <Button
                         Grid.Column="1"
+                        Width="100"
                         Background="Black"
                         Command="{Binding CancelCommand}"
                         Content="Cancel"
                         Foreground="Red"
                         IsCancel="True" />
-                    <Button
-                        Grid.Column="2"
-                        Background="Black"
-                        Command="{Binding EventsCommand}"
-                        Content="Events"
-                        Foreground="Yellow" />
                 </Grid>
-                <Grid x:Name="LeftSidePlayerGrid" Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="2">
-                        <Label
-                            x:Name="InfectionRateLabel"
-                            Content="{Binding Game.Infection.Rate, FallbackValue=2}"
-                            ContentStringFormat="Infection rate: {0}"
-                            Style="{StaticResource PileLabel}" />
-                        <Label
-                            x:Name="OutbreaksLabel"
-                            Content="{Binding Game.Outbreaks, FallbackValue=0}"
-                            ContentStringFormat="Outbreaks: {0}"
-                            Style="{StaticResource PileLabel}" />
-
-                    </StackPanel>
-
-                    <Grid x:Name="CubePilesGrid" Grid.Column="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="14*" />
-                            <RowDefinition Height="17*" />
-                        </Grid.RowDefinitions>
-                        <Label
-                            Grid.ColumnSpan="4"
-                            Content="Cube piles"
-                            Style="{StaticResource PileLabel}" />
-                        <Border
-                            Grid.Row="1"
-                            BorderBrush="DarkGray"
-                            Style="{StaticResource PileBorder}">
-                            <Label Content="{Binding Path=Game.Diseases[(logic:DiseaseColor)Black].Cubes}" Style="{StaticResource PileLabel}" />
-                        </Border>
-                        <Border
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            BorderBrush="Blue"
-                            Style="{StaticResource PileBorder}">
-                            <Label Content="{Binding Path=Game.Diseases[(logic:DiseaseColor)Blue].Cubes}" Style="{StaticResource PileLabel}" />
-                        </Border>
-                        <Border
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            BorderBrush="Red"
-                            Style="{StaticResource PileBorder}">
-                            <Label Content="{Binding Path=Game.Diseases[(logic:DiseaseColor)Red].Cubes}" Style="{StaticResource PileLabel}" />
-                        </Border>
-                        <Border
-                            Grid.Row="1"
-                            Grid.Column="3"
-                            BorderBrush="Yellow"
-                            Style="{StaticResource PileBorder}">
-                            <Label Content="{Binding Path=Game.Diseases[(logic:DiseaseColor)Yellow].Cubes}" Style="{StaticResource PileLabel}" />
-                        </Border>
-                    </Grid>
-                    <Grid x:Name="CureMarkersGrid" Grid.Column="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="14*" />
-                            <RowDefinition Height="17*" />
-                        </Grid.RowDefinitions>
-                        <Label
-                            Grid.ColumnSpan="4"
-                            Content="Cure markers"
-                            Style="{StaticResource PileLabel}" />
-                        <Border Grid.Row="1" BorderBrush="DarkGray">
-                            <Border.Style>
-                                <Style BasedOn="{StaticResource PileBorder}" TargetType="{x:Type Border}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=Game.Diseases[(logic:DiseaseColor)Black].IsCured}" Value="True">
-                                            <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                        </Border>
-                        <Border
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            BorderBrush="Blue">
-                            <Border.Style>
-                                <Style BasedOn="{StaticResource PileBorder}" TargetType="{x:Type Border}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=Game.Diseases[(logic:DiseaseColor)Blue].IsCured}" Value="True">
-                                            <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                        </Border>
-                        <Border
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            BorderBrush="Red">
-                            <Border.Style>
-                                <Style BasedOn="{StaticResource PileBorder}" TargetType="{x:Type Border}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=Game.Diseases[(logic:DiseaseColor)Red].IsCured}" Value="True">
-                                            <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                        </Border>
-                        <Border
-                            Grid.Row="1"
-                            Grid.Column="3"
-                            BorderBrush="Yellow">
-                            <Border.Style>
-                                <Style BasedOn="{StaticResource PileBorder}" TargetType="{x:Type Border}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=Game.Diseases[(logic:DiseaseColor)Yellow].IsCured}" Value="True">
-                                            <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                        </Border>
-                    </Grid>
-                </Grid>
-                <Grid Grid.Column="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <view:PlayingCard
-                        x:Name="PlayerDiscardPile"
-                        Grid.Column="0"
-                        Height="50"
-                        CardName="{Binding}"
-                        Command="{Binding DataContext.PlayerDiscardPileCommand, ElementName=Board}"
-                        DataContext="{Binding Game.PlayerDiscardPile.TopCard}" />
-                    <view:PlayingCard
-                        x:Name="InfectionDisardPile"
-                        Grid.Column="1"
-                        Height="50"
-                        CardName="{Binding}"
-                        Command="{Binding DataContext.InfectionDiscardPileCommand, ElementName=Board}"
-                        DataContext="{Binding Game.InfectionDiscardPile.TopCard}">
-                        <view:PlayingCard.Background>
-                            <RadialGradientBrush>
-                                <GradientStop Color="Black" />
-                                <GradientStop Offset="1" Color="White" />
-                            </RadialGradientBrush>
-                        </view:PlayingCard.Background>
-                    </view:PlayingCard>
-                </Grid>
+                <Button
+                    Padding="10"
+                    HorizontalAlignment="Right"
+                    Background="Black"
+                    Command="{Binding EventsCommand}"
+                    Content="Events"
+                    Foreground="Yellow"
+                    Style="{StaticResource ActionButtonStyle}" />
             </Grid>
             <Grid
-                x:Name="grid"
+                x:Name="BoardGrid"
                 HorizontalAlignment="Center"
                 Panel.ZIndex="10">
 
@@ -365,11 +189,12 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="13*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <ScrollViewer
-                    Grid.RowSpan="2"
+                    Grid.RowSpan="3"
                     Grid.ColumnSpan="2"
                     Width="1400"
                     root:TouchScrolling.IsEnabled="True"
@@ -380,8 +205,114 @@
                         <view:WorldMap Width="1400" Margin="0,-80,0,0" />
                     </StackPanel>
                 </ScrollViewer>
+                <DockPanel
+                    Grid.ColumnSpan="2"
+                    Margin="200,0"
+                    VerticalAlignment="Top"
+                    Background="#CC000000">
+                    <UniformGrid
+                        x:Name="CubePilesGrid"
+                        Margin="10,5"
+                        Rows="2">
+                        <Label Content="Cube piles" Style="{StaticResource PileLabel}" />
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding Game.Diseases.Values}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border
+                                        Grid.Row="1"
+                                        Width="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}"
+                                        BorderBrush="{Binding Color, Converter={StaticResource DiseaseToColorConverter}}"
+                                        Style="{StaticResource PileBorder}">
+
+                                        <Label Content="{Binding Cubes}" Style="{StaticResource PileLabel}" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel IsItemsHost="True" Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </UniformGrid>
+                    <UniformGrid
+                        x:Name="CureMarkersGrid"
+                        Margin="10,5"
+                        Rows="2">
+                        <Label Content="Cure markers" Style="{StaticResource PileLabel}" />
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding Game.Diseases.Values}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}" BorderBrush="{Binding Color, Converter={StaticResource DiseaseToColorConverter}}">
+                                        <Border.Style>
+                                            <Style BasedOn="{StaticResource PileBorder}" TargetType="{x:Type Border}">
+                                                <Setter Property="Background" Value="{Binding BorderBrush, RelativeSource={RelativeSource Self}}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Status}" Value="NotCured">
+                                                        <Setter Property="Background" Value="{x:Null}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <view:Disease>
+                                            <view:Disease.Style>
+                                                <Style TargetType="{x:Type view:Disease}">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Eradicated">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </view:Disease.Style>
+                                        </view:Disease>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel IsItemsHost="True" Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </UniformGrid>
+                    <StackPanel>
+                        <Label
+                            x:Name="InfectionRateLabel"
+                            Content="{Binding Game.Infection.Rate, FallbackValue=2}"
+                            ContentStringFormat="Infection rate: {0}"
+                            Style="{StaticResource PileLabel}" />
+                        <Label
+                            x:Name="OutbreaksLabel"
+                            Content="{Binding Game.Outbreaks, FallbackValue=0}"
+                            ContentStringFormat="Outbreaks: {0}"
+                            Style="{StaticResource PileLabel}" />
+
+                    </StackPanel>
+                    <view:PlayingCard
+                        x:Name="InfectionDisardPile"
+                        HorizontalAlignment="Right"
+                        CardName="{Binding}"
+                        Command="{Binding DataContext.InfectionDiscardPileCommand, ElementName=Board}"
+                        DataContext="{Binding Game.InfectionDiscardPile.TopCard}"
+                        DockPanel.Dock="Right">
+                        <view:PlayingCard.Background>
+                            <RadialGradientBrush>
+                                <GradientStop Color="Black" />
+                                <GradientStop Offset="1" Color="White" />
+                            </RadialGradientBrush>
+                        </view:PlayingCard.Background>
+                    </view:PlayingCard>
+                    <view:PlayingCard
+                        x:Name="PlayerDiscardPile"
+                        HorizontalAlignment="Right"
+                        CardName="{Binding}"
+                        Command="{Binding DataContext.PlayerDiscardPileCommand, ElementName=Board}"
+                        DataContext="{Binding Game.PlayerDiscardPile.TopCard}"
+                        DockPanel.Dock="Right" />
+                </DockPanel>
                 <ItemsControl
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.ColumnSpan="2"
                     HorizontalAlignment="Center"
                     ItemsSource="{Binding Source={StaticResource playerCards}}"
@@ -393,40 +324,62 @@
                     </ItemsControl.ItemTemplate>
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal" />
+                            <StackPanel IsItemsHost="True" Orientation="Horizontal" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
 
-                <Expander
+                <StackPanel
+                    Grid.RowSpan="2"
                     Grid.Column="1"
-                    HorizontalAlignment="Right"
-                    ExpandDirection="Right"
-                    IsExpanded="True">
-                    <ItemsControl MaxHeight="{Binding ActualHeight, ElementName=grid, Mode=OneWay}" ItemsSource="{Binding Game.Characters}">
+                    HorizontalAlignment="Right">
+                    <ItemsControl
+                        MaxHeight="{Binding ActualHeight, ElementName=BoardGrid, Mode=OneWay}"
+                        VerticalAlignment="Top"
+                        Background="#CC000000"
+                        ItemsSource="{Binding Game.Characters}">
+                        <ItemsControl.Resources>
+                            <DataTemplate x:Key="CityCardTemplate">
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle
+                                        Width="13"
+                                        Margin="6"
+                                        Fill="{Binding City.Color, Converter={StaticResource DiseaseToColorConverter}}" />
+                                    <Label Content="{Binding Name}" Foreground="White" />
+                                </StackPanel>
+                            </DataTemplate>
+
+                            <DataTemplate x:Key="EventCardTemplate">
+                                <StackPanel Orientation="Horizontal">
+                                    <Rectangle
+                                        Width="13"
+                                        Margin="6"
+                                        Fill="Orange" />
+                                    <Label Content="{Binding Name}" Foreground="White" />
+                                </StackPanel>
+                            </DataTemplate>
+
+                            <!--  DataTemplate Selector  -->
+                            <view:CardTemplateSelector
+                                x:Key="templateSelector"
+                                CityCardDataTemplate="{StaticResource CityCardTemplate}"
+                                EventCardDataTemplate="{StaticResource EventCardTemplate}" />
+                        </ItemsControl.Resources>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border BorderBrush="Beige">
-                                    <StackPanel>
-                                        <Label
-                                            Background="Black"
-                                            BorderBrush="{Binding Color, Converter={StaticResource ColorToSolidColorBrushConverter}}"
-                                            BorderThickness="2"
-                                            Content="{Binding Role}"
-                                            Foreground="White" />
-                                        <ItemsControl ItemsSource="{Binding Cards}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Label Background="#FFB2B2B2" Content="{Binding Name}" />
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </Border>
+                                <StackPanel>
+                                    <Label
+                                        BorderBrush="{Binding Color, Converter={StaticResource ColorToSolidColorBrushConverter}}"
+                                        BorderThickness="4"
+                                        Content="{Binding Role}"
+                                        Foreground="White" />
+                                    <ItemsControl ItemTemplateSelector="{StaticResource templateSelector}" ItemsSource="{Binding Cards}" />
+
+                                </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </Expander>
+                </StackPanel>
             </Grid>
 
         </DockPanel>
@@ -446,22 +399,20 @@
                     </ControlTemplate>
                 </Thumb.Template>
             </Thumb>
-            <Thumb
-                Margin="10,550,10,10"
+            <ContentControl
+                x:Name="ActionOverlay"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                DragDelta="Thumb_DragDelta"
                 Visibility="{Binding IsActionVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Thumb.Template>
+                <ContentControl.Template>
                     <ControlTemplate>
                         <ContentControl
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
                             Content="{Binding ActionViewModel}" />
                     </ControlTemplate>
-                </Thumb.Template>
-            </Thumb>
-
+                </ContentControl.Template>
+            </ContentControl>
         </Grid>
     </Grid>
 </UserControl>
