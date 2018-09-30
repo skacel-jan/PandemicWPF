@@ -11,6 +11,7 @@
     Height="1080"
     TextOptions.TextFormattingMode="Display"
     WindowState="Maximized"
+    WindowStyle="None"
     mc:Ignorable="d">
     <Window.DataContext>
         <viewModels:ViewModelLocator />
@@ -27,9 +28,8 @@
         <DataTemplate DataType="{x:Type viewModels:EventsViewModel}">
             <views:EventCardsView />
         </DataTemplate>
-
     </Window.Resources>
-    <Viewbox Stretch="Fill">
-        <ContentControl Content="{Binding CurrentViewModel}" />
-    </Viewbox>
+    <!--<Viewbox Stretch="Fill">-->
+    <ContentControl Content="{Binding CurrentViewModel}" />
+    <!--</Viewbox>-->
 </Window>

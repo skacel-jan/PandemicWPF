@@ -1,5 +1,6 @@
 ﻿using Pandemic.Cards;
 using Pandemic.Decks;
+using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Pandemic.GameLogic
 
         public Game Game { get; }
 
-        public void Action(string actionType)
+        public void Action(IGameAction action)
         {
             if (!TryDrawPlayerCard(Game.CurrentCharacter, out Card firstCard))
             {
@@ -34,46 +35,39 @@ namespace Pandemic.GameLogic
             _drawnCards.Add(secondCard);
 
             if (Game.CurrentCharacter.HasMoreCardsThenLimit)
-            {
-                var selectedCards = new List<Card>();
-                var callback = new Func<Card, bool>((Card card) =>
-                {
-                    if (selectedCards.Contains(card))
-                    {
-                        selectedCards.Remove(card);
-                    }
-                    else
-                    {
-                        selectedCards.Add(card);
-                    }
-
-                    if (Game.CurrentCharacter.CardsLimit >= (Game.CurrentCharacter.Cards.Count - selectedCards.Count))
-                    {
-                        foreach (var playerCard in selectedCards)
-                        {
-                            Game.CurrentCharacter.RemoveCard(playerCard);
-                            Game.AddCardToPlayerDiscardPile(playerCard);
-                        }
-
-                        Game.Info = new GameInfo($"Cards discarded: {string.Join<string>(",", selectedCards.Select(c => c.Name))}.", "Infection phase",
-                        () => Game.DoAction("Next"));
-
-                        NextPhase();
-                    }
-                    return false;
-                });                
-
-                Game.SelectCard(Game.CurrentCharacter.Cards, callback, $"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.{Environment.NewLine}" +
+            {                
+                Game.SetInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.{Environment.NewLine}" +
                         $"Player has more cards then his hand limit. Card has to be discarded.");
+
+                var selectAction = new MultiSelectAction<IEnumerable<Card>>(SetCard, Game.CurrentCharacter.Cards, string.Empty, ValidateCards);
+                Game.SelectionService.Select(selectAction);
             }
             else
             {
-                Game.Info = new GameInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.", "Infection phase",
-                    () => Game.DoAction("Next"));
-
+                Game.SetInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.", "Infection phase",
+                    () => Game.DoAction(null));
 
                 NextPhase();
             }
+        }
+
+        private bool ValidateCards(IEnumerable<Card> cards)
+        {
+            return Game.CurrentCharacter.CardsLimit >= (Game.CurrentCharacter.Cards.Count - cards.Count());
+        }
+
+        private void SetCard(IEnumerable<Card> cards)
+        {
+            foreach (var playerCard in cards)
+            {
+                Game.CurrentCharacter.RemoveCard(playerCard);
+                Game.AddCardToPlayerDiscardPile(playerCard);
+            }
+
+            Game.SetInfo($"Cards discarded: {string.Join<string>(",", cards.Select(c => c.Name))}.", "Infection phase",
+                () => Game.DoAction(null));
+
+            NextPhase();
         }
 
         public void End()
@@ -87,7 +81,7 @@ namespace Pandemic.GameLogic
         protected void OnOutbreak(OutbreakEventArgs e)
         {
             Game.Outbreaks++;
-            Game.Info = new GameInfo($"Outbreak : {e.City}", string.Empty, null);
+            Game.SetInfo($"Outbreak : {e.City}", string.Empty, null);
         }
 
         private bool CanRaiseInfection(MapCity city, DiseaseColor color)
@@ -106,8 +100,8 @@ namespace Pandemic.GameLogic
         {
             Game.Infection.IncreasePosition();
 
-            InfectionCard card = Game.InfectionDeck.DrawBottom();
-            Game.InfectionDiscardPile.Cards.Add(card);
+            InfectionCard card = Game.Infection.Deck.Draw(DeckSide.Top);
+            Game.Infection.DiscardPile.AddCard(card);
 
             if (Game.IsCubePileEmpty(card.City.Color))
             {
@@ -173,17 +167,13 @@ namespace Pandemic.GameLogic
 
         private void ShuffleInfectionDiscardPileBack()
         {
-            var newDeck = new Deck<InfectionCard>(Game.InfectionDiscardPile.Cards);
-            newDeck.Shuffle();
-            newDeck.AddCards(Game.InfectionDeck.Cards);
-            Game.InfectionDeck = newDeck;
-            Game.InfectionDiscardPile.Cards.Clear();
+            Game.Infection.ShuffleDiscardPileToDeck();
         }
 
         private bool TryDrawPlayerCard(Character character, out Card card)
         {
             bool isGameOver = false;
-            card = Game.PlayerDeck.DrawTop();
+            card = Game.PlayerDeck.Draw(DeckSide.Top);
 
             if (card == null)
             {

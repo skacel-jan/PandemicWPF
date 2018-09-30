@@ -46,7 +46,6 @@ namespace Pandemic.GameLogic
                     }
                 }
             }
-
         }
 
         public State Status { get => _status; set => Set(ref _status, value); }

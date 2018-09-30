@@ -52,23 +52,23 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommonServiceLocator, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommonServiceLocator.2.0.3\lib\net47\CommonServiceLocator.dll</HintPath>
+    <Reference Include="CommonServiceLocator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.2.0.4\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.4.1.0, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.4.1\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.4.1.0, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.4.1\lib\net45\GalaSoft.MvvmLight.Extras.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Extras.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.4.1.0, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.4.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.4.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -89,14 +89,20 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Cards\EventCardFactory.cs" />
-    <Compile Include="GameLogic\Actions\AirliftAction.cs" />
+    <Compile Include="Decks\DiscardPile.cs" />
+    <Compile Include="GameLogic\Actions\Events\AirliftAction.cs" />
     <Compile Include="GameLogic\Actions\ContingencyPlannerAction.cs" />
-    <Compile Include="GameLogic\Actions\GovernmentGrantAction.cs" />
-    <Compile Include="GameLogic\Actions\OneQuietNightAction.cs" />
-    <Compile Include="GameLogic\Actions\ResilientPopulationAction.cs" />
+    <Compile Include="GameLogic\Actions\Events\GovernmentGrantAction.cs" />
+    <Compile Include="GameLogic\Actions\IBuild.cs" />
+    <Compile Include="GameLogic\Actions\Interfaces\IGameAction.cs" />
+    <Compile Include="GameLogic\Actions\Interfaces\ISelectAction.cs" />
+    <Compile Include="GameLogic\Actions\Events\OneQuietNightAction.cs" />
+    <Compile Include="GameLogic\Actions\Events\ResilientPopulationAction.cs" />
     <Compile Include="GameLogic\Actions\EventAction.cs" />
     <Compile Include="GameLogic\Actions\DiscoverCureAction.cs" />
+    <Compile Include="GameLogic\Actions\SelectAction.cs" />
     <Compile Include="GameLogic\GameFactory.cs" />
+    <Compile Include="GameLogic\GameSettings.cs" />
     <Compile Include="GameLogic\Infection.cs" />
     <Compile Include="Characters\CharacterFactory.cs" />
     <Compile Include="Characters\Researcher.cs" />
@@ -111,6 +117,7 @@
     <Compile Include="GameLogic\Phase\GameOverState.cs" />
     <Compile Include="GameLogic\Phase\IGamePhase.cs" />
     <Compile Include="GameLogic\Phase\InfectionPhase.cs" />
+    <Compile Include="GameLogic\Services\SelectionService.cs" />
     <Compile Include="Helpers\CircularCollection.cs" />
     <Compile Include="Decks\IDeck.cs" />
     <Compile Include="GameLogic\ActionTypes.cs" />
@@ -135,14 +142,17 @@
     <Compile Include="Helpers\KeyExtractorDictionary.cs" />
     <Compile Include="Helpers\MessageTokens.cs" />
     <Compile Include="Helpers\MultiClickBehavior.cs" />
+    <Compile Include="Helpers\SelectedItemWrapper.cs" />
     <Compile Include="Helpers\TouchScrolling.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\CharacterSelectionViewModel.cs" />
     <Compile Include="GameLogic\Board\MockWorldMapFactory.cs" />
+    <Compile Include="ViewModels\Dialogs\DialogService.cs" />
     <Compile Include="ViewModels\EventsViewModel.cs" />
-    <Compile Include="ViewModels\NewGameViewModel.cs" />
+    <Compile Include="ViewModels\GameMenuViewModel.cs" />
+    <Compile Include="ViewModels\GameSetingsViewModel.cs" />
     <Compile Include="ViewModels\SelectionViewModel.cs" />
     <Compile Include="ViewModels\ShareTypeSelectionViewModel.cs" />
     <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
@@ -178,11 +188,20 @@
     </Compile>
     <Compile Include="Views\Card\PlayingCard.cs" />
     <Compile Include="Views\CustomPanels\OverlapCanvas.cs" />
+    <Compile Include="Views\Dialogs\WindowDialog.xaml.cs">
+      <DependentUpon>WindowDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Disease.xaml.cs">
       <DependentUpon>Disease.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EventCardsView.xaml.cs">
       <DependentUpon>EventCardsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GameSetingsView.xaml.cs">
+      <DependentUpon>GameSetingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GameMenuView.xaml.cs">
+      <DependentUpon>GameMenuView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShareTypeSelection.xaml.cs">
       <DependentUpon>ShareTypeSelection.xaml</DependentUpon>
@@ -247,11 +266,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Dialogs\WindowDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Disease.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EventCardsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\GameSetingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GameMenuView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

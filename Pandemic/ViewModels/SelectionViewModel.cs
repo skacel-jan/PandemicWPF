@@ -2,9 +2,6 @@
 using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Pandemic.ViewModels
@@ -13,7 +10,7 @@ namespace Pandemic.ViewModels
     {
         public IEnumerable<T> Items { get; }
         public Action<T> CallbackAction { get; }
-        public ICommand SelectedCommand { get;  }
+        public ICommand SelectedCommand { get; protected set; }
 
         public SelectionViewModel(IEnumerable<T> items, Action<T> callbackAction)
         {

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,7 +15,6 @@ namespace Pandemic.Views.CustomPanels
           DependencyProperty.Register("Spacing", typeof(double),
           typeof(OverlapCanvas), new FrameworkPropertyMetadata(10d,
           FrameworkPropertyMetadataOptions.AffectsArrange));
-
 
         public static readonly DependencyProperty ReverseZIndexProperty =
           DependencyProperty.Register("ReverseZIdnex", typeof(bool),
@@ -57,7 +52,6 @@ namespace Pandemic.Views.CustomPanels
             // The SimpleCanvas itself needs no space
             return new Size(0, 0);
         }
-
 
         protected override Size ArrangeOverride(Size finalSize)
         {

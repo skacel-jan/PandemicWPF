@@ -53,6 +53,5 @@
             Command="{Binding ConfirmSelectedEventCommand}"
             Content="Play event"
             Style="{StaticResource ActionButtonStyle}" />
-
     </StackPanel>
 </UserControl>

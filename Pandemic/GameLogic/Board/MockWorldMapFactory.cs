@@ -7,7 +7,7 @@ namespace Pandemic.GameLogic
     {
         public WorldMap CreateWorldMap(IDictionary<DiseaseColor, Disease> diseases)
         {
-            return new WorldMap(GetCities().Select(c => new MapCity(c, diseases)).ToDictionary((k) => k.City.Name));
+            return new WorldMap(GetCities().Select(c => new MapCity(c, diseases)));
         }
 
         private IEnumerable<City> GetCities()

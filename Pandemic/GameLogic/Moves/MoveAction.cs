@@ -1,5 +1,4 @@
 ﻿using Pandemic.Characters;
-using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,13 +37,19 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void Execute()
         {
-            var possibleDestinationCities = GetPossibleDestinationCities(Game.WorldMap.Cities.Values);
-            Game.SelectCity(possibleDestinationCities.Where(c => !c.Equals(Character.CurrentMapCity)), SelectCityCallBack, "Select destination city");
+            var possibleDestinationCities = GetPossibleDestinationCities(Game.WorldMap.Cities);
+
+            Game.SelectionService.Select(new SelectAction<MapCity>(SetCity, GetPossibleDestinationCities(Game.WorldMap.Cities), "Select destination city"));
+
+            void SetCity(MapCity mapCity)
+            {
+                MoveToCity(mapCity);
+            }
         }
 
         protected override void FinishAction()
         {
-            foreach (var city in Game.WorldMap.Cities.Values)
+            foreach (var city in Game.WorldMap.Cities)
             {
                 city.IsSelectable = false;
             }
@@ -63,7 +68,7 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
-        private void SelectCityCallBack(MapCity city)
+        private void MoveToCity(MapCity city)
         {
             var possibleMove = MoveActions.FirstOrDefault(x => x.IsPossible(Game, city));
             if (possibleMove != null)
@@ -85,7 +90,7 @@ namespace Pandemic.GameLogic.Actions
             }
             else
             {
-                possibleCardMoves.First().Move(Game, city, FinishAction);
+                possibleCardMoves.FirstOrDefault()?.Move(Game, city, FinishAction);
             }
         }
     }

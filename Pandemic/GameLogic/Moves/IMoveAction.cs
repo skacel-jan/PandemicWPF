@@ -1,6 +1,4 @@
-﻿using Pandemic.Cards;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 namespace Pandemic.GameLogic.Actions
 {

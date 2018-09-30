@@ -1,9 +1,4 @@
 ﻿using Pandemic.GameLogic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -19,16 +14,19 @@ namespace Pandemic.ViewModels
             {
                 case DiseaseColor.Black:
                     return element.FindResource("BlackDisease") as DataTemplate;
+
                 case DiseaseColor.Blue:
                     return element.FindResource("BlueDisease") as DataTemplate;
+
                 case DiseaseColor.Red:
                     return element.FindResource("RedDisease") as DataTemplate;
+
                 case DiseaseColor.Yellow:
                     return element.FindResource("YellowDisease") as DataTemplate;
+
                 default:
                     return null;
             }
         }
-
     }
 }

@@ -14,12 +14,12 @@ namespace Pandemic
         private List<City> _cities;
 
         public XmlWorldMapFactory()
-        { 
+        {
             ParseXml(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Configuration\CitiesConfiguration.xml"));
         }
 
         private void ParseXml(string path)
-        {           
+        {
             XmlDocument doc = new XmlDocument();
             doc.Load(path);
 
@@ -61,7 +61,7 @@ namespace Pandemic
                 }
             }
 
-            return new WorldMap(mapCities);
+            return new WorldMap(mapCities.Values);
         }
     }
 }

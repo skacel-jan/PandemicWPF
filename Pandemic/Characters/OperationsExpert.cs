@@ -1,9 +1,4 @@
-﻿using Pandemic.GameLogic.Actions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace Pandemic.Characters
@@ -22,11 +17,5 @@ namespace Pandemic.Characters
         public override IEnumerable<string> RoleDescription => _roleDescription;
 
         public override Color Color => Colors.Green;
-
-        public OperationsExpert() : base()
-        {
-            Actions[ActionTypes.Move] = new OperationsExpertMoveAction(this);
-            Actions[ActionTypes.Build] = new OperationsExpertBuildAction(this);
-        }
     }
 }

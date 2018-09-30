@@ -1,6 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
 using Pandemic.GameLogic;
 using System;
 using System.Collections.Generic;
@@ -37,6 +36,7 @@ namespace Pandemic
         }
 
         public event EventHandler CitySelected;
+
         public event EventHandler CityDoubleClicked;
 
         public double Area { get; }

@@ -19,7 +19,6 @@
                 <componentmodel:SortDescription Direction="Ascending" />
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
-
     </UserControl.Resources>
     <Grid>
         <ItemsControl ItemsSource="{Binding Source={StaticResource playerCards}}">
@@ -27,7 +26,7 @@
                 <DataTemplate>
                     <view:PlayingCard
                         CardName="{Binding}"
-                        Command="{Binding DataContext.SelectedCommand, Mode=OneWay, ElementName=root}"
+                        Command="{Binding DataContext.SelectedCommand, ElementName=root}"
                         CommandParameter="{Binding}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

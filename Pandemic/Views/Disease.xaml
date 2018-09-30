@@ -26,8 +26,6 @@
                 Stretch="Fill"
                 Stroke="White"
                 StrokeThickness="5" />
-
         </Canvas>
     </Viewbox>
-
 </UserControl>

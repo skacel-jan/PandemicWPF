@@ -238,8 +238,6 @@
             <Button Style="{StaticResource RedDiseaseButtonStyle}" />
         </ControlTemplate>
 
-
-
         <Style x:Key="CityStyle" TargetType="{x:Type Button}">
             <Setter Property="Template" Value="{StaticResource RedTemplate}" />
             <Style.Triggers>
@@ -266,7 +264,6 @@
                 <scm:SortDescription Direction="Descending" PropertyName="IsActive" />
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
-
     </UserControl.Resources>
 
     <Border BorderThickness="1">

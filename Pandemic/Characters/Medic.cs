@@ -1,5 +1,4 @@
 ﻿using Pandemic.GameLogic;
-using Pandemic.GameLogic.Actions;
 using System.Collections.Generic;
 using System.Windows.Media;
 
@@ -14,11 +13,6 @@ namespace Pandemic.Characters
             "Remove all cubes of one color when doing Treat Disease",
             "Automatically remove cubes of cured diseases from a city you are in (and prevent them from being placed there)."
         };
-
-        public Medic()
-        {
-            Actions[ActionTypes.Move] = new MedicMoveAction(this);
-        }
 
         public override Color Color => Colors.Orange;
         public override string Role => MEDIC;

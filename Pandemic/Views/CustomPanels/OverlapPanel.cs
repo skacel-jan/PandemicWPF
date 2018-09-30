@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -10,7 +6,7 @@ namespace Pandemic.Views.CustomPanels
 {
     public class OverlapPanel : Panel
     {
-        double _totalChildrenSize = 0; /**********/
+        private double _totalChildrenSize = 0; /**********/
 
         // The direction of stacking
         public static readonly DependencyProperty OrientationProperty =
@@ -37,7 +33,7 @@ namespace Pandemic.Views.CustomPanels
                     child.Measure(availableSize);
                     /************/
 
-                    // Our desired size is the sum of child sizes in the direction of 
+                    // Our desired size is the sum of child sizes in the direction of
                     // stacking, and the size of the largest child in the other direction
                     if (Orientation == Orientation.Vertical)
                     {

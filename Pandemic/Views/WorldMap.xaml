@@ -59,7 +59,6 @@
             <!--<Setter Property="Visibility" Value="Collapsed" />-->
             <Setter Property="CacheMode" Value="{StaticResource cacheMode}" />
         </Style>
-
     </UserControl.Resources>
     <Grid>
         <local:WorldMapBackground Grid.Row="0" />
@@ -394,196 +393,196 @@
                     x:Name="SanFrancisco"
                     Canvas.Left="152"
                     Canvas.Top="253"
-                    DataContext="{Binding Game.WorldMap.Cities[San Francisco]}" />
+                    DataContext="{Binding Cities[San Francisco]}" />
                 <local:MapCityControl
                     Canvas.Left="166"
                     Canvas.Top="325"
-                    DataContext="{Binding Game.WorldMap.Cities[Los Angeles]}" />
+                    DataContext="{Binding Cities[Los Angeles]}" />
                 <local:MapCityControl
                     Canvas.Left="251"
                     Canvas.Top="345"
-                    DataContext="{Binding Game.WorldMap.Cities[Mexico City]}" />
+                    DataContext="{Binding Cities[Mexico City]}" />
                 <local:MapCityControl
                     x:Name="Chicago"
                     Canvas.Left="258"
                     Canvas.Top="223"
-                    DataContext="{Binding Game.WorldMap.Cities[Chicago]}" />
+                    DataContext="{Binding Cities[Chicago]}" />
                 <local:MapCityControl
                     Canvas.Left="294"
                     Canvas.Top="278"
-                    DataContext="{Binding Game.WorldMap.Cities[Atlanta]}" />
+                    DataContext="{Binding Cities[Atlanta]}" />
                 <local:MapCityControl
                     Canvas.Left="300"
                     Canvas.Top="487"
-                    DataContext="{Binding Game.WorldMap.Cities[Lima]}" />
+                    DataContext="{Binding Cities[Lima]}" />
                 <local:MapCityControl
                     Canvas.Left="319"
                     Canvas.Top="566"
-                    DataContext="{Binding Game.WorldMap.Cities[Santiago]}" />
+                    DataContext="{Binding Cities[Santiago]}" />
                 <local:MapCityControl
                     Canvas.Left="342"
                     Canvas.Top="410"
-                    DataContext="{Binding Game.WorldMap.Cities[Bogota]}" />
+                    DataContext="{Binding Cities[Bogota]}" />
                 <local:MapCityControl
                     Canvas.Left="346"
                     Canvas.Top="217"
-                    DataContext="{Binding Game.WorldMap.Cities[Montreal]}" />
+                    DataContext="{Binding Cities[Montreal]}" />
                 <local:MapCityControl
                     Canvas.Left="353"
                     Canvas.Top="332"
-                    DataContext="{Binding Game.WorldMap.Cities[Miami]}" />
+                    DataContext="{Binding Cities[Miami]}" />
                 <local:MapCityControl
                     Canvas.Left="397"
                     Canvas.Top="270"
-                    DataContext="{Binding Game.WorldMap.Cities[Washington]}" />
+                    DataContext="{Binding Cities[Washington]}" />
                 <local:MapCityControl
                     Canvas.Left="410"
                     Canvas.Top="547"
-                    DataContext="{Binding Game.WorldMap.Cities[Buenos Aires]}" />
+                    DataContext="{Binding Cities[Buenos Aires]}" />
                 <local:MapCityControl
                     Canvas.Left="420"
                     Canvas.Top="220"
-                    DataContext="{Binding Game.WorldMap.Cities[New York]}" />
+                    DataContext="{Binding Cities[New York]}" />
                 <local:MapCityControl
                     Canvas.Left="461"
                     Canvas.Top="488"
-                    DataContext="{Binding Game.WorldMap.Cities[Sao Paulo]}" />
+                    DataContext="{Binding Cities[Sao Paulo]}" />
                 <local:MapCityControl
                     Canvas.Left="560"
                     Canvas.Top="259"
-                    DataContext="{Binding Game.WorldMap.Cities[Madrid]}" />
+                    DataContext="{Binding Cities[Madrid]}" />
                 <local:MapCityControl
                     Canvas.Left="570"
                     Canvas.Top="182"
-                    DataContext="{Binding Game.WorldMap.Cities[London]}" />
+                    DataContext="{Binding Cities[London]}" />
                 <local:MapCityControl
                     Canvas.Left="624"
                     Canvas.Top="390"
-                    DataContext="{Binding Game.WorldMap.Cities[Lagos]}" />
+                    DataContext="{Binding Cities[Lagos]}" />
                 <local:MapCityControl
                     Canvas.Left="640"
                     Canvas.Top="223"
-                    DataContext="{Binding Game.WorldMap.Cities[Paris]}" />
+                    DataContext="{Binding Cities[Paris]}" />
                 <local:MapCityControl
                     Canvas.Left="652"
                     Canvas.Top="302"
-                    DataContext="{Binding Game.WorldMap.Cities[Algiers]}" />
+                    DataContext="{Binding Cities[Algiers]}" />
                 <local:MapCityControl
                     Canvas.Left="662"
                     Canvas.Top="170"
-                    DataContext="{Binding Game.WorldMap.Cities[Essen]}" />
+                    DataContext="{Binding Cities[Essen]}" />
                 <local:MapCityControl
                     Canvas.Left="683"
                     Canvas.Top="445"
-                    DataContext="{Binding Game.WorldMap.Cities[Kinshasa]}" />
+                    DataContext="{Binding Cities[Kinshasa]}" />
                 <local:MapCityControl
                     Canvas.Left="701"
                     Canvas.Top="213"
-                    DataContext="{Binding Game.WorldMap.Cities[Milan]}" />
+                    DataContext="{Binding Cities[Milan]}" />
                 <local:MapCityControl
                     Canvas.Left="719"
                     Canvas.Top="313"
-                    DataContext="{Binding Game.WorldMap.Cities[Cairo]}" />
+                    DataContext="{Binding Cities[Cairo]}" />
                 <local:MapCityControl
                     Canvas.Left="725"
                     Canvas.Top="525"
-                    DataContext="{Binding Game.WorldMap.Cities[Johannesburg]}" />
+                    DataContext="{Binding Cities[Johannesburg]}" />
                 <local:MapCityControl
                     Canvas.Left="731"
                     Canvas.Top="247"
-                    DataContext="{Binding Game.WorldMap.Cities[Istanbul]}" />
+                    DataContext="{Binding Cities[Istanbul]}" />
                 <local:MapCityControl
                     Canvas.Left="734"
                     Canvas.Top="374"
-                    DataContext="{Binding Game.WorldMap.Cities[Khartoum]}" />
+                    DataContext="{Binding Cities[Khartoum]}" />
                 <local:MapCityControl
                     Canvas.Left="756"
                     Canvas.Top="148"
-                    DataContext="{Binding Game.WorldMap.Cities[St. Petersburg]}" />
+                    DataContext="{Binding Cities[St. Petersburg]}" />
                 <local:MapCityControl
                     Canvas.Left="791"
                     Canvas.Top="275"
-                    DataContext="{Binding Game.WorldMap.Cities[Baghdad]}" />
+                    DataContext="{Binding Cities[Baghdad]}" />
                 <local:MapCityControl
                     Canvas.Left="794"
                     Canvas.Top="200"
-                    DataContext="{Binding Game.WorldMap.Cities[Moscow]}" />
+                    DataContext="{Binding Cities[Moscow]}" />
                 <local:MapCityControl
                     Canvas.Left="802"
                     Canvas.Top="345"
-                    DataContext="{Binding Game.WorldMap.Cities[Riyadh]}" />
+                    DataContext="{Binding Cities[Riyadh]}" />
                 <local:MapCityControl
                     Canvas.Left="853"
                     Canvas.Top="237"
-                    DataContext="{Binding Game.WorldMap.Cities[Tehran]}" />
+                    DataContext="{Binding Cities[Tehran]}" />
                 <local:MapCityControl
                     Canvas.Left="872"
                     Canvas.Top="303"
-                    DataContext="{Binding Game.WorldMap.Cities[Karachi]}" />
+                    DataContext="{Binding Cities[Karachi]}" />
                 <local:MapCityControl
                     Canvas.Left="880"
                     Canvas.Top="366"
-                    DataContext="{Binding Game.WorldMap.Cities[Mumbai]}" />
+                    DataContext="{Binding Cities[Mumbai]}" />
                 <local:MapCityControl
                     Canvas.Left="932"
                     Canvas.Top="274"
-                    DataContext="{Binding Game.WorldMap.Cities[Delhi]}" />
+                    DataContext="{Binding Cities[Delhi]}" />
                 <local:MapCityControl
                     Canvas.Left="951"
                     Canvas.Top="397"
-                    DataContext="{Binding Game.WorldMap.Cities[Chennai]}" />
+                    DataContext="{Binding Cities[Chennai]}" />
                 <local:MapCityControl
                     Canvas.Left="989"
                     Canvas.Top="299"
-                    DataContext="{Binding Game.WorldMap.Cities[Kolkata]}" />
+                    DataContext="{Binding Cities[Kolkata]}" />
                 <local:MapCityControl
                     Canvas.Left="1004"
                     Canvas.Top="467"
-                    DataContext="{Binding Game.WorldMap.Cities[Jakarta]}" />
+                    DataContext="{Binding Cities[Jakarta]}" />
                 <local:MapCityControl
                     Canvas.Left="1013"
                     Canvas.Top="364"
-                    DataContext="{Binding Game.WorldMap.Cities[Bangkok]}" />
+                    DataContext="{Binding Cities[Bangkok]}" />
                 <local:MapCityControl
                     Canvas.Left="1049"
                     Canvas.Top="203"
-                    DataContext="{Binding Game.WorldMap.Cities[Beijing]}" />
+                    DataContext="{Binding Cities[Beijing]}" />
                 <local:MapCityControl
                     Canvas.Left="1050"
                     Canvas.Top="259"
-                    DataContext="{Binding Game.WorldMap.Cities[Shanghai]}" />
+                    DataContext="{Binding Cities[Shanghai]}" />
                 <local:MapCityControl
                     Canvas.Left="1054"
                     Canvas.Top="325"
-                    DataContext="{Binding Game.WorldMap.Cities[Hong Kong]}" />
+                    DataContext="{Binding Cities[Hong Kong]}" />
                 <local:MapCityControl
                     Canvas.Left="1056"
                     Canvas.Top="411"
-                    DataContext="{Binding Game.WorldMap.Cities[Ho Chi Minh City]}" />
+                    DataContext="{Binding Cities[Ho Chi Minh City]}" />
                 <local:MapCityControl
                     Canvas.Left="1120"
                     Canvas.Top="199"
-                    DataContext="{Binding Game.WorldMap.Cities[Seoul]}" />
+                    DataContext="{Binding Cities[Seoul]}" />
                 <local:MapCityControl
                     Canvas.Left="1125"
                     Canvas.Top="319"
-                    DataContext="{Binding Game.WorldMap.Cities[Taipei]}" />
+                    DataContext="{Binding Cities[Taipei]}" />
                 <local:MapCityControl
                     Canvas.Left="1143"
                     Canvas.Top="406"
-                    DataContext="{Binding Game.WorldMap.Cities[Manila]}" />
+                    DataContext="{Binding Cities[Manila]}" />
                 <local:MapCityControl
                     Canvas.Left="1188"
                     Canvas.Top="233"
-                    DataContext="{Binding Game.WorldMap.Cities[Tokyo]}" />
+                    DataContext="{Binding Cities[Tokyo]}" />
                 <local:MapCityControl
                     Canvas.Left="1188"
                     Canvas.Top="546"
-                    DataContext="{Binding Game.WorldMap.Cities[Sydney]}" />
+                    DataContext="{Binding Cities[Sydney]}" />
                 <local:MapCityControl
                     Canvas.Left="1198"
                     Canvas.Top="296"
-                    DataContext="{Binding Game.WorldMap.Cities[Osaka]}" />
+                    DataContext="{Binding Cities[Osaka]}" />
             </Canvas>
         </Viewbox>
     </Grid>

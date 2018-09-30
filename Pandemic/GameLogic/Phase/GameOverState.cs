@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Pandemic.GameLogic.Actions;
+using System;
 
 namespace Pandemic.GameLogic
 {
@@ -15,7 +12,7 @@ namespace Pandemic.GameLogic
             Game = game ?? throw new ArgumentNullException(nameof(game));
         }
 
-        public void Action(string actionType)
+        public void Action(IGameAction action)
         {
         }
 
@@ -25,7 +22,7 @@ namespace Pandemic.GameLogic
 
         public void Start()
         {
-            Game.Info = new GameInfo("Game over", "Main Menu", () => { Game.EndGame() ; });
+            Game.Info = new GameInfo("Game over", "Main Menu", () => { Game.EndGame(); });
         }
     }
 }

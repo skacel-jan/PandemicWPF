@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -12,7 +7,7 @@ namespace Pandemic.Helpers
 {
     public class MultiClickBehavior
     {
-        #region private timer 
+        #region private timer
 
         public const int DOUBLE_CLICK_TIME = 500;
 
@@ -28,9 +23,9 @@ namespace Pandemic.Helpers
             obj.SetValue(ClickWaitTimer, timer);
         }
 
-        #endregion
+        #endregion private timer
 
-        #region single click dependency properties 
+        #region single click dependency properties
 
         public static ICommand GetSingleClickCommand(DependencyObject obj)
         {
@@ -59,9 +54,9 @@ namespace Pandemic.Helpers
         public static readonly DependencyProperty SingleClickCommandParameter = DependencyProperty.RegisterAttached("SingleClickCommandParameter",
             typeof(object), typeof(MultiClickBehavior));
 
-        #endregion
+        #endregion single click dependency properties
 
-        #region double click dependency properties 
+        #region double click dependency properties
 
         public static ICommand GetDoubleClickCommand(DependencyObject obj)
         {
@@ -89,7 +84,6 @@ namespace Pandemic.Helpers
 
         public static readonly DependencyProperty DoubleClickCommandParameter = DependencyProperty.RegisterAttached("DoubleClickCommandParameter",
             typeof(object), typeof(MultiClickBehavior));
-
 
         public static bool GetDoubleClickCommandEnabled(DependencyObject obj)
         {
@@ -124,19 +118,18 @@ namespace Pandemic.Helpers
             }
         }
 
-        #endregion
+        #endregion double click dependency properties
 
         private static void CommandChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-
             if (sender is UIElement targetElement)
             {
-                //remove any existing handlers 
+                //remove any existing handlers
                 targetElement.RemoveHandler(UIElement.MouseLeftButtonDownEvent, new MouseButtonEventHandler(element_MouseLeftButtonDown));
-                //use AddHandler to be able to listen to handled events 
+                //use AddHandler to be able to listen to handled events
                 targetElement.AddHandler(UIElement.MouseLeftButtonDownEvent, new MouseButtonEventHandler(element_MouseLeftButtonDown), true);
 
-                //if the timer has not been created then do so 
+                //if the timer has not been created then do so
                 var timer = GetClickWaitTimer(targetElement);
 
                 if (timer == null)
@@ -145,7 +138,7 @@ namespace Pandemic.Helpers
                     timer.Interval = new TimeSpan(0, 0, 0, 0, DOUBLE_CLICK_TIME);
                     timer.Tick += (s, args) =>
                     {
-                        //if the interval has been reached without a second click then execute the SingClickCommand  
+                        //if the interval has been reached without a second click then execute the SingClickCommand
                         timer.Stop();
 
                         var commandParameter = targetElement.GetValue(SingleClickCommandParameter);
@@ -170,8 +163,8 @@ namespace Pandemic.Helpers
             {
                 var timer = GetClickWaitTimer(targetElement);
 
-                //if the timer is enabled there has already been one click within the interval and this is a second click so  
-                //stop the timer and execute the DoubleClickCommand 
+                //if the timer is enabled there has already been one click within the interval and this is a second click so
+                //stop the timer and execute the DoubleClickCommand
                 if (timer.IsEnabled)
                 {
                     timer.Stop();

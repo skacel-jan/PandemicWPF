@@ -5,6 +5,8 @@ using Pandemic.GameLogic;
 using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Pandemic
 {
@@ -14,21 +16,27 @@ namespace Pandemic
         private IGamePhase _gamePhase;
 
         private GameInfo _info;
+        private Stack<GameInfo> _gameInfos;
         private int _outbreaks;
 
         private int _researchStationPile;
 
-        public Game(WorldMap worldMap, IDictionary<DiseaseColor, Disease> diseases, CircularCollection<Character> characters,
-                    Infection infection, IEnumerable<EventCard> eventCards, PlayerDeck playerDeck, Deck<InfectionCard> infectionDeck)
+        public int Difficulty { get; }
+
+        public SelectionService SelectionService { get; }
+
+        internal Game(WorldMap worldMap, IDictionary<DiseaseColor, Disease> diseases, GameSettings gameSettings,
+            PlayerDeck playerDeck, SelectionService selectionService)
         {
             WorldMap = worldMap;
-            Characters = characters;
-            Characters.PropertyChanged += Characters_PropertyChanged;
-            Infection = infection;
+            Characters = gameSettings.GetCharacters(worldMap.GetCity(City.Atlanta));
+            Infection = new Infection(new Deck<InfectionCard>(WorldMap.Cities.Select(c => new InfectionCard(c.City))));
 
             PlayerDeck = playerDeck ?? throw new ArgumentNullException(nameof(playerDeck));
-            InfectionDeck = infectionDeck ?? throw new ArgumentNullException(nameof(infectionDeck));
-            InfectionDiscardPile = new DiscardPile<InfectionCard>();
+
+            SelectionService = selectionService ?? throw new ArgumentNullException(nameof(selectionService));
+            Difficulty = gameSettings.Difficulty;
+
             PlayerDiscardPile = new DiscardPile<Card>();
             RemovedCards = new DiscardPile<Card>();
 
@@ -36,39 +44,26 @@ namespace Pandemic
 
             EventCards = new List<EventCard>();
 
-            PlayerDeck.AddEventCards(eventCards);
-            foreach (var eventCard in eventCards)
-            {
-                eventCard.EventFinished += (s, e) => EventFinished?.Invoke(s, e);
-            }
+            _gameInfos = new Stack<GameInfo>();            
 
             //InfectionDeck.Shuffle();
             //PlayerDeck.Shuffle();
 
             Diseases[DiseaseColor.Blue].Status = Disease.State.Cured;
 
-            ChangeGamePhase(new InitialPhase(this));            
+            ChangeGamePhase(new InitialPhase(this));
             WorldMap.GetCity("Atlanta").ChangeInfection(DiseaseColor.Black, 2);
+
         }
 
         internal void EndGame()
         {
-            GameEnd?.Invoke(this, EventArgs.Empty);
+            GameEnded?.Invoke(this, EventArgs.Empty);
         }
 
         public event EventHandler ActionDone;
 
-        public event EventHandler<CardsSelectingEventArgs> CardSelecting;
-
         public event EventHandler<DiseaseSelectingEventArgs> DiseaseSelecting;
-
-        public event EventHandler EventFinished;
-
-        public event EventHandler CharacterChanged;
-
-        public event EventHandler<CharacterSelectingEventArgs> CharacterSelecting;
-
-        public event EventHandler InfoChanged;
 
         public event EventHandler<MoveTypeSelectingEventArgs> MoveTypeSelecting;
 
@@ -76,7 +71,7 @@ namespace Pandemic
 
         public event EventHandler<GamePhaseChangedEventArgs> GamePhaseChanged;
 
-        public event EventHandler GameEnd;
+        public event EventHandler GameEnded;
 
         public int Actions
         {
@@ -109,30 +104,30 @@ namespace Pandemic
         {
             var eventArgs = new GamePhaseChangedEventArgs(GamePhase, gamePhase);
 
-            GamePhase?.End();            
+            GamePhase?.End();
             GamePhase = gamePhase;
             GamePhase?.Start();
 
             GamePhaseChanged?.Invoke(this, eventArgs);
 
-            return true;            
+            return true;
         }
 
         public CircularCollection<Character> Characters { get; }
 
         public Infection Infection { get; }
 
-        public Deck<InfectionCard> InfectionDeck { get; set; }
-
-        public DiscardPile<InfectionCard> InfectionDiscardPile { get; private set; }
-
         public GameInfo Info
         {
             get => _info;
             set
             {
-                _info = value;
-                InfoChanged?.Invoke(this, EventArgs.Empty);
+                var newInfo = value;
+                if (newInfo == null && _gameInfos.Count > 0)
+                {
+                    newInfo = _gameInfos.Pop();
+                }
+                Set(ref _info, newInfo);
             }
         }
 
@@ -181,12 +176,12 @@ namespace Pandemic
             else
             {
                 Diseases[color].Status = Disease.State.Cured;
-            }            
+            }
         }
 
-        public void DoAction(string actionType)
+        public void DoAction(IGameAction action)
         {
-            GamePhase.Action(actionType);
+            GamePhase.Action(action);
         }
 
         public bool IsCubePileEmpty(DiseaseColor color)
@@ -216,29 +211,9 @@ namespace Pandemic
             }
         }
 
-        public void MoveCharacter(Character character, MapCity city)
-        {
-            character.CurrentMapCity = city;
-        }
-
-        public void SelectCard(IEnumerable<Card> cards, Func<Card, bool> action, string text)
-        {
-            CardSelecting?.Invoke(this, new CardsSelectingEventArgs(cards, action, text));
-        }
-
-        public void SelectCity(IEnumerable<MapCity> cities, Action<MapCity> action, string text)
-        {
-            WorldMap.SelectCity(cities, action, text);
-        }
-
         public void SelectDisease(IEnumerable<DiseaseColor> diseases, string text, Action<DiseaseColor> action)
         {
             DiseaseSelecting?.Invoke(this, new DiseaseSelectingEventArgs(diseases, action, text));
-        }
-
-        public void SelectCharacter(IEnumerable<Character> characters, string text, Action<Character> action)
-        {
-            CharacterSelecting?.Invoke(this, new CharacterSelectingEventArgs(characters, action, text));
         }
 
         public void SelectMove(IEnumerable<IMoveAction> possibleCardMoves, string text, Action<IMoveAction> action)
@@ -251,20 +226,35 @@ namespace Pandemic
             ShareTypeSelecting?.Invoke(this, new ShareTypeSelectingEventArgs(shareTypes, action, text));
         }
 
-        private void Characters_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        public void SetInfo(string text)
         {
-            if (e.PropertyName == nameof(CircularCollection<Character>.Current))
+            if (Info != null)
             {
-                CharacterChanged?.Invoke(this, e);
+                _gameInfos.Push(Info);
             }
+            Info = new GameInfo(text);
+        }
+
+        public void SetInfo(string text, string actionText, Action action)
+        {
+            if (Info != null)
+            {
+                _gameInfos.Push(Info);
+            }
+            Info = new GameInfo(text, actionText, action);
         }
     }
 
     public class GameInfo
     {
-        public GameInfo(string text, string buttonText, Action action)
+        public GameInfo(string text)
         {
             Text = text;
+        }
+
+        public GameInfo(string text, string buttonText, Action action)
+            : this(text)
+        {
             ButtonText = buttonText;
             Action = action;
         }

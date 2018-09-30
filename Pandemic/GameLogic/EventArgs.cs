@@ -1,4 +1,4 @@
-﻿using Pandemic.Cards;
+﻿using GalaSoft.MvvmLight;
 using Pandemic.GameLogic;
 using Pandemic.GameLogic.Actions;
 using System;
@@ -6,30 +6,6 @@ using System.Collections.Generic;
 
 namespace Pandemic
 {
-    public class CardDiscardedEventArgs : EventArgs
-    {
-        public CardDiscardedEventArgs(Card card)
-        {
-            Card = card;
-        }
-
-        public Card Card { get; }
-    }
-
-    public class CardsSelectingEventArgs : EventArgs
-    {
-        public CardsSelectingEventArgs(IEnumerable<Card> cards, Func<Card, bool> selectionDelegate, string text)
-        {
-            Cards = cards;
-            Text = text;
-            SelectionDelegate = selectionDelegate;
-        }
-
-        public IEnumerable<Card> Cards { get; }
-        public Func<Card, bool> SelectionDelegate { get; }
-        public string Text { get; }
-    }
-
     public class DiseaseSelectingEventArgs : EventArgs
     {
         public DiseaseSelectingEventArgs(IEnumerable<DiseaseColor> diseases, Action<DiseaseColor> selectionDelegate, string text)
@@ -122,5 +98,15 @@ namespace Pandemic
 
         public IGamePhase PreviousPhase { get; }
         public IGamePhase ActualPhase { get; }
+    }
+
+    public class ViewModelEventArgs : EventArgs
+    {
+        public ViewModelEventArgs(ViewModelBase viewModel)
+        {
+            ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+        }
+
+        public ViewModelBase ViewModel { get; }
     }
 }

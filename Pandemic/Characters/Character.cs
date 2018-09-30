@@ -22,18 +22,9 @@ namespace Pandemic
         {
             Cards = new ObservableCollection<Card>();
             Cards.CollectionChanged += Cards_CollectionChanged;
-
-            Actions = new KeyExtractorDictionary<string, IGameAction>((IGameAction a) => a.Name)
-            {
-                { new MoveAction(this) },
-                { new TreatAction(this) },
-                { new BuildAction(this) },
-                { new ShareKnowledgeAction(this) },
-                { new DiscoverCureAction(this) }                
-            };
         }
 
-        public IDictionary<string, IGameAction> Actions { get; }
+        public IDictionary<string, IGameAction> Actions { get; set; }
         public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
 
         public ObservableCollection<Card> Cards { get; }
@@ -92,7 +83,7 @@ namespace Pandemic
             return ((MoveAction)Actions[ActionTypes.Move]).AllMoveActions.OfType<DriveOrFerry>().Single().IsPossible(game, city);
         }
 
-        public int ColorCardsCount(DiseaseColor diseaseColor)
+        public int CardsCountOfColor(DiseaseColor diseaseColor)
         {
             return CityCards.Count(x => x.City.Color == diseaseColor);
         }
@@ -128,7 +119,7 @@ namespace Pandemic
             if (Cards.Count > 0)
             {
                 MostCardsColor = CityCards.GroupBy(x => x.City.Color).OrderByDescending(gb => gb.Count()).Select(y => y.Key).FirstOrDefault();
-                MostCardsColorCount = ColorCardsCount(MostCardsColor);
+                MostCardsColorCount = CardsCountOfColor(MostCardsColor);
             }
             else
             {

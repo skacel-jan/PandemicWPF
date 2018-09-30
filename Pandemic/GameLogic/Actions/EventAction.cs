@@ -1,31 +1,44 @@
-﻿using System;
+﻿using Pandemic.Cards;
+using System;
 
 namespace Pandemic.GameLogic.Actions
 {
-    public abstract class EventAction : IGameAction
+    public abstract class EventAction
     {
-        public string Name => ActionTypes.Event;
-
-        protected Action ActionCallback { get; set; }
-        protected Game Game { get; set; }
-
-        public bool CanExecute(Game game) => true;
-
-        public void Execute(Game game, Action callbackAction)
+        protected EventAction(EventCard card, Game game)
         {
-            ActionCallback = callbackAction;
-            Game = game;
-
-            Execute();
+            EventCard = card ?? throw new ArgumentNullException(nameof(card));
+            Game = game ?? throw new ArgumentNullException(nameof(game));
         }
 
-        protected abstract void Execute();
+        public string Name => ActionTypes.Event;
+
+        protected EventCard EventCard { get; }
+        protected Game Game { get; private set; }
+
+        public bool CanExecute() => true;
+
+        public abstract void Execute();
+
+        protected void ShowGameInfo(string text)
+        {
+            Game.Info = new GameInfo(text);
+        }
+
+        protected void ShowGameInfo(string text, string actionText, Action action)
+        {
+            Game.Info = new GameInfo(text, actionText, action);
+        }
+
+        protected void HideGameInfo()
+        {
+            Game.Info = null;
+        }
 
         protected virtual void FinishAction()
         {
-            ActionCallback?.Invoke();
-            ActionCallback = null;
-            Game = null;
+            HideGameInfo();
+            EventCard.FinishEvent();
         }
     }
 }

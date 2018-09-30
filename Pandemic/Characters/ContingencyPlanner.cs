@@ -1,9 +1,4 @@
-﻿using Pandemic.GameLogic.Actions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Media;
 
 namespace Pandemic.Characters
@@ -21,10 +16,5 @@ namespace Pandemic.Characters
         };
 
         public override Color Color => Colors.LightSkyBlue;
-
-        public ContingencyPlanner() : base()
-        {
-            Actions.Add(ActionTypes.ContingencyPlannerAction, new ContingencyPlannerAction(this));
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Pandemic.Cards;
+using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
 
@@ -13,7 +14,7 @@ namespace Pandemic.GameLogic
             Game = game ?? throw new ArgumentNullException(nameof(game));
         }
 
-        public void Action(string actionType)
+        public void Action(IGameAction action)
         {
             if (Game.Infection.Actual == 0)
             {
@@ -24,8 +25,8 @@ namespace Pandemic.GameLogic
 
             Game.Infection.Actual--;
 
-            InfectionCard card = Game.InfectionDeck.DrawTop();
-            Game.InfectionDiscardPile.Cards.Add(card);
+            InfectionCard card = Game.Infection.Deck.Draw(Decks.DeckSide.Top);
+            Game.Infection.DiscardPile.AddCard(card);
 
             if (Game.IsCubePileEmpty(card.City.Color))
             {
@@ -36,14 +37,18 @@ namespace Pandemic.GameLogic
                 if (CanRaiseInfection(Game.WorldMap.GetCity(card.City.Name), card.City.Color))
                 {
                     Game.Info = new GameInfo($"Infected city {card.City.Name}", $"Next {(Game.Infection.Actual == 0 ? "Player" : "Infection")}",
-                        () => Game.DoAction("Next"));
+                        () => Game.DoAction(null));
 
                     var isOutbreak = Game.IncreaseInfection(card.City, card.City.Color);
                     if (isOutbreak)
                     {
                         DoOutbreak(card.City, card.City.Color);
-                    }                   
-
+                    }
+                }
+                else
+                {
+                    Game.Info = new GameInfo($"City {card.City.Name} was not infected", $"Next {(Game.Infection.Actual == 0 ? "Player" : "Infection")}",
+                        () => Game.DoAction(null));
                 }
             }
         }
@@ -114,7 +119,7 @@ namespace Pandemic.GameLogic
             if (!(Game.GamePhase is GameOverPhase))
             {
                 Game.ChangeGamePhase(new GameOverPhase(Game));
-            }            
+            }
         }
     }
 }

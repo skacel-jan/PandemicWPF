@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -31,9 +27,9 @@ namespace Pandemic
         public static readonly DependencyProperty IsEnabledProperty =
             DependencyProperty.RegisterAttached("IsEnabled", typeof(bool), typeof(TouchScrolling), new UIPropertyMetadata(false, IsEnabledChanged));
 
-        static Dictionary<object, MouseCapture> _captures = new Dictionary<object, MouseCapture>();
+        private static Dictionary<object, MouseCapture> _captures = new Dictionary<object, MouseCapture>();
 
-        static void IsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void IsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (!(d is ScrollViewer target)) return;
 
@@ -47,7 +43,7 @@ namespace Pandemic
             }
         }
 
-        static void target_Unloaded(object sender, RoutedEventArgs e)
+        private static void target_Unloaded(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("Target Unloaded");
 
@@ -63,7 +59,7 @@ namespace Pandemic
             target.PreviewMouseLeftButtonUp -= target_PreviewMouseLeftButtonUp;
         }
 
-        static void target_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private static void target_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!(sender is ScrollViewer target)) return;
 
@@ -74,7 +70,7 @@ namespace Pandemic
             };
         }
 
-        static void target_Loaded(object sender, RoutedEventArgs e)
+        private static void target_Loaded(object sender, RoutedEventArgs e)
         {
             if (!(sender is ScrollViewer target)) return;
 
@@ -87,7 +83,7 @@ namespace Pandemic
             target.PreviewMouseLeftButtonUp += target_PreviewMouseLeftButtonUp;
         }
 
-        static void target_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private static void target_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (!(sender is ScrollViewer target)) return;
 
@@ -107,7 +103,7 @@ namespace Pandemic
             //});
         }
 
-        static void target_PreviewMouseMove(object sender, MouseEventArgs e)
+        private static void target_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (!_captures.ContainsKey(sender)) return;
 

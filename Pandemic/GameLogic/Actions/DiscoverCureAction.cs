@@ -1,6 +1,5 @@
 ﻿using Pandemic.Cards;
 using Pandemic.Characters;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,7 +15,7 @@ namespace Pandemic.GameLogic.Actions
 
         public override bool CanExecute(Game game)
         {
-            return Character.CurrentMapCity.HasResearchStation && Character.ColorCardsCount(Character.MostCardsColor) >= Character.CardsForCure;
+            return Character.CurrentMapCity.HasResearchStation && Character.CardsCountOfColor(Character.MostCardsColor) >= Character.CardsForCure;
         }
 
         protected override void Execute()
@@ -34,7 +33,7 @@ namespace Pandemic.GameLogic.Actions
         private void DiscoverCure(IEnumerable<CityCard> cards, DiseaseColor color)
         {
             Game.DiscoverCure(color);
-            foreach (var card in new List<CityCard>(cards))
+            foreach (var card in cards.ToList())
             {
                 Character.RemoveCard(card);
                 Game.AddCardToPlayerDiscardPile(card);
@@ -45,35 +44,22 @@ namespace Pandemic.GameLogic.Actions
             FinishAction();
         }
 
+        private void SelectCards(IEnumerable<Card> cards)
+        {
+            DiscoverCure(cards.Cast<CityCard>(), Character.MostCardsColor);
+        }
+
         private void SelectCardsForCure()
         {
-            var selectedCards = new List<CityCard>();
+            var action = new MultiSelectAction<IEnumerable<Card>>(SelectCards, Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
+                $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure", ValidateCards);
 
-            var callback = new Func<Card, bool>((Card card) =>
+            Game.SelectionService.Select(action);
+
+            bool ValidateCards(IEnumerable<Card> cards)
             {
-                if (card is CityCard cityCard)
-                {
-                    if (Character.MostCardsColor == cityCard.City.Color && !selectedCards.Remove(cityCard))
-                    {
-                        selectedCards.Add(cityCard);
-                    }
-                    else if (!selectedCards.Remove(cityCard))
-                    {
-                        selectedCards.Add(cityCard);
-                    }
-
-                    if (Character.CardsForCure == selectedCards.Count)
-                    {
-                        DiscoverCure(selectedCards, Character.MostCardsColor);
-                        return true;
-                    }
-                }
-
-                return false;
-            });
-
-            Game.SelectCard(Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
-                callback, $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure");
+                return cards.Count() == Character.CardsForCure && cards.Cast<CityCard>().All(c => c.City.Color == Character.MostCardsColor);
+            }
         }
     }
 }

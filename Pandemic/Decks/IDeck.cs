@@ -1,20 +1,22 @@
 ﻿using Pandemic.Cards;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace Pandemic.Decks
 {
     public interface IDeck<T> where T : Card
     {
-        ObservableCollection<T> Cards { get; }
-        void AddCard(T card);
-        void AddCards(IEnumerable<T> cards);
-        T DrawTop();
-        T DrawBottom();
+        IEnumerable<T> Cards { get; }
+
+        void AddCard(T card, DeckSide side);
+
+        void AddCards(IEnumerable<T> cards, DeckSide side);
+
+        T Draw(DeckSide side);
     }
 
-    public interface IShuffle<T> where T : Card
+    public enum DeckSide
     {
-        void Shuffle();
+        Top,
+        Bottom
     }
 }

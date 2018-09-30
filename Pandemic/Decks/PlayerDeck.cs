@@ -6,14 +6,14 @@ namespace Pandemic.Decks
 {
     public class PlayerDeck : Deck<Card>
     {
-        public PlayerDeck(IEnumerable<City> cities) : base(cities.Select(city => new PlayerCard(city)))
+        public PlayerDeck(IEnumerable<PlayerCard> cards) : base(cards)
         {
         }
 
         public void AddEpidemicCards(int epidemicCount)
         {
-            var numberOfDecks = Cards.Count / epidemicCount;
-            var deckIncrement = Cards.Count % epidemicCount;
+            var numberOfDecks = InnerCards.Count / epidemicCount;
+            var deckIncrement = InnerCards.Count % epidemicCount;
 
             List<Card> resultDeck = new List<Card>();
             foreach (var i in Enumerable.Range(0, epidemicCount))
@@ -21,28 +21,18 @@ namespace Pandemic.Decks
                 var count = numberOfDecks + (deckIncrement > 0 ? 1 : 0);
                 var deck = new Deck<Card>(Cards.Skip(i * count).Take(count));
                 deckIncrement = deckIncrement == 0 ? 0 : deckIncrement - 1;
-                deck.Cards.Add(new EpidemicCard("Epidemic"));
+                deck.AddCard(new EpidemicCard("Epidemic"));
                 deck.Shuffle();
                 resultDeck.AddRange(deck.Cards);
             }
-            Cards.Clear();
+            InnerCards.Clear();
 
             foreach (var card in resultDeck)
             {
-                Cards.Add(card);
+                InnerCards.Add(card);
             }
         }
 
-        public void AddEventCards(IEnumerable<EventCard> eventCards)
-        {
-            foreach (var card in eventCards)
-            {
-                Cards.Insert(0, card);
-            }
-        }
-
-        public IEnumerable<EventCard> EventCars => Cards.OfType<EventCard>();
-
-        public EventCardFactory EventCardFactory { get; }
+        public IEnumerable<EventCard> EventCards => Cards.OfType<EventCard>();
     }
 }

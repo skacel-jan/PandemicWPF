@@ -7,6 +7,13 @@ namespace Pandemic.Cards
     {
         private IList<EventCard> _eventCards;
 
+        public EventCardFactory(SelectionService selectionService)
+        {
+            SelectionService = selectionService;
+        }
+
+        public SelectionService SelectionService { get; }
+
         public IEnumerable<EventCard> GetEventCards()
         {
             if (_eventCards == null)
@@ -21,10 +28,10 @@ namespace Pandemic.Cards
         {
             _eventCards = new List<EventCard>()
             {
-                new EventCard("Government Grant", () => new GovernmentGrantAction()),
-                new EventCard("One Quiet Night", () => new OneQuietNightAction()),
-                new EventCard("Airlift", () => new AirliftAction()),
-                new EventCard("Resilient population", () => new ResilientPopulationAction()),
+                new EventCard("Government Grant", (game, eventCard) => new GovernmentGrantAction(eventCard, game)),
+                new EventCard("One Quiet Night", (game, eventCard) => new OneQuietNightAction(eventCard, game)),
+                new EventCard("Airlift", (game, eventCard) => new AirliftAction(eventCard, game)),
+                new EventCard("Resilient population", (game, eventCard) => new ResilientPopulationAction(eventCard, game)),
             };
         }
     }

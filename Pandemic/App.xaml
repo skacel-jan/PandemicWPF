@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm1="clr-namespace:Pandemic.ViewModels"
+    xmlns:viewModels="clr-namespace:Pandemic.ViewModels"
+    xmlns:views="clr-namespace:Pandemic.Views"
     StartupUri="MainWindow.xaml"
     mc:Ignorable="d">
     <Application.Resources>
@@ -20,6 +21,14 @@
                 xmlns:vm="clr-namespace:Pandemic.ViewModels"
                 x:Key="Locator"
                 d:IsDataSource="True" />
+
+            <DataTemplate DataType="{x:Type viewModels:GameSetingsViewModel}">
+                <views:GameSetingsView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:GameMenuViewModel}">
+                <views:GameMenuView />
+            </DataTemplate>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

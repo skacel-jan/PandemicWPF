@@ -1,11 +1,6 @@
 ﻿using Pandemic.GameLogic;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -21,12 +16,16 @@ namespace Pandemic.Converters
             {
                 case DiseaseColor.Yellow:
                     return new SolidColorBrush(Colors.Yellow);
+
                 case DiseaseColor.Red:
                     return new SolidColorBrush(Colors.Red);
+
                 case DiseaseColor.Blue:
                     return new SolidColorBrush(Colors.Blue);
+
                 case DiseaseColor.Black:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(30,30,30));
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 30, 30));
+
                 default:
                     return new SolidColorBrush(Colors.Yellow);
             }

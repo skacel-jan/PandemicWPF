@@ -1,9 +1,7 @@
 ﻿using Pandemic.Cards;
+using Pandemic.GameLogic.Actions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pandemic.GameLogic
 {
@@ -16,9 +14,8 @@ namespace Pandemic.GameLogic
 
         public Game Game { get; }
 
-        public void Action(string actionType)
+        public void Action(IGameAction action)
         {
-            
         }
 
         public void End()
@@ -31,7 +28,7 @@ namespace Pandemic.GameLogic
 
             InitialInfection();
             InitialDraw();
-            AddEpidemicCards(5);
+            AddEpidemicCards(Game.Difficulty);
 
             Game.ChangeGamePhase(new ActionPhase(Game));
         }
@@ -54,7 +51,7 @@ namespace Pandemic.GameLogic
             {
                 foreach (var i in Enumerable.Range(0, cardCount))
                 {
-                    Card card = Game.PlayerDeck.DrawTop();
+                    Card card = Game.PlayerDeck.Draw(Decks.DeckSide.Top);
                     character.AddCard(card);
                     if (card is EventCard eventCard)
                     {
@@ -70,8 +67,8 @@ namespace Pandemic.GameLogic
             {
                 foreach (var x in Enumerable.Range(0, 3))
                 {
-                    InfectionCard infectionCard = Game.InfectionDeck.DrawTop();
-                    Game.InfectionDiscardPile.Cards.Add(infectionCard);
+                    InfectionCard infectionCard = Game.Infection.Deck.Draw(Decks.DeckSide.Top);
+                    Game.Infection.DiscardPile.AddCard(infectionCard);
                     int changeInfections = Game.WorldMap.GetCity(infectionCard.City.Name).ChangeInfection(infectionCard.City.Color, i);
                     Game.DecreaseCubePile(infectionCard.City.Color, changeInfections);
                 }

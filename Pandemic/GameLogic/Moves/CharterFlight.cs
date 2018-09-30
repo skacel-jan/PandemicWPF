@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Pandemic.Cards;
+using System;
 using System.Linq;
-using Pandemic.Cards;
 
 namespace Pandemic.GameLogic.Actions
 {
@@ -12,9 +12,8 @@ namespace Pandemic.GameLogic.Actions
         }
 
         public Character Character { get; set; }
-        public string MoveType => ActionTypes.CharterFlight;
-
         public bool IsCardRequired => true;
+        public string MoveType => ActionTypes.CharterFlight;
 
         public bool IsPossible(Game game, MapCity city)
         {
@@ -23,27 +22,21 @@ namespace Pandemic.GameLogic.Actions
 
         public void Move(Game game, MapCity city, Action moveActionCallback)
         {
-            game.SelectCard(Character.Cards.OfType<CityCard>(), (Card card) =>
+            var action = new SelectAction<Card>(SetCard, Character.Cards.OfType<CityCard>(),
+                $"Select card of a current city {city.City.Name}",
+                (Card card) => card is CityCard cityCard && Character.CurrentMapCity.City == cityCard.City);
+
+            game.SelectionService.Select(action);
+
+            void SetCard(Card selectedCard)
             {
-                if (card is CityCard cityCard)
-                {
-                    if (Character.CurrentMapCity.City == cityCard.City)
-                    {
-                        game.MoveCharacter(Character, city);
-                        Character.RemoveCard(card);
-                        game.AddCardToPlayerDiscardPile(card);
-                        moveActionCallback();
-
-                        return true;
-                    }
-                }
-                return false;
-            }, "Select card of a current city");
+                Character.CurrentMapCity = city;
+                Character.RemoveCard(selectedCard);
+                game.AddCardToPlayerDiscardPile(selectedCard);
+                moveActionCallback();
+            }
         }
 
-        public override string ToString()
-        {
-            return MoveType;
-        }
+        public override string ToString() => MoveType;
     }
 }

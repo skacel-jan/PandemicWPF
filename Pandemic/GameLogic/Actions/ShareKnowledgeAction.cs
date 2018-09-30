@@ -17,7 +17,8 @@ namespace Pandemic.GameLogic.Actions
         {
             if (game.CurrentCharacter.Equals(Character))
             {
-                return Character.CurrentMapCity.Characters.Count > 1 && Character.HasCityCard(Character.CurrentMapCity.City);
+                return Character.CurrentMapCity.Characters.Count > 1 && (Character.HasCityCard(Character.CurrentMapCity.City) ||
+                    Character.CurrentMapCity.Characters.Any(x => x.HasCityCard(Character.CurrentMapCity.City)));
             }
             else
             {
@@ -61,7 +62,7 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
-        protected virtual ShareKnowledgeGive GetGiveAction(Character characterFrom, Character characterTo)
+        protected virtual ShareKnowledgeGive CreateGiveAction(Character characterFrom, Character characterTo)
         {
             return new ShareKnowledgeGive(characterFrom, characterTo);
         }
@@ -70,26 +71,32 @@ namespace Pandemic.GameLogic.Actions
         {
             if (Character.CurrentMapCity.Characters.Count > 2)
             {
-                var action = new Action<Character>((Character character) =>
-                {
-                    GetGiveAction(Character, character).Execute(Game, FinishAction);
-                });
-                Game.SelectCharacter(Character.CurrentMapCity.Characters.Where(c => c != Character), "Select character to which you will give the card", action);
+                var action = new SelectAction<Character>(SetCharacter, Character.CurrentMapCity.Characters.Where(c => c != Character),
+                    "Select character to which you will give the card");
+                Game.SelectionService.Select(action);
             }
             else
             {
-                GetGiveAction(Character, Character.CurrentMapCity.Characters.Single(c => !c.Equals(Character))).Execute(Game, FinishAction);
+                CreateGiveAction(Character, Character.CurrentMapCity.Characters.Single(c => !c.Equals(Character))).Execute(Game, FinishAction);
+            }
+
+            void SetCharacter(Character character)
+            {
+                CreateGiveAction(Character, character).Execute(Game, FinishAction);
             }
         }
 
         private void SelectCharacterToTake(IEnumerable<ShareKnowledgeAction> possibleActions)
         {
-            var action = new Action<Character>((Character character) =>
+            var action = new SelectAction<Character>(SetCharacter, Character.CurrentMapCity.Characters.Where(c => c != Character),
+                    "Select character from which you will take card");
+            Game.SelectionService.Select(action);
+
+            void SetCharacter(Character character)
             {
                 var shareAction = possibleActions.Single(a => a.Character.Equals(character));
-                shareAction.GetGiveAction(character, Character).Execute(Game, FinishAction);
-            });
-            Game.SelectCharacter(Character.CurrentMapCity.Characters.Where(c => c != Character), "Select character from which you will take card", action);
+                shareAction.CreateGiveAction(character, Character).Execute(Game, FinishAction);
+            }
         }
     }
 
@@ -97,9 +104,6 @@ namespace Pandemic.GameLogic.Actions
 
     public class ShareKnowledgeGive
     {
-        private Action _callback;
-        private Game _game;
-
         public ShareKnowledgeGive(Character characterFrom, Character characterTo)
         {
             CharacterFrom = characterFrom;
@@ -111,37 +115,20 @@ namespace Pandemic.GameLogic.Actions
 
         public void Execute(Game game, Action callback)
         {
-            _game = game;
-            _callback = callback;
+            game.SelectionService.Select(new SelectAction<Card>(SetCard, CharacterFrom.Cards.OfType<PlayerCard>(), "Select card to share", ValidateSelectedCard));
 
-            SelectCard();
+            void SetCard(Card card)
+            {
+                CharacterFrom.RemoveCard(card);
+                CharacterTo.AddCard(card);
+
+                callback();
+            }
         }
 
         protected virtual bool ValidateSelectedCard(Card card)
         {
             return (card as PlayerCard).City.Equals(CharacterFrom.CurrentMapCity.City);
-        }
-
-        private void SelectCard()
-        {
-            var callback = new Func<Card, bool>((Card card) =>
-            {
-                if (ValidateSelectedCard(card))
-                {
-                    ShareKnowledge(card);
-                    return true;
-                }
-                return false;
-            });
-            _game.SelectCard(CharacterFrom.Cards.OfType<PlayerCard>(), callback, "Select card to share");
-        }
-
-        private void ShareKnowledge(Card card)
-        {
-            CharacterFrom.RemoveCard(card);
-            CharacterTo.AddCard(card);
-
-            _callback();
         }
     }
 
@@ -179,7 +166,7 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
-        protected override ShareKnowledgeGive GetGiveAction(Character from, Character to)
+        protected override ShareKnowledgeGive CreateGiveAction(Character from, Character to)
         {
             return new ShareKnowledgeGiveResearcher(from, to);
         }

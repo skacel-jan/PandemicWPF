@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pandemic
 {
-    internal class KeyExtractorDictionary<TKey, TValue> : Dictionary<TKey, TValue>
+    public class KeyExtractorDictionary<TKey, TValue> : Dictionary<TKey, TValue>
     {
         private readonly Func<TValue, TKey> _extractor;
 

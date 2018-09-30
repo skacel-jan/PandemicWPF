@@ -1,42 +1,41 @@
 ﻿using Pandemic.Cards;
-using Pandemic.Characters;
 using Pandemic.Decks;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pandemic.GameLogic
 {
     public class GameFactory
     {
-        public GameFactory(DiseaseFactory diseaseFactory, IWorldMapFactory worldMapFactory, EventCardFactory eventCardFactory)
+        public GameFactory(IWorldMapFactory worldMapFactory, GameSettings gameSettings)
         {
-            DiseaseFactory = diseaseFactory ?? throw new ArgumentNullException(nameof(diseaseFactory));
+            DiseaseFactory = new DiseaseFactory();
             WorldMapFactory = worldMapFactory ?? throw new ArgumentNullException(nameof(worldMapFactory));
-            EventCardFactory = eventCardFactory ?? throw new ArgumentNullException(nameof(eventCardFactory));
-
-            CharacterFactory = new CharacterFactory();
+            GameSettings = gameSettings;
         }
 
         public DiseaseFactory DiseaseFactory { get; }
         public IWorldMapFactory WorldMapFactory { get; }
-        public EventCardFactory EventCardFactory { get; }
-        public CharacterFactory CharacterFactory { get; }
+        public GameSettings GameSettings { get; }
 
         public Game CreateGame()
         {
-
             var diseases = DiseaseFactory.GetDiseases();
             var worldMap = WorldMapFactory.CreateWorldMap(diseases);
-            var infectionCards = worldMap.Cities.Values.Select(c => new InfectionCard(c.City));
-            CharacterFactory.StartingCity = worldMap.GetCity(City.Atlanta);
-            var characters = CharacterFactory.GetCharacters(new string[] { ContingencyPlanner.CONTINGENCY_PLANNER,
-                OperationsExpert.OPERATIONS_EXPERT, Medic.MEDIC, Researcher.RESEARCHER });
 
-            return new Game(worldMap, diseases, new CircularCollection<Character>(characters), new Infection(),
-                EventCardFactory.GetEventCards(), new PlayerDeck(worldMap.Cities.Values.Select(c => c.City)), new Deck<InfectionCard>(infectionCards));
+            var selectionService = new SelectionService(worldMap);
+            var events = new EventCardFactory(selectionService).GetEventCards();
+
+            PlayerDeck playerDeck = new PlayerDeck(worldMap.Cities.Select(c => new PlayerCard(c.City)));
+
+            foreach (var card in events)
+            {
+                playerDeck.AddCard(card);
+            }
+
+            //playerDeck.AddCards(EventCardFactory.GetEventCards());
+
+            return new Game(worldMap, diseases, GameSettings, playerDeck, selectionService);
         }
     }
 }

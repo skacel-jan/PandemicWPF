@@ -2,126 +2,72 @@
 using Pandemic.Cards;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Pandemic.Decks
 {
-    public class BaseDeck<T> : ObservableObject, IDeck<T> where T : Card
+    public class Deck<T> : ObservableObject, IDeck<T> where T : Card
     {
-        public BaseDeck()
+        public Deck() : this(Enumerable.Empty<T>()) { }
+
+        public Deck(IEnumerable<T> cards)
         {
-            Cards = new ObservableCollection<T>();
+            InnerCards = new List<T>(cards);
         }
 
-        public BaseDeck(IEnumerable<T> cards)
-        {
-            Cards = new ObservableCollection<T>(cards);
-        }
+        protected List<T> InnerCards { get; }
+        public IEnumerable<T> Cards => InnerCards;
 
-        public ObservableCollection<T> Cards { get; }
-
-        public virtual void AddCard(T card)
+        public virtual void AddCard(T card, DeckSide side = DeckSide.Top)
         {
-            if (card != null)
+            if (card == null)
             {
-                Cards.Add(card);
+                throw new ArgumentNullException(nameof(card));
             }
+            InnerCards.Insert(side == DeckSide.Top ? 0 : InnerCards.Count - 1, card);
+            RaisePropertyChanged(nameof(Cards));
         }
 
-        public virtual void AddCards(IEnumerable<T> cards)
+        public virtual void AddCards(IEnumerable<T> cards, DeckSide side = DeckSide.Top)
         {
             if (cards == null)
             {
                 throw new ArgumentNullException(nameof(cards));
             }
 
-            foreach (var card in cards)
-            {
-                AddCard(card);
-            }
+            InnerCards.InsertRange(side == DeckSide.Top ? 0 : InnerCards.Count - 1, cards);
+
+            RaisePropertyChanged(nameof(Cards));
         }
 
-        public virtual T DrawTop()
+        public virtual T Draw(DeckSide side)
         {
-            if (Cards.Count > 0)
+            if (InnerCards.Count > 0)
             {
-                var card = Cards[0];
-                Cards.RemoveAt(0);
+                var card = InnerCards[0];
+                InnerCards.RemoveAt(0);
+                RaisePropertyChanged(nameof(Cards));
                 return card;
             }
             else
             {
                 return null;
             }
-        }
-
-        public virtual T DrawBottom()
-        {
-            if (Cards.Count > 0)
-            {
-                var card = Cards[Cards.Count - 1];
-                Cards.RemoveAt(Cards.Count - 1);
-                return card;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public virtual void RemoveCard(T card)
-        {
-            Cards.Remove(card);
-        }
-    }
-
-    public class Deck<T> : BaseDeck<T>, IShuffle<T> where T : Card
-    {
-        public Deck()
-        {
-        }
-
-        public Deck(IEnumerable<T> cards) : base(cards)
-        {
         }
 
         public void Shuffle()
         {
-            int n = Cards.Count();
+            int n = InnerCards.Count;
             while (n > 1)
             {
                 n--;
                 int k = ThreadSafeRandom.ThisThreadsRandom.Next(n + 1);
-                T value = Cards[k];
-                Cards[k] = Cards[n];
-                Cards[n] = value;
+                T value = InnerCards[k];
+                InnerCards[k] = InnerCards[n];
+                InnerCards[n] = value;
             }
-        }
-    }
 
-    public class DiscardPile<T> : BaseDeck<T> where T: Card
-    {
-        public DiscardPile()
-        {
-        }
-
-        public DiscardPile(IEnumerable<T> cards) : base(cards)
-        {
-        }
-
-        public T TopCard { get => Cards.LastOrDefault(); }
-
-        public override void AddCard(T card)
-        {
-            base.AddCard(card);
-            RaisePropertyChanged(nameof(TopCard));
-        }
-
-        public override void RemoveCard(T card)
-        {
-            base.RemoveCard(card);
-            RaisePropertyChanged(nameof(TopCard));
+            RaisePropertyChanged(nameof(Cards));
         }
     }
 }

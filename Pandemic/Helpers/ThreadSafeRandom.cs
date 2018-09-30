@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Pandemic
 {
@@ -11,6 +7,7 @@ namespace Pandemic
     {
         [ThreadStatic]
         private static Random _random;
+
         public static Random ThisThreadsRandom
         {
             get

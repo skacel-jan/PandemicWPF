@@ -1,9 +1,6 @@
 ﻿using Pandemic.Cards;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pandemic.GameLogic.Actions
 {
@@ -22,21 +19,18 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void Execute()
         {
-            Game.SelectCard(Game.PlayerDiscardPile.Cards.OfType<EventCard>(), CardSelectedCallback, "Select event card");
+            Game.SelectionService.Select(new SelectAction<Card>(SetCard, Game.PlayerDiscardPile.Cards.OfType<EventCard>(),
+                "Select event card to save"));            
         }
 
-        private bool CardSelectedCallback(Card card)
+        private void SetCard(Card card)
         {
-            if (card is EventCard eventCard)
-            {
-                Game.PlayerDiscardPile.RemoveCard(eventCard);
-                Game.EventCards.Add(eventCard);
-                eventCard.EventFinished += EventCard_EventFinished;
-                FinishAction();
-                return true;
-            }
+            EventCard eventCard = (EventCard)card;
 
-            return false;
+            Game.PlayerDiscardPile.RemoveCard(eventCard);
+            Game.EventCards.Add(eventCard);
+            eventCard.EventFinished += EventCard_EventFinished;
+            FinishAction();
         }
 
         private void EventCard_EventFinished(object sender, EventArgs e)

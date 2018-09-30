@@ -11,9 +11,8 @@ namespace Pandemic.GameLogic.Actions
 
         public Character Character { get; set; }
 
-        public string MoveType { get => ActionTypes.DriveOrFerry; }
-
         public bool IsCardRequired => false;
+        public string MoveType { get => ActionTypes.DriveOrFerry; }
 
         public bool IsPossible(Game game, MapCity city)
         {
@@ -22,13 +21,10 @@ namespace Pandemic.GameLogic.Actions
 
         public void Move(Game game, MapCity city, Action moveActionCallback)
         {
-            game.MoveCharacter(Character, city);
+            Character.CurrentMapCity = city;
             moveActionCallback();
         }
 
-        public override string ToString()
-        {
-            return MoveType;
-        }
+        public override string ToString() => MoveType;
     }
 }

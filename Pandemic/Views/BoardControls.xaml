@@ -77,7 +77,6 @@
                             Focusable="False"
                             RecognizesAccessKey="True"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -95,8 +94,4 @@
             </Setter.Value>
         </Setter>
     </Style>
-
 </ResourceDictionary>
-
-
-

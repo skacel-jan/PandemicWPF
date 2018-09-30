@@ -2,8 +2,9 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Pandemic.Cards;
+using Pandemic.Characters;
 using Pandemic.GameLogic;
-using System.Collections.Generic;
+using Pandemic.ViewModels.Dialogs;
 
 namespace Pandemic.ViewModels
 {
@@ -17,6 +18,7 @@ namespace Pandemic.ViewModels
 
             SimpleIoc.Default.Register<ViewModelLocator>();
             SimpleIoc.Default.Register<MainMenuViewModel>();
+            SimpleIoc.Default.Register<GameSetingsViewModel>();
             SimpleIoc.Default.Register<BoardViewModel>();
 
             SimpleIoc.Default.Register<DiseaseFactory>();
@@ -32,11 +34,14 @@ namespace Pandemic.ViewModels
 
             SimpleIoc.Default.Register<EventCardFactory>();
 
-            if (!SimpleIoc.Default.IsRegistered<Game>())
-            {
-                SimpleIoc.Default.Register<GameFactory>();
-                SimpleIoc.Default.Register<Game>(() => SimpleIoc.Default.GetInstanceWithoutCaching<GameFactory>().CreateGame());
-            }
+            SimpleIoc.Default.Register<GameFactory>();
+
+            SimpleIoc.Default.Register<CharacterFactory>();
+
+            SimpleIoc.Default.Register<GameSettings>();
+
+            SimpleIoc.Default.Register<IDialogService, WindowDialogService>();
+            SimpleIoc.Default.Register<SelectionService>();
 
             MessengerInstance.Register<NavigateToViewModelMessage>(this, NavigateTo);
 
@@ -51,7 +56,7 @@ namespace Pandemic.ViewModels
 
         public EventsViewModel EventsViewModel => new EventsViewModel(SimpleIoc.Default.GetInstance<EventCardFactory>().GetEventCards(), SimpleIoc.Default.GetInstance<Game>());
 
-        public BoardViewModel Game
+        public BoardViewModel BoardViewModel
         {
             get
             {
@@ -59,11 +64,19 @@ namespace Pandemic.ViewModels
             }
         }
 
-        public MainMenuViewModel MainMenu
+        public MainMenuViewModel MainMenuViewModel
         {
             get
             {
                 return ServiceLocator.Current.GetInstance<MainMenuViewModel>();
+            }
+        }
+
+        public GameSetingsViewModel GameSetingsViewModel
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<GameSetingsViewModel>();
             }
         }
 
@@ -72,11 +85,15 @@ namespace Pandemic.ViewModels
             switch (message.NavigateTo)
             {
                 case MessageTokens.StartNewGame:
-                    CurrentViewModel = SimpleIoc.Default.GetInstanceWithoutCaching<BoardViewModel>();
+                    CurrentViewModel = BoardViewModel;
                     break;
 
-                case MessageTokens.EndGame:
-                    CurrentViewModel = SimpleIoc.Default.GetInstance<MainMenuViewModel>();
+                case MessageTokens.MainMenu:
+                    CurrentViewModel = MainMenuViewModel;
+                    break;
+
+                case MessageTokens.NewGameSettings:
+                    CurrentViewModel = GameSetingsViewModel;
                     break;
             }
         }

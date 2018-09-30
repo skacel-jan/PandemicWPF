@@ -22,26 +22,20 @@ namespace Pandemic.GameLogic.Actions
 
         public void Move(Game game, MapCity city, Action moveActionCallback)
         {
-            game.SelectCard(Character.Cards.OfType<CityCard>(), (Card card) =>
+            var action = new SelectAction<Card>(SetCard, Character.Cards.OfType<CityCard>(),
+                $"Select card of a destination city {city.City.Name}", (c) => c is CityCard cCard && city.City == cCard.City);
+
+            game.SelectionService.Select(action);
+
+            void SetCard(Card card)
             {
-                if (card is CityCard cityCard)
-                {
-                    if (city.City == cityCard.City)
-                    {
-                        game.MoveCharacter(Character, city);
-                        Character.RemoveCard(card);
-                        game.AddCardToPlayerDiscardPile(card);
-                        moveActionCallback();
-                        return true;
-                    }
-                }
-                return false;
-            }, "Select card of a destination city");
+                Character.CurrentMapCity = city;
+                Character.RemoveCard(card);
+                game.AddCardToPlayerDiscardPile(card);
+                moveActionCallback();
+            }
         }
 
-        public override string ToString()
-        {
-            return MoveType;
-        }
+        public override string ToString() => MoveType;
     }
 }

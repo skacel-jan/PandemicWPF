@@ -7,20 +7,20 @@ namespace Pandemic.Cards
     {
         private Game _game;
 
-        public EventCard(string name, Func<EventAction> factoryMethod) : base(name)
+        public EventCard(string name, Func<Game, EventCard, EventAction> createEventAction) : base(name)
         {
-            FactoryMethod = factoryMethod ?? throw new ArgumentNullException(nameof(factoryMethod));
+            CreateEventAction = createEventAction ?? throw new ArgumentNullException(nameof(createEventAction));
         }
 
         public event EventHandler EventFinished;
 
-        public Func<EventAction> FactoryMethod { get; }
+        public Func<Game, EventCard, EventAction> CreateEventAction { get; }
         public Character Character { get; set; }
 
         public void PlayEvent(Game game)
         {
             _game = game;
-            FactoryMethod().Execute(game, FinishEvent);
+            CreateEventAction(game, this).Execute();
         }
 
         protected virtual void OnEventFinished(EventArgs e)
@@ -28,7 +28,7 @@ namespace Pandemic.Cards
             EventFinished?.Invoke(this, e);
         }
 
-        private void FinishEvent()
+        public void FinishEvent()
         {
             Character.RemoveCard(this);
             _game.AddCardToPlayerDiscardPile(this);

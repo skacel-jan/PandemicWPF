@@ -24,6 +24,7 @@ namespace Pandemic.ViewModels
 
         public ICommand ConfirmSelectedEventCommand => _confirmSelectedEvent ?? (_confirmSelectedEvent =
             new RelayCommand(OnEventSelected, () => SelectedEventCard != null));
+
         public IEnumerable<EventCard> EventCards { get; }
 
         public Game Game { get; }

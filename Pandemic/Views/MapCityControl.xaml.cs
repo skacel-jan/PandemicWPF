@@ -1,21 +1,8 @@
 ﻿using Pandemic.GameLogic;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace Pandemic.Views
 {
@@ -31,7 +18,6 @@ namespace Pandemic.Views
         }
 
         public static readonly DependencyProperty ClickCommandProperty = DependencyProperty.Register(nameof(ClickCommand), typeof(ICommand), typeof(MapCityControl), new UIPropertyMetadata(null));
-
 
         public ICommand DoubleClickCommand
         {
@@ -112,7 +98,7 @@ namespace Pandemic.Views
         }
 
         public static readonly DependencyProperty CharactersProperty =
-            DependencyProperty.Register(nameof(Characters), typeof(ObservableCollection<Character>), typeof(MapCityControl), 
+            DependencyProperty.Register(nameof(Characters), typeof(ObservableCollection<Character>), typeof(MapCityControl),
                 new PropertyMetadata(null));
 
         public bool IsBorderVisible
