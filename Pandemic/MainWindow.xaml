@@ -11,25 +11,10 @@
     Height="1080"
     TextOptions.TextFormattingMode="Display"
     WindowState="Maximized"
-    WindowStyle="None"
+    WindowStyle="SingleBorderWindow"
     mc:Ignorable="d">
     <Window.DataContext>
         <viewModels:ViewModelLocator />
     </Window.DataContext>
-    <Window.Resources>
-        <DataTemplate DataType="{x:Type viewModels:BoardViewModel}">
-            <views:BoardView />
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type viewModels:MainMenuViewModel}">
-            <views:MainMenuView />
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type viewModels:EventsViewModel}">
-            <views:EventCardsView />
-        </DataTemplate>
-    </Window.Resources>
-    <!--<Viewbox Stretch="Fill">-->
     <ContentControl Content="{Binding CurrentViewModel}" />
-    <!--</Viewbox>-->
 </Window>

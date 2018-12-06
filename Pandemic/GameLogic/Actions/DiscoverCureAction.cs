@@ -44,21 +44,21 @@ namespace Pandemic.GameLogic.Actions
             FinishAction();
         }
 
-        private void SelectCards(IEnumerable<Card> cards)
+        private void SelectCards(IEnumerable<CityCard> cards)
         {
-            DiscoverCure(cards.Cast<CityCard>(), Character.MostCardsColor);
+            DiscoverCure(cards, Character.MostCardsColor);
         }
 
         private void SelectCardsForCure()
         {
-            var action = new MultiSelectAction<IEnumerable<Card>>(SelectCards, Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
+            var action = new MultiSelectAction<IEnumerable<CityCard>>(SelectCards, Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
                 $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure", ValidateCards);
 
             Game.SelectionService.Select(action);
 
-            bool ValidateCards(IEnumerable<Card> cards)
+            bool ValidateCards(IEnumerable<CityCard> cards)
             {
-                return cards.Count() == Character.CardsForCure && cards.Cast<CityCard>().All(c => c.City.Color == Character.MostCardsColor);
+                return cards.Count() == Character.CardsForCure && cards.All(c => c.City.Color == Character.MostCardsColor);
             }
         }
     }

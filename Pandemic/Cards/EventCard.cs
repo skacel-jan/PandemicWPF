@@ -3,7 +3,7 @@ using System;
 
 namespace Pandemic.Cards
 {
-    public class EventCard : Card
+    public class EventCard : PlayerCard
     {
         private Game _game;
 

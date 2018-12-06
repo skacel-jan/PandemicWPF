@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pandemic.Cards;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -39,8 +40,10 @@ namespace Pandemic.GameLogic.Actions
         private void BuildStation(MapCity mapCity)
         {
             mapCity.HasResearchStation = true;
-            Character.RemoveCard(mapCity.City);
+            CityCard cityCard = Character.CityCards.FirstOrDefault(c => c.City.Equals(Character.CurrentMapCity.City));
 
+            Character.RemoveCard(cityCard);
+            Game.AddCardToPlayerDiscardPile(cityCard);
             Game.ResearchStationsPile--;
 
             FinishAction();
@@ -71,95 +74,5 @@ namespace Pandemic.GameLogic.Actions
 
             FinishAction();
         }
-    }
-
-    public class Build : INext
-    {
-        private Queue<IAction> actions;
-        private IGamePhase _phase;
-
-        public Character Character { get; }
-
-        public Game Game => _phase.Game;
-
-        public Build(Character character)
-        {
-            actions = new Queue<IAction>();
-            actions.Enqueue(new DestroyCityAction(this));
-
-            Character = character;
-        }
-
-        public void Execute(IGamePhase phase)
-        {            
-            _phase = phase;
-            Next();
-        }
-
-        public void Next()
-        {
-            if (actions.Count > 0)
-            {
-                var action = actions.Dequeue();
-                if (action.CanExecute(null))
-                {
-                    action.Execute(null);
-                }
-                else
-                {
-                    Next();
-                }
-            }
-            else
-            {
-                DoAction();
-                _phase.End();
-            }        
-        }
-
-        private void DoAction()
-        {
-            Character.CurrentMapCity.HasResearchStation = true;
-            Character.RemoveCard(Character.CurrentMapCity.City);
-
-            _phase.Game.ResearchStationsPile--;
-        }
-    }
-
-    public class DestroyCityAction : IAction
-    {
-        private MapCity _mapCity;
-
-        public DestroyCityAction(INext buildAction)
-        {
-            BuildAction = buildAction;
-        }
-
-        public INext BuildAction { get; }
-
-        public bool CanExecute(object param)
-        {
-            var mapCity = (MapCity)param;
-            return BuildAction.Game.ResearchStationsPile == 0;
-        }
-
-        public void Execute(object param)
-        {
-            BuildAction.Game.SelectionService.Select(new SelectAction<MapCity>(DestroyCity,
-                BuildAction.Game.WorldMap.Cities.Where(c => c.HasResearchStation),
-                   "Select city with research station to destroy"));
-        }
-
-        private void DestroyCity(MapCity mapCity)
-        {
-            _mapCity = mapCity;
-            _mapCity.HasResearchStation = false;
-            BuildAction.Next();
-        }
-
-        public void Undo()
-        {
-            _mapCity.HasResearchStation = true;
-        }
-    }
+    }    
 }

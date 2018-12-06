@@ -10,13 +10,13 @@ namespace Pandemic.GameLogic.Actions
         void Execute(object param);
     }
 
-    public interface ISelectAction<T> : IAction
+    public interface ISelectAction<out T> : IAction
     {
         IEnumerable<T> Items { get; }
         string Text { get; }
     }
 
-    public interface IMultiSelectAction<T> : IAction
+    public interface IMultiSelectAction<out T> : IAction
     {
         T Items { get; }
         string Text { get; }

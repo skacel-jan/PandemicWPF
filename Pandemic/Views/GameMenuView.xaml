@@ -25,13 +25,19 @@
         <Button
             Margin="20,10"
             Padding="30"
+            Command="{Binding LoadGameCommand}"
+            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}, Mode=FindAncestor}}"
+            Content="Load game" />
+        <Button
+            Margin="20,10"
+            Padding="30"
             Command="{Binding SaveGameCommand}"
             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
             Content="Save game" />
         <Button
             Margin="20,10"
             Padding="30"
-            Command="{Binding MaimMenuCommand}"
+            Command="{Binding MainMenuCommand}"
             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
             Content="Main menu" />
         <Button

@@ -115,9 +115,9 @@ namespace Pandemic.GameLogic.Actions
 
         public void Execute(Game game, Action callback)
         {
-            game.SelectionService.Select(new SelectAction<Card>(SetCard, CharacterFrom.Cards.OfType<PlayerCard>(), "Select card to share", ValidateSelectedCard));
+            game.SelectionService.Select(new SelectAction<CityCard>(SetCard, CharacterFrom.CityCards, "Select card to share", ValidateSelectedCard));
 
-            void SetCard(Card card)
+            void SetCard(CityCard card)
             {
                 CharacterFrom.RemoveCard(card);
                 CharacterTo.AddCard(card);
@@ -128,7 +128,7 @@ namespace Pandemic.GameLogic.Actions
 
         protected virtual bool ValidateSelectedCard(Card card)
         {
-            return (card as PlayerCard).City.Equals(CharacterFrom.CurrentMapCity.City);
+            return (card as CityCard).City.Equals(CharacterFrom.CurrentMapCity.City);
         }
     }
 

@@ -12,39 +12,37 @@ namespace Pandemic
 {
     public class Game : ObservableObject
     {
+        private readonly SaveLoad _saveLoad;
+        private readonly bool _autoSave;
         private int _actions;
         private IGamePhase _gamePhase;
-
         private GameInfo _info;
         private Stack<GameInfo> _gameInfos;
         private int _outbreaks;
-
-        private int _researchStationPile;
-
-        public int Difficulty { get; }
-
-        public SelectionService SelectionService { get; }
+        private int _researchStationPile = 6;
 
         internal Game(WorldMap worldMap, IDictionary<DiseaseColor, Disease> diseases, GameSettings gameSettings,
             PlayerDeck playerDeck, SelectionService selectionService)
         {
             WorldMap = worldMap;
-            Characters = gameSettings.GetCharacters(worldMap.GetCity(City.Atlanta));
+            Characters = gameSettings.GetCharacters(worldMap[City.Atlanta]);
             Infection = new Infection(new Deck<InfectionCard>(WorldMap.Cities.Select(c => new InfectionCard(c.City))));
 
             PlayerDeck = playerDeck ?? throw new ArgumentNullException(nameof(playerDeck));
 
+            AllPlayerCards = PlayerDeck.Cards.ToDictionary(c => c.Name, c => c);
+            AllInfectionCards = Infection.Deck.Cards.ToDictionary(c => c.Name, c => c);
+
             SelectionService = selectionService ?? throw new ArgumentNullException(nameof(selectionService));
             Difficulty = gameSettings.Difficulty;
 
-            PlayerDiscardPile = new DiscardPile<Card>();
+            PlayerDiscardPile = new DiscardPile<PlayerCard>();
             RemovedCards = new DiscardPile<Card>();
 
             Diseases = diseases;
+            GameSettings = gameSettings;
 
-            EventCards = new List<EventCard>();
-
-            _gameInfos = new Stack<GameInfo>();            
+            _gameInfos = new Stack<GameInfo>();
 
             //InfectionDeck.Shuffle();
             //PlayerDeck.Shuffle();
@@ -52,13 +50,11 @@ namespace Pandemic
             Diseases[DiseaseColor.Blue].Status = Disease.State.Cured;
 
             ChangeGamePhase(new InitialPhase(this));
-            WorldMap.GetCity("Atlanta").ChangeInfection(DiseaseColor.Black, 2);
+            WorldMap["Atlanta"].ChangeInfection(DiseaseColor.Black, 2);
 
-        }
+            _saveLoad = new SaveLoad();
 
-        internal void EndGame()
-        {
-            GameEnded?.Invoke(this, EventArgs.Empty);
+            _autoSave = true;
         }
 
         public event EventHandler ActionDone;
@@ -73,6 +69,10 @@ namespace Pandemic
 
         public event EventHandler GameEnded;
 
+        public int Difficulty { get; private set; }
+
+        public SelectionService SelectionService { get; }
+
         public int Actions
         {
             get => _actions;
@@ -80,16 +80,25 @@ namespace Pandemic
             {
                 if (Set(ref _actions, value))
                 {
-                    ActionDone?.Invoke(this, EventArgs.Empty);
+                    OnActionDone(EventArgs.Empty);
                 }
+            }
+        }
+
+        protected virtual async void OnActionDone(EventArgs e)
+        {
+            ActionDone?.Invoke(this, e);
+            if (_autoSave)
+            {
+                await Save();
             }
         }
 
         public Character CurrentCharacter { get => Characters.Current; }
 
-        public IDictionary<DiseaseColor, Disease> Diseases { get; }
-
-        public IList<EventCard> EventCards { get; }
+        public IDictionary<DiseaseColor, Disease> Diseases { get; private set; }
+        public GameSettings GameSettings { get; }
+        public IEnumerable<EventCard> EventCards => Characters.SelectMany(c => c.Cards.OfType<EventCard>());
 
         public IGamePhase GamePhase
         {
@@ -100,22 +109,9 @@ namespace Pandemic
             }
         }
 
-        public bool ChangeGamePhase(IGamePhase gamePhase)
-        {
-            var eventArgs = new GamePhaseChangedEventArgs(GamePhase, gamePhase);
+        public CircularCollection<Character> Characters { get; private set; }
 
-            GamePhase?.End();
-            GamePhase = gamePhase;
-            GamePhase?.Start();
-
-            GamePhaseChanged?.Invoke(this, eventArgs);
-
-            return true;
-        }
-
-        public CircularCollection<Character> Characters { get; }
-
-        public Infection Infection { get; }
+        public Infection Infection { get; private set; }
 
         public GameInfo Info
         {
@@ -139,7 +135,9 @@ namespace Pandemic
 
         public PlayerDeck PlayerDeck { get; private set; }
 
-        public DiscardPile<Card> PlayerDiscardPile { get; private set; }
+        public Dictionary<string, PlayerCard> AllPlayerCards { get; }
+        public Dictionary<string, InfectionCard> AllInfectionCards { get; }
+        public DiscardPile<PlayerCard> PlayerDiscardPile { get; private set; }
 
         public DiscardPile<Card> RemovedCards { get; }
 
@@ -150,16 +148,25 @@ namespace Pandemic
         }
 
         public WorldMap WorldMap { get; private set; }
+
         public int Turn { get; internal set; }
 
-        public void AddCardToPlayerDiscardPile(Card card)
+        public bool ChangeGamePhase(IGamePhase gamePhase)
+        {
+            var eventArgs = new GamePhaseChangedEventArgs(GamePhase, gamePhase);
+
+            GamePhase?.End();
+            GamePhase = gamePhase;
+            GamePhase?.Start();
+
+            GamePhaseChanged?.Invoke(this, eventArgs);
+
+            return true;
+        }
+
+        public void AddCardToPlayerDiscardPile(PlayerCard card)
         {
             PlayerDiscardPile.AddCard(card);
-
-            if (card is EventCard eventCard)
-            {
-                EventCards.Remove(eventCard);
-            }
         }
 
         public void DecreaseCubePile(DiseaseColor color, int cubesCount)
@@ -198,7 +205,7 @@ namespace Pandemic
         {
             if (Diseases[color].Status < Disease.State.Eradicated)
             {
-                int addedInfections = WorldMap.GetCity(city.Name).ChangeInfection(color, 1);
+                int addedInfections = WorldMap[city.Name].ChangeInfection(color, 1);
                 if (addedInfections > 0)
                 {
                     DecreaseCubePile(color, addedInfections);
@@ -242,6 +249,56 @@ namespace Pandemic
                 _gameInfos.Push(Info);
             }
             Info = new GameInfo(text, actionText, action);
+        }
+
+        public async Task Save()
+        {
+            await _saveLoad.Save(this);
+        }
+
+        public async Task Load()
+        {
+            SavedState savedState = await _saveLoad.Load();
+            SetSavedState(savedState);
+        }
+
+        internal void EndGame()
+        {
+            GameEnded?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SetSavedState(SavedState savedState)
+        {          
+            Actions = savedState.Actions;
+            Characters = new CircularCollection<Character>(
+                savedState.Characters.Select(c =>
+                {
+                    var character = GameSettings.CharacterFactory.GetCharacter(c.Role, WorldMap[c.MapCity]);
+                    foreach  (var card in c.Cards)
+                    {
+                        character.AddCard(AllPlayerCards[card]);
+                    }
+                    return character;                    
+                }));
+            Characters.First().IsActive = true;
+            Difficulty = savedState.Difficulty;
+            Diseases = savedState.Diseases;
+            Outbreaks = savedState.Outbreaks;
+            Turn = savedState.Turn;
+
+            PlayerDeck = new PlayerDeck(savedState.PlayerDeck.Select(c => c == "Epidemic" ? new EpidemicCard() : AllPlayerCards[c]));
+
+            PlayerDiscardPile = new DiscardPile<PlayerCard>(savedState.PlayerDeck.Select(c => c == "Epidemic" ? new EpidemicCard() : AllPlayerCards[c]));
+
+            var infectionDeck = new Deck<InfectionCard>(savedState.InfectionCardsInDeck.Select(c => AllInfectionCards[c]));
+            var infectionDiscardPile = new DiscardPile<InfectionCard>(savedState.InfectionCardsInDiscardPile.Select(c => AllInfectionCards[c]));
+
+            Infection = new Infection(infectionDeck, infectionDiscardPile)
+            {
+                Actual = savedState.InfectionActual,
+                Position = savedState.InfectionPosition,
+                Rate = savedState.InfectionRate
+            };
         }
     }
 

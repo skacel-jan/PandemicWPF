@@ -2,9 +2,9 @@
 
 namespace Pandemic.Cards
 {
-    public class PlayerCard : CityCard, IComparable
+    public abstract class PlayerCard : Card
     {
-        public PlayerCard(City city) : base(city)
+        protected PlayerCard(string name) : base(name)
         {
         }
     }

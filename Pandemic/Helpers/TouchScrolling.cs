@@ -88,19 +88,6 @@ namespace Pandemic
             if (!(sender is ScrollViewer target)) return;
 
             target.ReleaseMouseCapture();
-
-            //Task.Run(() =>
-            //{
-            //    for (int i = 0; i < 100; i++)
-            //    {
-            //        if (!target.CheckAccess())
-            //        {
-            //            target.Dispatcher.Invoke(() => target.ScrollToHorizontalOffset(target.HorizontalOffset - 2));
-            //        }
-
-            //        Thread.Sleep(10);
-            //    }
-            //});
         }
 
         private static void target_PreviewMouseMove(object sender, MouseEventArgs e)

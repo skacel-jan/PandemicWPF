@@ -1,8 +1,8 @@
 ﻿namespace Pandemic.Cards
 {
-    public class EpidemicCard : Card
+    public class EpidemicCard : PlayerCard
     {
-        public EpidemicCard(string name) : base(name)
+        public EpidemicCard() : base("Epidemic")
         {
         }
     }

@@ -1,0 +1,597 @@
+﻿<UserControl
+    x:Class="Pandemic.Views.WorldMapView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Converters="clr-namespace:Pandemic.Converters"
+    xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:custompanels="clr-namespace:Pandemic.Views.CustomPanels"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="clr-namespace:Pandemic.Helpers"
+    xmlns:local="clr-namespace:Pandemic.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:usercontrols="clr-namespace:Pandemic.Views.UserControls"
+    d:DataContext="{Binding Path=WorldMapViewModel, Source={StaticResource Locator}}"
+    d:DesignHeight="700"
+    d:DesignWidth="1400"
+    mc:Ignorable="d">
+    <UserControl.CacheMode>
+        <BitmapCache
+            EnableClearType="False"
+            RenderAtScale="2"
+            SnapsToDevicePixels="False" />
+    </UserControl.CacheMode>
+    <UserControl.Resources>
+
+        <Style TargetType="{x:Type local:MapCityControl}">
+            <Setter Property="Height" Value="60" />
+            <Setter Property="Width" Value="60" />
+            <Setter Property="helpers:MultiClickBehavior.SingleClickCommand" Value="{Binding CityCommand}" />
+            <Setter Property="helpers:MultiClickBehavior.DoubleClickCommand" Value="{Binding InstantMoveCommand}" />
+            <!--<Setter Property="helpers:MultiClickBehavior.DoubleClickCommandEnabled" Value="{Binding DataContext.IsMoveSelected, RelativeSource={RelativeSource AncestorType=local:BoardView}}" />-->
+            <Setter Property="helpers:MultiClickBehavior.DoubleClickCommandParameter" Value="{Binding}" />
+            <Setter Property="YellowInfection" Value="{Binding YellowInfection}" />
+            <Setter Property="RedInfection" Value="{Binding RedInfection}" />
+            <Setter Property="BlueInfection" Value="{Binding BlueInfection}" />
+            <Setter Property="BlackInfection" Value="{Binding BlackInfection}" />
+            <Setter Property="CityName" Value="{Binding City.Name}" />
+            <Setter Property="HasResearchStation" Value="{Binding HasResearchStation}" />
+            <Setter Property="Characters" Value="{Binding Characters}" />
+            <Setter Property="IsBorderVisible" Value="{Binding IsSelectable}" />
+            <Setter Property="CityColor" Value="{Binding City.Color}" />
+            <Setter Property="Canvas.Left" Value="{Binding AnchorX, RelativeSource={RelativeSource Mode=Self}}" />
+            <Setter Property="Canvas.Top" Value="{Binding AnchorY, RelativeSource={RelativeSource Mode=Self}}" />
+        </Style>
+
+        <Style TargetType="{x:Type Line}">
+            <Style.Resources>
+                <BlurEffect
+                    x:Key="LineBlur"
+                    Radius="2" />
+            </Style.Resources>
+            <Setter Property="Stroke" Value="#FF8BC6C9" />
+            <Setter Property="StrokeThickness" Value="2" />
+            <Setter Property="Effect" Value="{StaticResource LineBlur}" />
+        </Style>
+    </UserControl.Resources>
+    <Grid x:Name="grid">
+        <local:WorldMapBackground Grid.Row="0" />
+        <Viewbox
+            Grid.Row="0"
+            Stretch="Fill">
+            <Canvas
+                Width="{Binding Size.Width}"
+                Height="{Binding Size.Height}">
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=SanFrancisco}"
+                    Source="{Binding CenterPoint, ElementName=Chicago}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=SanFrancisco}"
+                    Source="{Binding CenterPoint, ElementName=LosAngeles}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Chicago}"
+                    Source="{Binding CenterPoint, ElementName=Montreal}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Chicago}"
+                    Source="{Binding CenterPoint, ElementName=Atlanta}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Chicago}"
+                    Source="{Binding CenterPoint, ElementName=MexicoCity}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Chicago}"
+                    Source="{Binding CenterPoint, ElementName=LosAngeles}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=LosAngeles}"
+                    Source="{Binding CenterPoint, ElementName=MexicoCity}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Atlanta}"
+                    Source="{Binding CenterPoint, ElementName=Washington}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Atlanta}"
+                    Source="{Binding CenterPoint, ElementName=Miami}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=MexicoCity}"
+                    Source="{Binding CenterPoint, ElementName=Miami}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=MexicoCity}"
+                    Source="{Binding CenterPoint, ElementName=Bogota}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=MexicoCity}"
+                    Source="{Binding CenterPoint, ElementName=Lima}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Montreal}"
+                    Source="{Binding CenterPoint, ElementName=NewYork}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Montreal}"
+                    Source="{Binding CenterPoint, ElementName=Washington}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Miami}"
+                    Source="{Binding CenterPoint, ElementName=Washington}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Miami}"
+                    Source="{Binding CenterPoint, ElementName=Bogota}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=NewYork}"
+                    Source="{Binding CenterPoint, ElementName=London}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=NewYork}"
+                    Source="{Binding CenterPoint, ElementName=Madrid}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=NewYork}"
+                    Source="{Binding CenterPoint, ElementName=Washington}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Bogota}"
+                    Source="{Binding CenterPoint, ElementName=Lima}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Bogota}"
+                    Source="{Binding CenterPoint, ElementName=SaoPaulo}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Bogota}"
+                    Source="{Binding CenterPoint, ElementName=BueonsAires}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Lima}"
+                    Source="{Binding CenterPoint, ElementName=Santiago}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=BueonsAires}"
+                    Source="{Binding CenterPoint, ElementName=SaoPaulo}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=SaoPaulo}"
+                    Source="{Binding CenterPoint, ElementName=Madrid}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=SaoPaulo}"
+                    Source="{Binding CenterPoint, ElementName=Lagos}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=London}"
+                    Source="{Binding CenterPoint, ElementName=Essen}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=London}"
+                    Source="{Binding CenterPoint, ElementName=Paris}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Madrid}"
+                    Source="{Binding CenterPoint, ElementName=Paris}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Madrid}"
+                    Source="{Binding CenterPoint, ElementName=Algiers}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Paris}"
+                    Source="{Binding CenterPoint, ElementName=Milan}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Paris}"
+                    Source="{Binding CenterPoint, ElementName=Algiers}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Essen}"
+                    Source="{Binding CenterPoint, ElementName=StPetersburg}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Essen}"
+                    Source="{Binding CenterPoint, ElementName=Milan}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Milan}"
+                    Source="{Binding CenterPoint, ElementName=Istanbul}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Algiers}"
+                    Source="{Binding CenterPoint, ElementName=Istanbul}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Algiers}"
+                    Source="{Binding CenterPoint, ElementName=Cairo}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Lagos}"
+                    Source="{Binding CenterPoint, ElementName=Kinshasa}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Lagos}"
+                    Source="{Binding CenterPoint, ElementName=Khartoum}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Kinshasa}"
+                    Source="{Binding CenterPoint, ElementName=Johannesburg}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Kinshasa}"
+                    Source="{Binding CenterPoint, ElementName=Khartoum}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Johannesburg}"
+                    Source="{Binding CenterPoint, ElementName=Khartoum}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Khartoum}"
+                    Source="{Binding CenterPoint, ElementName=Cairo}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Cairo}"
+                    Source="{Binding CenterPoint, ElementName=Istanbul}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Cairo}"
+                    Source="{Binding CenterPoint, ElementName=Baghdad}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Cairo}"
+                    Source="{Binding CenterPoint, ElementName=Riyadh}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Istanbul}"
+                    Source="{Binding CenterPoint, ElementName=StPetersburg}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Istanbul}"
+                    Source="{Binding CenterPoint, ElementName=Moscow}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Istanbul}"
+                    Source="{Binding CenterPoint, ElementName=Baghdad}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=StPetersburg}"
+                    Source="{Binding CenterPoint, ElementName=Moscow}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Moscow}"
+                    Source="{Binding CenterPoint, ElementName=Tehran}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Baghdad}"
+                    Source="{Binding CenterPoint, ElementName=Tehran}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Baghdad}"
+                    Source="{Binding CenterPoint, ElementName=Riyadh}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Baghdad}"
+                    Source="{Binding CenterPoint, ElementName=Karachi}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Tehran}"
+                    Source="{Binding CenterPoint, ElementName=Karachi}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Tehran}"
+                    Source="{Binding CenterPoint, ElementName=Delhi}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Riyadh}"
+                    Source="{Binding CenterPoint, ElementName=Karachi}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Karachi}"
+                    Source="{Binding CenterPoint, ElementName=Mumbai}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Karachi}"
+                    Source="{Binding CenterPoint, ElementName=Delhi}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Delhi}"
+                    Source="{Binding CenterPoint, ElementName=Kolkata}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Delhi}"
+                    Source="{Binding CenterPoint, ElementName=Mumbai}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Delhi}"
+                    Source="{Binding CenterPoint, ElementName=Chennai}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Mumbai}"
+                    Source="{Binding CenterPoint, ElementName=Chennai}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Kolkata}"
+                    Source="{Binding CenterPoint, ElementName=Chennai}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Kolkata}"
+                    Source="{Binding CenterPoint, ElementName=Bangkok}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Kolkata}"
+                    Source="{Binding CenterPoint, ElementName=HongKong}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Chennai}"
+                    Source="{Binding CenterPoint, ElementName=Bangkok}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Chennai}"
+                    Source="{Binding CenterPoint, ElementName=Jakarta}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Jakarta}"
+                    Source="{Binding CenterPoint, ElementName=HoChiMinhCity}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Jakarta}"
+                    Source="{Binding CenterPoint, ElementName=Sydney}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=HongKong}"
+                    Source="{Binding CenterPoint, ElementName=Shanghai}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=HongKong}"
+                    Source="{Binding CenterPoint, ElementName=Taipei}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=HongKong}"
+                    Source="{Binding CenterPoint, ElementName=Bangkok}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=HongKong}"
+                    Source="{Binding CenterPoint, ElementName=HoChiMinhCity}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=HongKong}"
+                    Source="{Binding CenterPoint, ElementName=Manila}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Bangkok}"
+                    Source="{Binding CenterPoint, ElementName=HoChiMinhCity}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Bangkok}"
+                    Source="{Binding CenterPoint, ElementName=Jakarta}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=HoChiMinhCity}"
+                    Source="{Binding CenterPoint, ElementName=Sydney}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=HoChiMinhCity}"
+                    Source="{Binding CenterPoint, ElementName=Manila}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Shanghai}"
+                    Source="{Binding CenterPoint, ElementName=Beijing}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Shanghai}"
+                    Source="{Binding CenterPoint, ElementName=Seoul}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Shanghai}"
+                    Source="{Binding CenterPoint, ElementName=Taipei}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Shanghai}"
+                    Source="{Binding CenterPoint, ElementName=Tokyo}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Beijing}"
+                    Source="{Binding CenterPoint, ElementName=Seoul}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Seoul}"
+                    Source="{Binding CenterPoint, ElementName=Tokyo}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Taipei}"
+                    Source="{Binding CenterPoint, ElementName=Manila}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Taipei}"
+                    Source="{Binding CenterPoint, ElementName=Osaka}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Manila}"
+                    Source="{Binding CenterPoint, ElementName=Sydney}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Tokyo}"
+                    Source="{Binding CenterPoint, ElementName=Osaka}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Shanghai}"
+                    Source="{Binding CenterPoint, ElementName=Beijing}" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=SanFrancisco}"
+                    Source="-1 273" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Tokyo}"
+                    Source="1400 273" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=SanFrancisco}"
+                    Source="-1 349" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Manila}"
+                    Source="1400 349" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=LosAngeles}"
+                    Source="-1 470" />
+                <usercontrols:Connection
+                    Destination="{Binding CenterPoint, ElementName=Sydney}"
+                    Source="1400 470 " />
+
+                <local:MapCityControl
+                    x:Name="SanFrancisco"
+                    AnchorX="152"
+                    AnchorY="253"
+                    DataContext="{Binding WorldMap[San Francisco].MapCity}" />
+                <local:MapCityControl
+                    x:Name="LosAngeles"
+                    AnchorX="166"
+                    AnchorY="325"
+                    DataContext="{Binding WorldMap[Los Angeles].MapCity}" />
+                <local:MapCityControl
+                    x:Name="MexicoCity"
+                    AnchorX="251"
+                    AnchorY="345"
+                    DataContext="{Binding WorldMap[Mexico City].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Chicago"
+                    AnchorX="258"
+                    AnchorY="223"
+                    DataContext="{Binding WorldMap[Chicago].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Atlanta"
+                    AnchorX="294"
+                    AnchorY="278"
+                    DataContext="{Binding WorldMap[Atlanta].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Lima"
+                    AnchorX="300"
+                    AnchorY="487"
+                    DataContext="{Binding WorldMap[Lima].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Santiago"
+                    AnchorX="319"
+                    AnchorY="566"
+                    DataContext="{Binding WorldMap[Santiago].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Bogota"
+                    AnchorX="342"
+                    AnchorY="410"
+                    DataContext="{Binding WorldMap[Bogota].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Montreal"
+                    AnchorX="346"
+                    AnchorY="217"
+                    DataContext="{Binding WorldMap[Montreal].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Miami"
+                    AnchorX="353"
+                    AnchorY="332"
+                    DataContext="{Binding WorldMap[Miami].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Washington"
+                    AnchorX="397"
+                    AnchorY="270"
+                    DataContext="{Binding WorldMap[Washington].MapCity}" />
+                <local:MapCityControl
+                    x:Name="BueonsAires"
+                    AnchorX="410"
+                    AnchorY="547"
+                    DataContext="{Binding WorldMap[Buenos Aires].MapCity}" />
+                <local:MapCityControl
+                    x:Name="NewYork"
+                    AnchorX="420"
+                    AnchorY="220"
+                    DataContext="{Binding WorldMap[New York].MapCity}" />
+                <local:MapCityControl
+                    x:Name="SaoPaulo"
+                    AnchorX="461"
+                    AnchorY="488"
+                    DataContext="{Binding WorldMap[Sao Paulo].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Madrid"
+                    AnchorX="560"
+                    AnchorY="259"
+                    DataContext="{Binding WorldMap[Madrid].MapCity}" />
+                <local:MapCityControl
+                    x:Name="London"
+                    AnchorX="570"
+                    AnchorY="182"
+                    DataContext="{Binding WorldMap[London].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Lagos"
+                    AnchorX="624"
+                    AnchorY="390"
+                    DataContext="{Binding WorldMap[Lagos].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Paris"
+                    AnchorX="640"
+                    AnchorY="223"
+                    DataContext="{Binding WorldMap[Paris].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Algiers"
+                    AnchorX="652"
+                    AnchorY="302"
+                    DataContext="{Binding WorldMap[Algiers].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Essen"
+                    AnchorX="662"
+                    AnchorY="170"
+                    DataContext="{Binding WorldMap[Essen].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Kinshasa"
+                    AnchorX="683"
+                    AnchorY="445"
+                    DataContext="{Binding WorldMap[Kinshasa].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Milan"
+                    AnchorX="701"
+                    AnchorY="213"
+                    DataContext="{Binding WorldMap[Milan].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Cairo"
+                    AnchorX="719"
+                    AnchorY="313"
+                    DataContext="{Binding WorldMap[Cairo].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Johannesburg"
+                    AnchorX="725"
+                    AnchorY="525"
+                    DataContext="{Binding WorldMap[Johannesburg].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Istanbul"
+                    AnchorX="731"
+                    AnchorY="247"
+                    DataContext="{Binding WorldMap[Istanbul].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Khartoum"
+                    AnchorX="734"
+                    AnchorY="374"
+                    DataContext="{Binding WorldMap[Khartoum].MapCity}" />
+                <local:MapCityControl
+                    x:Name="StPetersburg"
+                    AnchorX="756"
+                    AnchorY="148"
+                    DataContext="{Binding WorldMap[St. Petersburg].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Baghdad"
+                    AnchorX="791"
+                    AnchorY="275"
+                    DataContext="{Binding WorldMap[Baghdad].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Moscow"
+                    AnchorX="794"
+                    AnchorY="200"
+                    DataContext="{Binding WorldMap[Moscow].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Riyadh"
+                    AnchorX="802"
+                    AnchorY="345"
+                    DataContext="{Binding WorldMap[Riyadh].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Tehran"
+                    AnchorX="853"
+                    AnchorY="237"
+                    DataContext="{Binding WorldMap[Tehran].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Karachi"
+                    AnchorX="872"
+                    AnchorY="303"
+                    DataContext="{Binding WorldMap[Karachi].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Mumbai"
+                    AnchorX="880"
+                    AnchorY="366"
+                    DataContext="{Binding WorldMap[Mumbai].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Delhi"
+                    AnchorX="932"
+                    AnchorY="274"
+                    DataContext="{Binding WorldMap[Delhi].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Chennai"
+                    AnchorX="951"
+                    AnchorY="397"
+                    DataContext="{Binding WorldMap[Chennai].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Kolkata"
+                    AnchorX="989"
+                    AnchorY="299"
+                    DataContext="{Binding WorldMap[Kolkata].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Jakarta"
+                    AnchorX="1004"
+                    AnchorY="467"
+                    DataContext="{Binding WorldMap[Jakarta].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Bangkok"
+                    AnchorX="1013"
+                    AnchorY="364"
+                    DataContext="{Binding WorldMap[Bangkok].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Beijing"
+                    AnchorX="1049"
+                    AnchorY="203"
+                    DataContext="{Binding WorldMap[Beijing].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Shanghai"
+                    AnchorX="1050"
+                    AnchorY="259"
+                    DataContext="{Binding WorldMap[Shanghai].MapCity}" />
+                <local:MapCityControl
+                    x:Name="HongKong"
+                    AnchorX="1054"
+                    AnchorY="325"
+                    DataContext="{Binding WorldMap[Hong Kong].MapCity}" />
+                <local:MapCityControl
+                    x:Name="HoChiMinhCity"
+                    AnchorX="1056"
+                    AnchorY="411"
+                    DataContext="{Binding WorldMap[Ho Chi Minh City].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Seoul"
+                    AnchorX="1120"
+                    AnchorY="199"
+                    DataContext="{Binding WorldMap[Seoul].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Taipei"
+                    AnchorX="1125"
+                    AnchorY="319"
+                    DataContext="{Binding WorldMap[Taipei].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Manila"
+                    AnchorX="1143"
+                    AnchorY="406"
+                    DataContext="{Binding WorldMap[Manila].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Tokyo"
+                    AnchorX="1188"
+                    AnchorY="233"
+                    DataContext="{Binding WorldMap[Tokyo].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Sydney"
+                    AnchorX="1188"
+                    AnchorY="546"
+                    DataContext="{Binding WorldMap[Sydney].MapCity}" />
+                <local:MapCityControl
+                    x:Name="Osaka"
+                    AnchorX="1198"
+                    AnchorY="296"
+                    DataContext="{Binding WorldMap[Osaka].MapCity}" />
+
+            </Canvas>
+        </Viewbox>
+    </Grid>
+</UserControl>

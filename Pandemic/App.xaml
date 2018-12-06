@@ -29,6 +29,19 @@
             <DataTemplate DataType="{x:Type viewModels:GameMenuViewModel}">
                 <views:GameMenuView />
             </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:BoardViewModel}">
+                <views:BoardView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:MainMenuViewModel}">
+                <views:MainMenuView />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type viewModels:EventsViewModel}">
+                <views:EventCardsView />
+            </DataTemplate>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

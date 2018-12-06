@@ -21,10 +21,11 @@ namespace Pandemic.ViewModels
 
         private Stack<ViewModelBase> _actionViewModels;
 
+        public WorldMapViewModel WorldMapViewModel { get; }
+
         public BoardViewModel(GameFactory gameFactory, IDialogService dialogService)
         {
             Game = gameFactory?.CreateGame() ?? throw new ArgumentNullException(nameof(gameFactory));
-            Cities = Game.WorldMap.Cities.ToDictionary(c => c.City.Name, c => c);
             DialogService = dialogService;
             Game.SelectionService.Selecting += SelectingAction;
             Game.SelectionService.SelectionFinished += ActionFinished;
@@ -47,17 +48,17 @@ namespace Pandemic.ViewModels
 
             CancelCommand = new RelayCommand(Cancel, () => IsActionPhase);
 
-            EventsCommand = new RelayCommand(SelectEvent, () => Game.EventCards.Count > 0);
+            EventsCommand = new RelayCommand(SelectEvent, () => Game.EventCards.Count() > 0);
 
-            GameMenuCommand = new RelayCommand(() => DialogService.ShowDialog("Game menu", new GameMenuViewModel()));
+            GameMenuCommand = new RelayCommand(() => DialogService.ShowDialog("Game menu", new GameMenuViewModel(Game)));
 
             PlayerDiscardPileCommand = new RelayCommand(ShowPlayerDiscardPile);
             InfectionDiscardPileCommand = new RelayCommand(ShowInfectionDiscardPile);
 
             _actionViewModels = new Stack<ViewModelBase>();
-        }
 
-        public IDictionary<string, MapCity> Cities { get; }
+            WorldMapViewModel = new WorldMapViewModel(Game.WorldMap);
+        }
 
         private void Game_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -315,5 +316,8 @@ namespace Pandemic.ViewModels
                 InfoViewModel = new PlayerCardsViewModel(Game.PlayerDiscardPile.Cards);
             }
         }
+
+
+
     }
 }

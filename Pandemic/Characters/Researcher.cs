@@ -17,11 +17,6 @@ namespace Pandemic.Characters
               player’s hand, but it can occur on either player’s turn."
         };
 
-        public Researcher()
-        {
-            Actions[ActionTypes.Share] = new ShareKnowledgeResearcherAction(this);
-        }
-
         public override Color Color => Colors.Brown;
         public override string Role => RESEARCHER;
         public override IEnumerable<string> RoleDescription => _roleDescription;

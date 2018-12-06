@@ -42,10 +42,7 @@ namespace Pandemic
 
         public IEnumerable<MapCity> Cities => _cities.Values;
 
-        public MapCity GetCity(string city)
-        {
-            return _cities[city];
-        }
+        public MapCity this[string city] => _cities[city];
 
         public void SelectCity(ISelectAction<MapCity> selectAction)
         {

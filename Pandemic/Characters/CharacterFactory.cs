@@ -34,6 +34,14 @@ namespace Pandemic.Characters
                     character = new ContingencyPlanner() { CurrentMapCity = startingCity };
                     break;
 
+                case QuarantineSpecialist.QUARANTINE_SPECIALIST:
+                    character = new QuarantineSpecialist() { CurrentMapCity = startingCity };
+                    break;
+
+                case Scientist.SCIENTIST:
+                    character = new Scientist() { CurrentMapCity = startingCity };
+                    break;
+
                 default:
                     throw new ArgumentException("Unknwon role", nameof(role));
             }
@@ -59,7 +67,7 @@ namespace Pandemic.Characters
                 case Medic.MEDIC:
                     return new KeyExtractorDictionary<string, IGameAction>((IGameAction a) => a.Name)
                     {
-                        { new MoveAction(character) },
+                        { new MedicMoveAction((Medic)character) },
                         { new TreatAction(character) },
                         { new BuildAction(character) },
                         { new ShareKnowledgeAction(character) },
@@ -74,17 +82,7 @@ namespace Pandemic.Characters
                         { new OperationsExpertBuildAction(character) },
                         { new ShareKnowledgeAction(character) },
                         { new DiscoverCureAction(character) }
-                    };
-
-                case Researcher.RESEARCHER:
-                    return new KeyExtractorDictionary<string, IGameAction>((IGameAction a) => a.Name)
-                    {
-                        { new MoveAction(character) },
-                        { new TreatAction(character) },
-                        { new BuildAction(character) },
-                        { new ShareKnowledgeAction(character) },
-                        { new DiscoverCureAction(character) }
-                    };
+                    };                
 
                 case ContingencyPlanner.CONTINGENCY_PLANNER:
                     return new KeyExtractorDictionary<string, IGameAction>((IGameAction a) => a.Name)
@@ -95,6 +93,26 @@ namespace Pandemic.Characters
                         { new ShareKnowledgeAction(character) },
                         { new DiscoverCureAction(character) },
                         { new ContingencyPlannerAction(character) }
+                    };
+
+                case Researcher.RESEARCHER:
+                    return new KeyExtractorDictionary<string, IGameAction>((IGameAction a) => a.Name)
+                    {
+                        { new MoveAction(character) },
+                        { new TreatAction(character) },
+                        { new BuildAction(character) },
+                        { new ShareKnowledgeResearcherAction(character) },
+                        { new DiscoverCureAction(character) }
+                    };
+                case Scientist.SCIENTIST:
+                case QuarantineSpecialist.QUARANTINE_SPECIALIST:
+                    return new KeyExtractorDictionary<string, IGameAction>((IGameAction a) => a.Name)
+                    {
+                        { new MoveAction(character) },
+                        { new TreatAction(character) },
+                        { new BuildAction(character) },
+                        { new ShareKnowledgeAction(character) },
+                        { new DiscoverCureAction(character) }
                     };
 
                 default:

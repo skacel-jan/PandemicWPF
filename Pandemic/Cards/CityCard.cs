@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Pandemic.Cards
 {
-    public class CityCard : Card, IComparable, IComparable<CityCard>, IEquatable<CityCard>
+    public class CityCard : PlayerCard, IComparable, IComparable<CityCard>, IEquatable<CityCard>
     {
         public City City { get; private set; }
 

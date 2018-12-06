@@ -12,6 +12,14 @@ namespace Pandemic
             _extractor = extractor;
         }
 
+        public KeyExtractorDictionary(Func<TValue, TKey> extractor, IEnumerable<TValue> values) :this(extractor)
+        {
+            foreach (var value in values)
+            {
+                Add(value);
+            }
+        }
+
         public void Add(TValue value)
         {
             Add(_extractor(value), value);

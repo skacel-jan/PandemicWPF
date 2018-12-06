@@ -4,17 +4,18 @@ using Pandemic.GameLogic;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Pandemic
 {
-    public class MapCity : ViewModelBase
+    public class MapCity : ObservableObject
     {
         private City _city;
         private ICommand _cityCommand;
         private bool _hasResearchStation;
         private ICommand _instantMoveCommand;
-        private bool _isSelectable = false;
+        private bool _isSelectable = false;       
 
         public MapCity(City city, IDictionary<DiseaseColor, Disease> diseases)
         {
@@ -87,6 +88,19 @@ namespace Pandemic
         {
             get => _isSelectable;
             set => Set(ref _isSelectable, value);
+        }
+
+
+        private Point _centerPoint;
+
+        /// <summary>
+        /// Sets and gets the Point property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public Point CenterPoint
+        {
+            get => _centerPoint;
+            set => Set(ref _centerPoint, value);
         }
 
         public int Population { get; }

@@ -64,9 +64,14 @@
     <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.4.1.0, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -88,16 +93,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Cards\CityCard.cs" />
     <Compile Include="Cards\EventCardFactory.cs" />
     <Compile Include="Decks\DiscardPile.cs" />
-    <Compile Include="GameLogic\Actions\Events\AirliftAction.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\AirliftAction.cs" />
     <Compile Include="GameLogic\Actions\ContingencyPlannerAction.cs" />
-    <Compile Include="GameLogic\Actions\Events\GovernmentGrantAction.cs" />
-    <Compile Include="GameLogic\Actions\IBuild.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\GovernmentGrantAction.cs" />
     <Compile Include="GameLogic\Actions\Interfaces\IGameAction.cs" />
     <Compile Include="GameLogic\Actions\Interfaces\ISelectAction.cs" />
-    <Compile Include="GameLogic\Actions\Events\OneQuietNightAction.cs" />
-    <Compile Include="GameLogic\Actions\Events\ResilientPopulationAction.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\OneQuietNightAction.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\ResilientPopulationAction.cs" />
     <Compile Include="GameLogic\Actions\EventAction.cs" />
     <Compile Include="GameLogic\Actions\DiscoverCureAction.cs" />
     <Compile Include="GameLogic\Actions\SelectAction.cs" />
@@ -117,6 +122,7 @@
     <Compile Include="GameLogic\Phase\GameOverState.cs" />
     <Compile Include="GameLogic\Phase\IGamePhase.cs" />
     <Compile Include="GameLogic\Phase\InfectionPhase.cs" />
+    <Compile Include="GameLogic\SaveLoad.cs" />
     <Compile Include="GameLogic\Services\SelectionService.cs" />
     <Compile Include="Helpers\CircularCollection.cs" />
     <Compile Include="Decks\IDeck.cs" />
@@ -137,11 +143,11 @@
     <Compile Include="Characters\QuarantineSpecialist.cs" />
     <Compile Include="Characters\Scientist.cs" />
     <Compile Include="Helpers\Converters\ColorToSolidColorBrushConverter.cs" />
-    <Compile Include="Helpers\Converters\MovePointToCenter.cs" />
-    <Compile Include="Helpers\GenericEventArgs.cs" />
     <Compile Include="Helpers\KeyExtractorDictionary.cs" />
-    <Compile Include="Helpers\MessageTokens.cs" />
+    <Compile Include="Helpers\KineticBehaviour.cs" />
+    <Compile Include="ViewModels\MessageTokens.cs" />
     <Compile Include="Helpers\MultiClickBehavior.cs" />
+    <Compile Include="Helpers\ScrollAnimationBehavior.cs" />
     <Compile Include="Helpers\SelectedItemWrapper.cs" />
     <Compile Include="Helpers\TouchScrolling.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -163,10 +169,11 @@
     <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
     <Compile Include="ViewModels\CardsSelectionViewModel.cs" />
     <Compile Include="ViewModels\NavigateToViewModelMessage.cs" />
+    <Compile Include="ViewModels\WorldMapViewModel.cs" />
     <Compile Include="Views\BoardView.xaml.cs">
       <DependentUpon>BoardView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Cards\CityCard.cs" />
+    <Compile Include="Cards\PlayerCard.cs" />
     <Compile Include="Characters\Character.cs" />
     <Compile Include="Characters\Medic.cs" />
     <Compile Include="GameLogic\Board\MapCity.cs" />
@@ -222,14 +229,20 @@
     <Compile Include="Views\MoveSelection.xaml.cs">
       <DependentUpon>MoveSelection.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\WorldMap.xaml.cs">
-      <DependentUpon>WorldMap.xaml</DependentUpon>
+    <Compile Include="Views\UserControls\Connection.xaml.cs">
+      <DependentUpon>Connection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WorldMapView.xaml.cs">
+      <DependentUpon>WorldMapView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\WorldMapBackground.xaml.cs">
       <DependentUpon>WorldMapBackground.xaml</DependentUpon>
     </Compile>
     <Compile Include="GameLogic\Board\WorldMap.cs" />
     <Compile Include="GameLogic\Board\XmlWorldMapFactory.cs" />
+    <Compile Include="Views\WorldMapView2.xaml.cs">
+      <DependentUpon>WorldMapView2.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -310,7 +323,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\WorldMap.xaml">
+    <Page Include="Views\UserControls\Connection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WorldMapView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -318,9 +335,12 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\WorldMapView2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cards\PlayerCard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

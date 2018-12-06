@@ -21,25 +21,25 @@ namespace Pandemic.GameLogic
 
         public void Action(IGameAction action)
         {
-            if (!TryDrawPlayerCard(Game.CurrentCharacter, out Card firstCard))
+            if (!TryDrawPlayerCard(Game.CurrentCharacter, out PlayerCard firstCard))
             {
                 GameOver();
             }
 
             _drawnCards.Add(firstCard);
 
-            if (!TryDrawPlayerCard(Game.CurrentCharacter, out Card secondCard))
+            if (!TryDrawPlayerCard(Game.CurrentCharacter, out PlayerCard secondCard))
             {
                 GameOver();
             }
             _drawnCards.Add(secondCard);
 
             if (Game.CurrentCharacter.HasMoreCardsThenLimit)
-            {                
+            {
                 Game.SetInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.{Environment.NewLine}" +
                         $"Player has more cards then his hand limit. Card has to be discarded.");
 
-                var selectAction = new MultiSelectAction<IEnumerable<Card>>(SetCard, Game.CurrentCharacter.Cards, string.Empty, ValidateCards);
+                var selectAction = new MultiSelectAction<IEnumerable<PlayerCard>>(SetCard, Game.CurrentCharacter.Cards, string.Empty, ValidateCards);
                 Game.SelectionService.Select(selectAction);
             }
             else
@@ -51,12 +51,12 @@ namespace Pandemic.GameLogic
             }
         }
 
-        private bool ValidateCards(IEnumerable<Card> cards)
+        private bool ValidateCards(IEnumerable<PlayerCard> cards)
         {
             return Game.CurrentCharacter.CardsLimit >= (Game.CurrentCharacter.Cards.Count - cards.Count());
         }
 
-        private void SetCard(IEnumerable<Card> cards)
+        private void SetCard(IEnumerable<PlayerCard> cards)
         {
             foreach (var playerCard in cards)
             {
@@ -109,7 +109,7 @@ namespace Pandemic.GameLogic
             }
             else
             {
-                if (CanRaiseInfection(Game.WorldMap.GetCity(card.City.Name), card.City.Color))
+                if (CanRaiseInfection(Game.WorldMap[card.City.Name], card.City.Color))
                 {
                     var isOutbreak = Game.IncreaseInfection(card.City, card.City.Color);
                     if (isOutbreak)
@@ -135,7 +135,7 @@ namespace Pandemic.GameLogic
                 var outbreakCity = citiesToOutbreak.Dequeue();
                 alreadyOutbreakedCities.Add(outbreakCity);
 
-                foreach (var connectedCity in Game.WorldMap.GetCity(outbreakCity.Name).ConnectedCities)
+                foreach (var connectedCity in Game.WorldMap[outbreakCity.Name].ConnectedCities)
                 {
                     if (CanRaiseInfection(connectedCity, diseaseColor))
                     {
@@ -170,7 +170,7 @@ namespace Pandemic.GameLogic
             Game.Infection.ShuffleDiscardPileToDeck();
         }
 
-        private bool TryDrawPlayerCard(Character character, out Card card)
+        private bool TryDrawPlayerCard(Character character, out PlayerCard card)
         {
             bool isGameOver = false;
             card = Game.PlayerDeck.Draw(DeckSide.Top);
@@ -180,18 +180,17 @@ namespace Pandemic.GameLogic
                 isGameOver = true;
             }
 
-            if (card is PlayerCard)
+            if (card is EventCard eventCard)
             {
                 character.AddCard(card);
-            }
-            else if (card is EventCard eventCard)
-            {
-                character.AddCard(card);
-                Game.EventCards.Add(eventCard);
             }
             else if (card is EpidemicCard)
             {
                 DoEpidemicActions();
+            }
+            else
+            {
+                character.AddCard(card);
             }
 
             return !isGameOver;

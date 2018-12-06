@@ -20,17 +20,17 @@ namespace Pandemic
 
         protected Character()
         {
-            Cards = new ObservableCollection<Card>();
+            Cards = new ObservableCollection<PlayerCard>();
             Cards.CollectionChanged += Cards_CollectionChanged;
         }
 
         public IDictionary<string, IGameAction> Actions { get; set; }
         public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
 
-        public ObservableCollection<Card> Cards { get; }
+        public ObservableCollection<PlayerCard> Cards { get; }
         public virtual int CardsForCure { get => STANDARD_CARDS_FOR_CURE; }
         public virtual int CardsLimit { get => STANDARD_CARDS_LIMIT; }
-        public IEnumerable<PlayerCard> CityCards { get => Cards.OfType<PlayerCard>(); }
+        public IEnumerable<CityCard> CityCards { get => Cards.OfType<CityCard>(); }
 
         public abstract Color Color { get; }
 
@@ -64,7 +64,7 @@ namespace Pandemic
 
         public abstract IEnumerable<string> RoleDescription { get; }
 
-        public void AddCard(Card card)
+        public void AddCard(PlayerCard card)
         {
             Cards.Add(card);
             if (card is EventCard eventCard)
@@ -93,14 +93,14 @@ namespace Pandemic
             return CityCards.Any(card => card.City == city);
         }
 
-        public void RemoveCard(Card card)
+        public void RemoveCard(PlayerCard card)
         {
             Cards.Remove(card);
         }
 
         public void RemoveCard(City city)
         {
-            var card = CityCards.Single(c => c.City == city);
+            CityCard card = CityCards.Single(c => c.City == city);
             RemoveCard(card);
         }
 

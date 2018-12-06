@@ -29,29 +29,29 @@ namespace Pandemic.Helpers
 
         public static ICommand GetSingleClickCommand(DependencyObject obj)
         {
-            return (ICommand)obj.GetValue(SingleClickCommand);
+            return (ICommand)obj.GetValue(SingleClickCommandProperty);
         }
 
         public static void SetSingleClickCommand(DependencyObject obj, ICommand command)
         {
-            obj.SetValue(SingleClickCommand, command);
+            obj.SetValue(SingleClickCommandProperty, command);
         }
 
-        public static readonly DependencyProperty SingleClickCommand = DependencyProperty.RegisterAttached("SingleClickCommand",
+        public static readonly DependencyProperty SingleClickCommandProperty = DependencyProperty.RegisterAttached("SingleClickCommand",
             typeof(ICommand), typeof(MultiClickBehavior),
             new UIPropertyMetadata(null, CommandChanged));
 
         public static object GetSingleClickCommandParameter(DependencyObject obj)
         {
-            return obj.GetValue(SingleClickCommandParameter);
+            return obj.GetValue(SingleClickCommandParameterProperty);
         }
 
         public static void SetSingleClickCommandParameter(DependencyObject obj, ICommand command)
         {
-            obj.SetValue(SingleClickCommandParameter, command);
+            obj.SetValue(SingleClickCommandParameterProperty, command);
         }
 
-        public static readonly DependencyProperty SingleClickCommandParameter = DependencyProperty.RegisterAttached("SingleClickCommandParameter",
+        public static readonly DependencyProperty SingleClickCommandParameterProperty = DependencyProperty.RegisterAttached("SingleClickCommandParameter",
             typeof(object), typeof(MultiClickBehavior));
 
         #endregion single click dependency properties
@@ -60,39 +60,39 @@ namespace Pandemic.Helpers
 
         public static ICommand GetDoubleClickCommand(DependencyObject obj)
         {
-            return (ICommand)obj.GetValue(DoubleClickCommand);
+            return (ICommand)obj.GetValue(DoubleClickCommandProperty);
         }
 
         public static void SetDoubleClickCommand(DependencyObject obj, ICommand command)
         {
-            obj.SetValue(DoubleClickCommand, command);
+            obj.SetValue(DoubleClickCommandProperty, command);
         }
 
-        public static readonly DependencyProperty DoubleClickCommand = DependencyProperty.RegisterAttached("DoubleClickCommand",
+        public static readonly DependencyProperty DoubleClickCommandProperty = DependencyProperty.RegisterAttached("DoubleClickCommand",
             typeof(ICommand), typeof(MultiClickBehavior),
             new UIPropertyMetadata(null, CommandChanged));
 
         public static object GetDoubleClickCommandParameter(DependencyObject obj)
         {
-            return obj.GetValue(DoubleClickCommandParameter);
+            return obj.GetValue(DoubleClickCommandParameterProperty);
         }
 
         public static void SetDoubleClickCommandParameter(DependencyObject obj, object parameter)
         {
-            obj.SetValue(DoubleClickCommandParameter, parameter);
+            obj.SetValue(DoubleClickCommandParameterProperty, parameter);
         }
 
-        public static readonly DependencyProperty DoubleClickCommandParameter = DependencyProperty.RegisterAttached("DoubleClickCommandParameter",
+        public static readonly DependencyProperty DoubleClickCommandParameterProperty = DependencyProperty.RegisterAttached("DoubleClickCommandParameter",
             typeof(object), typeof(MultiClickBehavior));
 
         public static bool GetDoubleClickCommandEnabled(DependencyObject obj)
         {
-            return (bool)obj.GetValue(DoubleClickCommandParameter);
+            return (bool)obj.GetValue(DoubleClickCommandParameterProperty);
         }
 
         public static void SetDoubleClickCommandEnabled(DependencyObject obj, bool enabled)
         {
-            obj.SetValue(DoubleClickCommandParameter, enabled);
+            obj.SetValue(DoubleClickCommandParameterProperty, enabled);
         }
 
         public static readonly DependencyProperty DoubleClickCommandEnabled = DependencyProperty.RegisterAttached("DoubleClickCommandEnabled",
@@ -141,9 +141,9 @@ namespace Pandemic.Helpers
                         //if the interval has been reached without a second click then execute the SingClickCommand
                         timer.Stop();
 
-                        var commandParameter = targetElement.GetValue(SingleClickCommandParameter);
+                        var commandParameter = targetElement.GetValue(SingleClickCommandParameterProperty);
 
-                        if (targetElement.GetValue(SingleClickCommand) is ICommand command)
+                        if (targetElement.GetValue(SingleClickCommandProperty) is ICommand command)
                         {
                             if (command.CanExecute(e))
                             {
@@ -169,9 +169,9 @@ namespace Pandemic.Helpers
                 {
                     timer.Stop();
 
-                    var commandParameter = targetElement.GetValue(DoubleClickCommandParameter);
+                    var commandParameter = targetElement.GetValue(DoubleClickCommandParameterProperty);
 
-                    if (targetElement.GetValue(DoubleClickCommand) is ICommand command)
+                    if (targetElement.GetValue(DoubleClickCommandProperty) is ICommand command)
                     {
                         if (command.CanExecute(e))
                         {
@@ -185,9 +185,9 @@ namespace Pandemic.Helpers
                 }
                 else
                 {
-                    var commandParameter = targetElement.GetValue(SingleClickCommandParameter);
+                    var commandParameter = targetElement.GetValue(SingleClickCommandParameterProperty);
 
-                    if (targetElement.GetValue(SingleClickCommand) is ICommand command)
+                    if (targetElement.GetValue(SingleClickCommandProperty) is ICommand command)
                     {
                         if (command.CanExecute(e))
                         {

@@ -17,17 +17,17 @@ namespace Pandemic.GameLogic.Actions
 
         public bool IsPossible(Game game, MapCity city)
         {
-            return Character.CityCards.Any(card => card.City == city.City);
+            return Character.HasCityCard(city.City);
         }
 
         public void Move(Game game, MapCity city, Action moveActionCallback)
         {
-            var action = new SelectAction<Card>(SetCard, Character.Cards.OfType<CityCard>(),
-                $"Select card of a destination city {city.City.Name}", (c) => c is CityCard cCard && city.City == cCard.City);
+            var action = new SelectAction<CityCard>(SetCard, Character.CityCards,
+                $"Select card of a destination city {city.City.Name}", (card) => city.City == card.City);
 
             game.SelectionService.Select(action);
 
-            void SetCard(Card card)
+            void SetCard(CityCard card)
             {
                 Character.CurrentMapCity = city;
                 Character.RemoveCard(card);

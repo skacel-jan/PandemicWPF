@@ -10,16 +10,19 @@ namespace Pandemic.GameLogic
         private int _position;
         private int _rate;
 
-        public Infection(Deck<InfectionCard> infectionDeck)
+        public Infection(Deck<InfectionCard> infectionDeck) : this(infectionDeck, new DiscardPile<InfectionCard>())
+        { }
+
+        public Infection(Deck<InfectionCard> deck, DiscardPile<InfectionCard> discardPile)
         {
             Rate = 2;
             Position = 1;
 
-            Deck = infectionDeck ?? throw new ArgumentNullException(nameof(infectionDeck));
-            DiscardPile = new DiscardPile<InfectionCard>();
+            DiscardPile = discardPile ?? throw new ArgumentNullException(nameof(discardPile));
+            Deck = deck ?? throw new ArgumentNullException(nameof(deck));
         }
 
-        public DiscardPile<InfectionCard> DiscardPile { get; private set; }
+        public DiscardPile<InfectionCard> DiscardPile { get; }
 
         public int Actual { get; set; }
 

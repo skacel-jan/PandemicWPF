@@ -27,8 +27,6 @@ namespace Pandemic.GameLogic
         public void Action(IGameAction action)
         {
             action.Execute(Game, FinishAction);
-            //var build = new Build(Game.CurrentCharacter);
-            //build.Execute(this);
         }
 
         public void End()

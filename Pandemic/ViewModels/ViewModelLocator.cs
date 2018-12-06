@@ -5,6 +5,7 @@ using Pandemic.Cards;
 using Pandemic.Characters;
 using Pandemic.GameLogic;
 using Pandemic.ViewModels.Dialogs;
+using System.Threading.Tasks;
 
 namespace Pandemic.ViewModels
 {
@@ -26,6 +27,12 @@ namespace Pandemic.ViewModels
             if (IsInDesignMode)
             {
                 SimpleIoc.Default.Register<IWorldMapFactory, MockWorldMapFactory>();
+                if (!SimpleIoc.Default.IsRegistered<WorldMap>())
+                {
+                    SimpleIoc.Default.Register<WorldMap>(() =>
+                                        SimpleIoc.Default.GetInstance<IWorldMapFactory>().CreateWorldMap(SimpleIoc.Default.GetInstance<DiseaseFactory>().GetDiseases()));
+
+                }
             }
             else
             {
@@ -37,11 +44,15 @@ namespace Pandemic.ViewModels
             SimpleIoc.Default.Register<GameFactory>();
 
             SimpleIoc.Default.Register<CharacterFactory>();
+            SimpleIoc.Default.Register<CharacterActionsFactory>();
 
             SimpleIoc.Default.Register<GameSettings>();
 
             SimpleIoc.Default.Register<IDialogService, WindowDialogService>();
             SimpleIoc.Default.Register<SelectionService>();
+
+            SimpleIoc.Default.Register<WorldMapViewModel>();
+
 
             MessengerInstance.Register<NavigateToViewModelMessage>(this, NavigateTo);
 
@@ -80,6 +91,14 @@ namespace Pandemic.ViewModels
             }
         }
 
+        public WorldMapViewModel WorldMapViewModel
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<WorldMapViewModel>();
+            }
+        }
+
         private void NavigateTo(NavigateToViewModelMessage message)
         {
             switch (message.NavigateTo)
@@ -94,6 +113,16 @@ namespace Pandemic.ViewModels
 
                 case MessageTokens.NewGameSettings:
                     CurrentViewModel = GameSetingsViewModel;
+                    break;
+
+                case MessageTokens.LoadGame:
+                    Task.Run(async () =>
+                    {
+                        var vm = BoardViewModel;
+                        await vm.Game.Load();
+                        CurrentViewModel = vm;
+                    });
+
                     break;
             }
         }

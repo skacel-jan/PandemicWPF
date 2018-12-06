@@ -48,7 +48,7 @@ namespace Pandemic.ViewModels
 
         public void PrepareGame()
         {
-            GameSettings.StartingCharacters = Characters.Where(c => c.IsSelected).Select(c => c.Item);
+            GameSettings.SelectedCharacters = Characters.Where(c => c.IsSelected).Select(c => c.Item);
             GameSettings.Difficulty = SelectedDifficulty;
 
             MessengerInstance.Send(new NavigateToViewModelMessage(MessageTokens.StartNewGame));

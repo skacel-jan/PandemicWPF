@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 
 namespace Pandemic
 {
@@ -10,6 +11,7 @@ namespace Pandemic
         public MainWindow()
         {
             InitializeComponent();
+            //RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
         }
     }
 }

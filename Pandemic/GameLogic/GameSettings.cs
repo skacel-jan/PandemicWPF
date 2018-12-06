@@ -5,13 +5,18 @@ namespace Pandemic.GameLogic
 {
     public class GameSettings
     {
-        public IEnumerable<string> StartingCharacters { get; internal set; } = new[] { "Medic" };
+        public IEnumerable<string> SelectedCharacters { get; internal set; } = new[] { "Medic" };
         public int Difficulty { get; internal set; } = 4;
+        public CharacterFactory CharacterFactory { get; }
+
+        public GameSettings(CharacterFactory characterFactory)
+        {
+            CharacterFactory = characterFactory;
+        }
 
         public CircularCollection<Character> GetCharacters(MapCity startingCity)
         {
-            var characters = new CharacterFactory(new CharacterActionsFactory())
-                .GetCharacters(StartingCharacters, startingCity);
+            var characters = CharacterFactory.GetCharacters(SelectedCharacters, startingCity);
 
             return new CircularCollection<Character>(characters);
         }

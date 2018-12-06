@@ -28,7 +28,6 @@ namespace Pandemic.GameLogic.Actions
             EventCard eventCard = (EventCard)card;
 
             Game.PlayerDiscardPile.RemoveCard(eventCard);
-            Game.EventCards.Add(eventCard);
             eventCard.EventFinished += EventCard_EventFinished;
             FinishAction();
         }

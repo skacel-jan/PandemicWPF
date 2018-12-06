@@ -15,7 +15,7 @@ namespace Pandemic.Decks
             InnerCards = new List<T>(cards);
         }
 
-        protected List<T> InnerCards { get; }
+        protected List<T> InnerCards { get; set; }
         public IEnumerable<T> Cards => InnerCards;
 
         public virtual void AddCard(T card, DeckSide side = DeckSide.Top)
@@ -55,19 +55,37 @@ namespace Pandemic.Decks
             }
         }
 
+        public void Remove(T card)
+        {
+            InnerCards.Remove(card);
+        }
+
         public void Shuffle()
         {
-            int n = InnerCards.Count;
+            Shuffle(InnerCards);
+
+            RaisePropertyChanged(nameof(Cards));
+        }
+
+        public T this[string key]
+        {
+            get
+            {
+                return InnerCards.FirstOrDefault(c => c.Name.Equals(key));
+            }
+        }
+
+        public static void Shuffle(IList<T> cards)
+        {
+            int n = cards.Count;
             while (n > 1)
             {
                 n--;
                 int k = ThreadSafeRandom.ThisThreadsRandom.Next(n + 1);
-                T value = InnerCards[k];
-                InnerCards[k] = InnerCards[n];
-                InnerCards[n] = value;
+                T value = cards[k];
+                cards[k] = cards[n];
+                cards[n] = value;
             }
-
-            RaisePropertyChanged(nameof(Cards));
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Pandemic.GameLogic
             var selectionService = new SelectionService(worldMap);
             var events = new EventCardFactory(selectionService).GetEventCards();
 
-            PlayerDeck playerDeck = new PlayerDeck(worldMap.Cities.Select(c => new PlayerCard(c.City)));
+            PlayerDeck playerDeck = new PlayerDeck(worldMap.Cities.Select(c => new CityCard(c.City)));
 
             foreach (var card in events)
             {

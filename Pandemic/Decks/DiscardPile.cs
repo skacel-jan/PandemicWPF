@@ -6,7 +6,17 @@ namespace Pandemic.Decks
 {
     public class DiscardPile<T> : Deck<T> where T : Card
     {
+        public DiscardPile(IEnumerable<T> cards)
+        {
+            InnerCards = new List<T>(cards);
+        }
+
+        public DiscardPile()
+        {
+        }
+
         public T TopCard { get => Cards.LastOrDefault(); }
+
 
         public override void AddCard(T card, DeckSide side = DeckSide.Top)
         {

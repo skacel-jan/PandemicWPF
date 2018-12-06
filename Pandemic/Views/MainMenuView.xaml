@@ -5,19 +5,32 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Pandemic.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Width="1920"
-    Height="1080"
     d:DataContext="{Binding Path=MainMenu, Source={StaticResource Locator}}"
-    d:DesignHeight="300"
-    d:DesignWidth="300"
-    FontSize="50"
+    d:DesignHeight="1020"
+    d:DesignWidth="1980"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style
+            BasedOn="{StaticResource ActionButtonStyle}"
+            TargetType="Button">
+            <Setter Property="Padding" Value="60,5" />
+            <Setter Property="FontSize" Value="50" />
+        </Style>
+    </UserControl.Resources>
     <Grid>
-        <StackPanel VerticalAlignment="Center">
+        <local:WorldMapView2 />
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
             <Button
                 Margin="20,10"
                 Command="{Binding StartGameCommand}"
                 Content="New game" />
+
+            <Button
+                Margin="20,10"
+                Command="{Binding LoadGameCommand}"
+                Content="Continue game" />
             <Button
                 Margin="20,10"
                 Command="{Binding ExitCommand}"

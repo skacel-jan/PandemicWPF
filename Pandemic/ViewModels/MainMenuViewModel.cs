@@ -21,5 +21,13 @@ namespace Pandemic.ViewModels
         {
             get => _exitCommand ?? (_exitCommand = new RelayCommand(() => Application.Current.Shutdown()));
         }
+
+        private ICommand _loadGameCommand;
+
+        public ICommand LoadGameCommand
+        {
+            get => _loadGameCommand ?? (_loadGameCommand = new RelayCommand(() =>
+                MessengerInstance.Send(new NavigateToViewModelMessage(MessageTokens.LoadGame))));
+        }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Pandemic.GameLogic.Actions
 {
-
     public abstract class CharacterAction : IGameAction
     {
         protected CharacterAction(Character character)
@@ -10,10 +9,10 @@ namespace Pandemic.GameLogic.Actions
             Character = character ?? throw new ArgumentNullException(nameof(character));
         }
 
+        public Game Game { get; set; }
         public Character Character { get; set; }
         public abstract string Name { get; }
         protected Action ActionFinishedCallback { get; set; }
-        public Game Game { get; set; }
 
         public abstract bool CanExecute(Game game);
 
@@ -31,11 +30,6 @@ namespace Pandemic.GameLogic.Actions
         {
             Game.Info = null;
             ActionFinishedCallback();
-        }
-
-        internal void Next()
-        {
-            throw new NotImplementedException();
         }
     }
 }

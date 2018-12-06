@@ -24,7 +24,7 @@ namespace Pandemic.GameLogic
 
         public void Start()
         {
-            BuildResearchStation(Game.WorldMap.GetCity(City.Atlanta));
+            BuildResearchStation(Game.WorldMap[City.Atlanta]);
 
             InitialInfection();
             InitialDraw();
@@ -51,12 +51,8 @@ namespace Pandemic.GameLogic
             {
                 foreach (var i in Enumerable.Range(0, cardCount))
                 {
-                    Card card = Game.PlayerDeck.Draw(Decks.DeckSide.Top);
+                    PlayerCard card = Game.PlayerDeck.Draw(Decks.DeckSide.Top);
                     character.AddCard(card);
-                    if (card is EventCard eventCard)
-                    {
-                        Game.EventCards.Add(eventCard);
-                    }
                 }
             }
         }
@@ -69,7 +65,7 @@ namespace Pandemic.GameLogic
                 {
                     InfectionCard infectionCard = Game.Infection.Deck.Draw(Decks.DeckSide.Top);
                     Game.Infection.DiscardPile.AddCard(infectionCard);
-                    int changeInfections = Game.WorldMap.GetCity(infectionCard.City.Name).ChangeInfection(infectionCard.City.Color, i);
+                    int changeInfections = Game.WorldMap[infectionCard.City.Name].ChangeInfection(infectionCard.City.Color, i);
                     Game.DecreaseCubePile(infectionCard.City.Color, changeInfections);
                 }
             }

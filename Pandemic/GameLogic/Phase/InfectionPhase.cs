@@ -34,7 +34,7 @@ namespace Pandemic.GameLogic
             }
             else
             {
-                if (CanRaiseInfection(Game.WorldMap.GetCity(card.City.Name), card.City.Color))
+                if (CanRaiseInfection(Game.WorldMap[card.City.Name], card.City.Color))
                 {
                     Game.Info = new GameInfo($"Infected city {card.City.Name}", $"Next {(Game.Infection.Actual == 0 ? "Player" : "Infection")}",
                         () => Game.DoAction(null));
@@ -94,7 +94,7 @@ namespace Pandemic.GameLogic
                 var outbreakCity = citiesToOutbreak.Dequeue();
                 alreadyOutbreakedCities.Add(outbreakCity);
 
-                foreach (var connectedCity in Game.WorldMap.GetCity(outbreakCity.Name).ConnectedCities)
+                foreach (var connectedCity in Game.WorldMap[outbreakCity.Name].ConnectedCities)
                 {
                     if (CanRaiseInfection(connectedCity, diseaseColor))
                     {

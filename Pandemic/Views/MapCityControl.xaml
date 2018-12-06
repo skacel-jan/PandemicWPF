@@ -17,7 +17,9 @@
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
-        <Style x:Key="DiseaseLabelStyle" TargetType="{x:Type Label}">
+        <Style
+            x:Key="DiseaseLabelStyle"
+            TargetType="{x:Type Label}">
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="1" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -26,13 +28,17 @@
             <Setter Property="FontWeight" Value="DemiBold" />
             <Setter Property="Visibility" Value="Visible" />
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="0">
+                <DataTrigger
+                    Binding="{Binding Content, RelativeSource={RelativeSource Self}}"
+                    Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="YellowDiseaseButtonStyle" TargetType="{x:Type Button}">
+        <Style
+            x:Key="YellowDiseaseButtonStyle"
+            TargetType="{x:Type Button}">
             <Setter Property="Background" Value="Yellow" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -48,7 +54,9 @@
                                     <BlurEffect Radius="3" />
                                 </Ellipse.Effect>
                                 <Ellipse.LayoutTransform>
-                                    <ScaleTransform ScaleX="0.9" ScaleY="0.9" />
+                                    <ScaleTransform
+                                        ScaleX="0.9"
+                                        ScaleY="0.9" />
                                 </Ellipse.LayoutTransform>
                             </Ellipse>
                             <Ellipse
@@ -56,10 +64,14 @@
                                 Stroke="#FFBDBD92"
                                 StrokeThickness="1">
                                 <Ellipse.LayoutTransform>
-                                    <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
+                                    <ScaleTransform
+                                        ScaleX="0.8"
+                                        ScaleY="0.8" />
                                 </Ellipse.LayoutTransform>
                             </Ellipse>
-                            <Control Margin="4" Template="{StaticResource YellowVirusShape}" />
+                            <Control
+                                Margin="4"
+                                Template="{StaticResource YellowVirusShape}" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -78,7 +90,9 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="BlueDiseaseButtonStyle" TargetType="{x:Type Button}">
+        <Style
+            x:Key="BlueDiseaseButtonStyle"
+            TargetType="{x:Type Button}">
             <Setter Property="Background" Value="#FF3C5FB1" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -89,7 +103,9 @@
                                     <BlurEffect Radius="15" />
                                 </Ellipse.Effect>
                             </Ellipse>
-                            <Ellipse Margin="1" Fill="#FF84D0E4">
+                            <Ellipse
+                                Margin="1"
+                                Fill="#FF84D0E4">
                                 <Ellipse.Effect>
                                     <BlurEffect Radius="3" />
                                 </Ellipse.Effect>
@@ -99,7 +115,9 @@
                                 Fill="{TemplateBinding Background}"
                                 Stroke="#FF4160A7"
                                 StrokeThickness="1" />
-                            <Control Margin="4" Template="{StaticResource YellowVirusShape}" />
+                            <Control
+                                Margin="4"
+                                Template="{StaticResource YellowVirusShape}" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -118,7 +136,9 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="BlackDiseaseButtonStyle" TargetType="{x:Type Button}">
+        <Style
+            x:Key="BlackDiseaseButtonStyle"
+            TargetType="{x:Type Button}">
             <Setter Property="Background" Value="#FF04060B" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -134,13 +154,19 @@
                                     <BlurEffect Radius="10" />
                                 </Ellipse.Effect>
                             </Ellipse>
-                            <Ellipse Margin="1" Fill="#FF04060B">
+                            <Ellipse
+                                Margin="1"
+                                Fill="#FF04060B">
                                 <Ellipse.Effect>
                                     <BlurEffect Radius="2" />
                                 </Ellipse.Effect>
                             </Ellipse>
-                            <Ellipse Margin="2" Fill="{TemplateBinding Background}" />
-                            <Control Margin="4" Template="{StaticResource YellowVirusShape}" />
+                            <Ellipse
+                                Margin="2"
+                                Fill="{TemplateBinding Background}" />
+                            <Control
+                                Margin="4"
+                                Template="{StaticResource YellowVirusShape}" />
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -159,13 +185,17 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="RedDiseaseButtonStyle" TargetType="{x:Type Button}">
+        <Style
+            x:Key="RedDiseaseButtonStyle"
+            TargetType="{x:Type Button}">
             <Setter Property="Background" Value="#FFEC2721" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <Grid>
-                            <Ellipse Fill="#FFEC2721" RenderTransformOrigin="0.5,0.5">
+                            <Ellipse
+                                Fill="#FFEC2721"
+                                RenderTransformOrigin="0.5,0.5">
                                 <!--<Ellipse.Fill>
                                     <RadialGradientBrush>
                                         <GradientStop Color="#FFE43D44" />
@@ -179,12 +209,16 @@
                                     <BlurEffect Radius="30" />
                                 </Ellipse.Effect>
                             </Ellipse>
-                            <Ellipse Fill="#FFD6757B" RenderTransformOrigin="0.5 0.5">
+                            <Ellipse
+                                Fill="#FFD6757B"
+                                RenderTransformOrigin="0.5 0.5">
                                 <Ellipse.Effect>
                                     <BlurEffect Radius="3" />
                                 </Ellipse.Effect>
                                 <Ellipse.RenderTransform>
-                                    <ScaleTransform ScaleX="0.93" ScaleY="0.93" />
+                                    <ScaleTransform
+                                        ScaleX="0.93"
+                                        ScaleY="0.93" />
                                 </Ellipse.RenderTransform>
                             </Ellipse>
                             <Ellipse
@@ -196,12 +230,18 @@
                                     <BlurEffect Radius="2" />
                                 </Ellipse.Effect>
                                 <Ellipse.RenderTransform>
-                                    <ScaleTransform ScaleX="0.86" ScaleY="0.86" />
+                                    <ScaleTransform
+                                        ScaleX="0.86"
+                                        ScaleY="0.86" />
                                 </Ellipse.RenderTransform>
                             </Ellipse>
-                            <Control RenderTransformOrigin="0.5 0.5" Template="{StaticResource YellowVirusShape}">
+                            <Control
+                                RenderTransformOrigin="0.5 0.5"
+                                Template="{StaticResource YellowVirusShape}">
                                 <Control.RenderTransform>
-                                    <ScaleTransform ScaleX="0.65" ScaleY="0.65" />
+                                    <ScaleTransform
+                                        ScaleX="0.65"
+                                        ScaleY="0.65" />
                                 </Control.RenderTransform>
                             </Control>
                         </Grid>
@@ -238,19 +278,29 @@
             <Button Style="{StaticResource RedDiseaseButtonStyle}" />
         </ControlTemplate>
 
-        <Style x:Key="CityStyle" TargetType="{x:Type Button}">
+        <Style
+            x:Key="CityStyle"
+            TargetType="{x:Type Button}">
             <Setter Property="Template" Value="{StaticResource RedTemplate}" />
             <Style.Triggers>
-                <DataTrigger Binding="{Binding CityColor, ElementName=mapCityControl}" Value="Yellow">
+                <DataTrigger
+                    Binding="{Binding CityColor, ElementName=mapCityControl}"
+                    Value="Yellow">
                     <Setter Property="Template" Value="{StaticResource YellowTemplate}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding CityColor, ElementName=mapCityControl}" Value="Blue">
+                <DataTrigger
+                    Binding="{Binding CityColor, ElementName=mapCityControl}"
+                    Value="Blue">
                     <Setter Property="Template" Value="{StaticResource BlueTemplate}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding CityColor, ElementName=mapCityControl}" Value="Black">
+                <DataTrigger
+                    Binding="{Binding CityColor, ElementName=mapCityControl}"
+                    Value="Black">
                     <Setter Property="Template" Value="{StaticResource BlackTemplate}" />
                 </DataTrigger>
-                <DataTrigger Binding="{Binding CityColor, ElementName=mapCityControl}" Value="Red">
+                <DataTrigger
+                    Binding="{Binding CityColor, ElementName=mapCityControl}"
+                    Value="Red">
                     <Setter Property="Template" Value="{StaticResource RedTemplate}" />
                 </DataTrigger>
             </Style.Triggers>
@@ -261,7 +311,9 @@
             IsLiveSortingRequested="True"
             Source="{Binding Characters}">
             <CollectionViewSource.SortDescriptions>
-                <scm:SortDescription Direction="Descending" PropertyName="IsActive" />
+                <scm:SortDescription
+                    Direction="Descending"
+                    PropertyName="IsActive" />
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
     </UserControl.Resources>
@@ -270,13 +322,17 @@
         <Border.Style>
             <Style TargetType="Border">
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsBorderVisible, ElementName=mapCityControl}" Value="True">
+                    <DataTrigger
+                        Binding="{Binding IsBorderVisible, ElementName=mapCityControl}"
+                        Value="True">
                         <Setter Property="BorderBrush" Value="#FF3892E0" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
         </Border.Style>
-        <Grid x:Name="MainGrid" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MapCityControl}}}">
+        <Grid
+            x:Name="MainGrid"
+            DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MapCityControl}}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*" />
                 <RowDefinition Height="3*" />
@@ -339,7 +395,9 @@
                             <Ellipse.Style>
                                 <Style TargetType="Ellipse">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=IsActive}" Value="True">
+                                        <DataTrigger
+                                            Binding="{Binding Path=IsActive}"
+                                            Value="True">
                                             <Setter Property="Stroke" Value="White" />
                                             <Setter Property="StrokeThickness" Value="2" />
                                         </DataTrigger>
@@ -369,7 +427,9 @@
                 Stroke="#FFBDBD92"
                 StrokeThickness="0.7"
                 Visibility="{Binding HasResearchStation, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}" />
-            <Viewbox Grid.Row="4" Grid.ColumnSpan="4">
+            <Viewbox
+                Grid.Row="4"
+                Grid.ColumnSpan="4">
                 <Label
                     Padding="0"
                     HorizontalContentAlignment="Center"

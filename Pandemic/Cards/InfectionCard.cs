@@ -1,9 +1,12 @@
 ﻿namespace Pandemic.Cards
 {
-    public class InfectionCard : CityCard
+    public class InfectionCard : Card
     {
-        public InfectionCard(City city) : base(city)
+        public InfectionCard(City city) : base($"Infection - {city.Name}")
         {
+            City = city;
         }
+
+        public City City { get; }
     }
 }

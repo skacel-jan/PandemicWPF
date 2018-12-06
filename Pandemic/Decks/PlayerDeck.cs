@@ -1,10 +1,11 @@
 ﻿using Pandemic.Cards;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Pandemic.Decks
 {
-    public class PlayerDeck : Deck<Card>
+    public class PlayerDeck : Deck<PlayerCard>
     {
         public PlayerDeck(IEnumerable<PlayerCard> cards) : base(cards)
         {
@@ -15,22 +16,18 @@ namespace Pandemic.Decks
             var numberOfDecks = InnerCards.Count / epidemicCount;
             var deckIncrement = InnerCards.Count % epidemicCount;
 
-            List<Card> resultDeck = new List<Card>();
+            var newDeck = new List<PlayerCard>();
             foreach (var i in Enumerable.Range(0, epidemicCount))
             {
                 var count = numberOfDecks + (deckIncrement > 0 ? 1 : 0);
-                var deck = new Deck<Card>(Cards.Skip(i * count).Take(count));
+                var cards = Cards.Skip(i * count).Take(count).ToList();
                 deckIncrement = deckIncrement == 0 ? 0 : deckIncrement - 1;
-                deck.AddCard(new EpidemicCard("Epidemic"));
-                deck.Shuffle();
-                resultDeck.AddRange(deck.Cards);
-            }
-            InnerCards.Clear();
+                cards.Add(new EpidemicCard());
+                Shuffle(cards);
+                newDeck.AddRange(cards);
+            }            
 
-            foreach (var card in resultDeck)
-            {
-                InnerCards.Add(card);
-            }
+            InnerCards = newDeck;
         }
 
         public IEnumerable<EventCard> EventCards => Cards.OfType<EventCard>();
