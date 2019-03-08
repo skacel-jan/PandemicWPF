@@ -8,12 +8,27 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Pandemic</RootNamespace>
     <AssemblyName>Pandemic</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -24,7 +39,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>true</Prefer32Bit>
+    <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>latest</LangVersion>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -37,6 +52,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\PandemicIcon.ico</ApplicationIcon>
@@ -93,9 +109,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Cards\CityCard.cs" />
-    <Compile Include="Cards\EventCardFactory.cs" />
-    <Compile Include="Decks\DiscardPile.cs" />
+    <Compile Include="GameLogic\Cards\CityCard.cs" />
+    <Compile Include="GameLogic\Cards\EventCardFactory.cs" />
+    <Compile Include="GameLogic\Decks\DiscardPile.cs" />
     <Compile Include="GameLogic\Actions\EventActions\AirliftAction.cs" />
     <Compile Include="GameLogic\Actions\ContingencyPlannerAction.cs" />
     <Compile Include="GameLogic\Actions\EventActions\GovernmentGrantAction.cs" />
@@ -109,8 +125,8 @@
     <Compile Include="GameLogic\GameFactory.cs" />
     <Compile Include="GameLogic\GameSettings.cs" />
     <Compile Include="GameLogic\Infection.cs" />
-    <Compile Include="Characters\CharacterFactory.cs" />
-    <Compile Include="Characters\Researcher.cs" />
+    <Compile Include="GameLogic\Characters\CharacterFactory.cs" />
+    <Compile Include="GameLogic\Characters\Researcher.cs" />
     <Compile Include="GameLogic\Actions\BuildAction.cs" />
     <Compile Include="GameLogic\Actions\ShareKnowledgeAction.cs" />
     <Compile Include="GameLogic\Actions\CharacterAction.cs" />
@@ -125,7 +141,7 @@
     <Compile Include="GameLogic\SaveLoad.cs" />
     <Compile Include="GameLogic\Services\SelectionService.cs" />
     <Compile Include="Helpers\CircularCollection.cs" />
-    <Compile Include="Decks\IDeck.cs" />
+    <Compile Include="GameLogic\Decks\IDeck.cs" />
     <Compile Include="GameLogic\ActionTypes.cs" />
     <Compile Include="GameLogic\Game.cs" />
     <Compile Include="GameLogic\EventArgs.cs" />
@@ -136,12 +152,12 @@
     <Compile Include="GameLogic\Moves\DriveOrFerry.cs" />
     <Compile Include="GameLogic\Moves\OperationsExpertSpecialMove.cs" />
     <Compile Include="GameLogic\Moves\ShuttleFlight.cs" />
-    <Compile Include="Cards\EventCard.cs" />
-    <Compile Include="Characters\ContingencyPlanner.cs" />
-    <Compile Include="Characters\Dispatcher.cs" />
-    <Compile Include="Characters\OperationsExpert.cs" />
-    <Compile Include="Characters\QuarantineSpecialist.cs" />
-    <Compile Include="Characters\Scientist.cs" />
+    <Compile Include="GameLogic\Cards\EventCard.cs" />
+    <Compile Include="GameLogic\Characters\ContingencyPlanner.cs" />
+    <Compile Include="GameLogic\Characters\Dispatcher.cs" />
+    <Compile Include="GameLogic\Characters\OperationsExpert.cs" />
+    <Compile Include="GameLogic\Characters\QuarantineSpecialist.cs" />
+    <Compile Include="GameLogic\Characters\Scientist.cs" />
     <Compile Include="Helpers\Converters\ColorToSolidColorBrushConverter.cs" />
     <Compile Include="Helpers\KeyExtractorDictionary.cs" />
     <Compile Include="Helpers\KineticBehaviour.cs" />
@@ -173,13 +189,13 @@
     <Compile Include="Views\BoardView.xaml.cs">
       <DependentUpon>BoardView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Cards\PlayerCard.cs" />
-    <Compile Include="Characters\Character.cs" />
-    <Compile Include="Characters\Medic.cs" />
+    <Compile Include="GameLogic\Cards\PlayerCard.cs" />
+    <Compile Include="GameLogic\Characters\Character.cs" />
+    <Compile Include="GameLogic\Characters\Medic.cs" />
     <Compile Include="GameLogic\Board\MapCity.cs" />
-    <Compile Include="Decks\PlayerDeck.cs" />
+    <Compile Include="GameLogic\Decks\PlayerDeck.cs" />
     <Compile Include="GameLogic\Disease.cs" />
-    <Compile Include="Cards\EpidemicCard.cs" />
+    <Compile Include="GameLogic\Cards\EpidemicCard.cs" />
     <Compile Include="Helpers\ThreadSafeRandom.cs" />
     <Compile Include="Helpers\Converters\DiseaseToColorConverter.cs" />
     <Compile Include="Views\CardsView.xaml.cs">
@@ -259,10 +275,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Cards\Card.cs" />
+    <Compile Include="GameLogic\Cards\Card.cs" />
     <Compile Include="GameLogic\Board\City.cs" />
-    <Compile Include="Decks\Deck.cs" />
-    <Compile Include="Cards\InfectionCard.cs" />
+    <Compile Include="GameLogic\Decks\Deck.cs" />
+    <Compile Include="GameLogic\Cards\InfectionCard.cs" />
     <Page Include="Views\CardsView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -382,11 +398,29 @@
   <ItemGroup>
     <Resource Include="Resources\PandemicIcon.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Configuration\CitiesConfiguration.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\black_city.jpg" />
+    <Resource Include="Resources\blue_city.jpg" />
+    <Resource Include="Resources\red_city.jpg" />
+    <Resource Include="Resources\yellow_card.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\yellow_city.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

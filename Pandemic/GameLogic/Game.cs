@@ -258,8 +258,8 @@ namespace Pandemic
 
         public async Task Load()
         {
-            SavedState savedState = await _saveLoad.Load();
-            SetSavedState(savedState);
+            SavedState loadedState = await _saveLoad.Load();
+            SetLoadedState(loadedState);
         }
 
         internal void EndGame()
@@ -267,17 +267,32 @@ namespace Pandemic
             GameEnded?.Invoke(this, EventArgs.Empty);
         }
 
-        private void SetSavedState(SavedState savedState)
+        private void SetLoadedState(SavedState savedState)
         {          
             Actions = savedState.Actions;
+            
+            foreach (var citySave in savedState.Cities)
+            {
+                MapCity city = WorldMap[citySave.Name];
+                city.HasResearchStation = citySave.HasResearchStation;
+                city.Characters.Clear();
+                foreach (var infection in citySave.Infection)
+                {
+                    city.Infections[infection.Item1] = infection.Item2;
+                }               
+            }
+
             Characters = new CircularCollection<Character>(
                 savedState.Characters.Select(c =>
                 {
                     var character = GameSettings.CharacterFactory.GetCharacter(c.Role, WorldMap[c.MapCity]);
+                    WorldMap[c.MapCity].Characters.Add(character);
+
                     foreach  (var card in c.Cards)
                     {
                         character.AddCard(AllPlayerCards[card]);
                     }
+
                     return character;                    
                 }));
             Characters.First().IsActive = true;

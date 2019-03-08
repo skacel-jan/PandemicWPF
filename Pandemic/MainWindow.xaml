@@ -9,12 +9,14 @@
     Title="Pandemic Legacy"
     Width="1920"
     Height="1080"
-    TextOptions.TextFormattingMode="Display"
+    TextOptions.TextFormattingMode="Ideal"
     WindowState="Maximized"
-    WindowStyle="SingleBorderWindow"
+    WindowStyle="None"
     mc:Ignorable="d">
     <Window.DataContext>
         <viewModels:ViewModelLocator />
     </Window.DataContext>
-    <ContentControl Content="{Binding CurrentViewModel}" />
+    <Viewbox Stretch="UniformToFill" >
+        <ContentControl Content="{Binding CurrentViewModel}" Width="1920" Height="1080"/>
+    </Viewbox>    
 </Window>

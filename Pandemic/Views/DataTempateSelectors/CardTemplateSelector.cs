@@ -11,7 +11,6 @@ namespace Pandemic.Views
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            FrameworkElement elemnt = container as FrameworkElement;
             Card card = item as Card;
             if (card is EventCard)
             {

@@ -18,7 +18,7 @@ namespace Pandemic.GameLogic
 
         public string GamePhase { get; set; }
 
-        public List<SaveLoad.CharacterState> Characters { get; set; }
+        public List<SaveLoad.CharacterSave> Characters { get; set; }
 
         public int InfectionActual { get; set; }
 
@@ -42,7 +42,7 @@ namespace Pandemic.GameLogic
 
         public List<string> InfectionCardsInDeck { get; set; }
 
-        public List<SaveLoad.MapCityState> Cities { get; set; }
+        public List<SaveLoad.MapCitySave> Cities { get; set; }
     }
 
     public class SaveLoad
@@ -75,7 +75,7 @@ namespace Pandemic.GameLogic
                 var savedState = new SavedState()
                 {
                     Actions = game.Actions,
-                    Characters = game.Characters.Select(c => new CharacterState()
+                    Characters = game.Characters.Select(c => new CharacterSave()
                     {
                         Role = c.Role,
                         MapCity = c.CurrentMapCity.City.Name,
@@ -96,13 +96,12 @@ namespace Pandemic.GameLogic
                     RemovedCards = game.RemovedCards.Cards.Select(c => c.Name).ToList(),
                     ResearchStationPile = game.ResearchStationsPile,
                     Turn = game.Turn,
-                    //Cities = game.WorldMap.Cities.Select(c => new MapCityState()
-                    //{
-                    //    Characters = c.Characters.Select(ch => ch.Role).ToList(),
-                    //    HasResearchStation = c.HasResearchStation,
-                    //    Name = c.City.Name,
-                    //    Infection = c.Infections.Select(i => (i.Key, i.Value).ToTuple()).ToList()
-                    //}).ToList()
+                    Cities = game.WorldMap.Cities.Select(c => new MapCitySave()
+                    {
+                        HasResearchStation = c.HasResearchStation,
+                        Name = c.City.Name,
+                        Infection = c.Infections.Select(i => (i.Key, i.Value).ToTuple()).ToList()
+                    }).ToList()
                 };
 
                 Directory.CreateDirectory(Path.GetDirectoryName(_savePath));
@@ -129,18 +128,16 @@ namespace Pandemic.GameLogic
             });
         }
 
-        public class MapCityState
+        public class MapCitySave
         {
             public string Name { get; set; }
 
             public List<Tuple<DiseaseColor, int>> Infection { get; set; }
 
             public bool HasResearchStation { get; set; }
-
-            public List<string> Characters { get; set; }
         }
 
-        public class CharacterState
+        public class CharacterSave
         {
             public string Role { get; set; }
 

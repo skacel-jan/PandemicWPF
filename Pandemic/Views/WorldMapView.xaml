@@ -2,9 +2,6 @@
     x:Class="Pandemic.Views.WorldMapView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:Converters="clr-namespace:Pandemic.Converters"
-    xmlns:System="clr-namespace:System;assembly=mscorlib"
-    xmlns:custompanels="clr-namespace:Pandemic.Views.CustomPanels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helpers="clr-namespace:Pandemic.Helpers"
     xmlns:local="clr-namespace:Pandemic.Views"
@@ -17,7 +14,7 @@
     <UserControl.CacheMode>
         <BitmapCache
             EnableClearType="False"
-            RenderAtScale="2"
+            RenderAtScale="1"
             SnapsToDevicePixels="False" />
     </UserControl.CacheMode>
     <UserControl.Resources>

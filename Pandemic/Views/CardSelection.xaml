@@ -7,6 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:view="clr-namespace:Pandemic.Views"
+    xmlns:panels="clr-namespace:Pandemic.Views.CustomPanels"
     x:Name="root"
     d:DesignHeight="100"
     d:DesignWidth="300"
@@ -32,7 +33,7 @@
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal" />
+                    <panels:OverlapCanvas Orientation="Horizontal" IsItemsHost="True" Spacing="80"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

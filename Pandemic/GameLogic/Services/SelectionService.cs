@@ -85,9 +85,9 @@ namespace Pandemic
             OnSelectionFinished(EventArgs.Empty);
         }
 
-        public void Select(IMultiSelectAction<IEnumerable<Card>> selectAction)
+        public void Select(IMultiSelectAction<IEnumerable<PlayerCard>> selectAction)
         {
-            var wrapper = new MultiSelectActionWrapper<IEnumerable<Card>>(selectAction, ActionFinishedCallback);
+            var wrapper = new MultiSelectActionWrapper<IEnumerable<PlayerCard>>(selectAction, ActionFinishedCallback);
 
             var viewModel = new CardsSelectionViewModel(selectAction);
 

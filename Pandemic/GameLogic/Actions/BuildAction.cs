@@ -1,6 +1,4 @@
 ﻿using Pandemic.Cards;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Pandemic.GameLogic.Actions
@@ -74,5 +72,5 @@ namespace Pandemic.GameLogic.Actions
 
             FinishAction();
         }
-    }    
+    }
 }

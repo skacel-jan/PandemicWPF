@@ -1,11 +1,14 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+
 using Pandemic.GameLogic;
 using Pandemic.GameLogic.Actions;
 using Pandemic.ViewModels.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Pandemic.ViewModels
 {
@@ -19,7 +22,7 @@ namespace Pandemic.ViewModels
         private bool _isInfoVisible;
         private bool _isPlayerHandVisible = true;
 
-        private Stack<ViewModelBase> _actionViewModels;
+        private readonly Stack<ViewModelBase> _actionViewModels;
 
         public WorldMapViewModel WorldMapViewModel { get; }
 
@@ -109,12 +112,17 @@ namespace Pandemic.ViewModels
             {
                 if (Set(ref _currentCharacter, value))
                 {
-                    Actions = _currentCharacter.Actions.Select(a =>
+                    SetNextCharacter();
+                }
+            }
+        }
+
+        public void SetNextCharacter()
+        {
+            Actions = _currentCharacter.Actions.Select(a =>
                     new Tuple<RelayCommand, IGameAction>(new RelayCommand(
                         () => DoAction(a.Value),
                         () => IsActionPhase && CanExecuteAction(a.Value), true), _currentCharacter.Actions[a.Key])).ToList();
-                }
-            }
         }
 
         public RelayCommand EventsCommand { get; }
@@ -125,7 +133,7 @@ namespace Pandemic.ViewModels
 
         public string InfoText
         {
-            get { return string.Format("{0}'s turn, {1} actions left", CurrentCharacter.Role, Game.Actions); }
+            get { return $"{CurrentCharacter.Role}'s turn, {Game.Actions} actions left"; }
         }
 
         public ViewModelBase InfoViewModel

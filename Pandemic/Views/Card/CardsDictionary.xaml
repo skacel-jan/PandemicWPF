@@ -3,16 +3,24 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Pandemic.Views">
 
-    <Label
+    <StackPanel
         x:Key="Airlift"
-        Padding="10"
         x:Shared="false"
-        Background="Black"
-        BorderBrush="Orange"
-        BorderThickness="2"
-        Content="{Binding Name}"
-        FontSize="12"
-        Foreground="Yellow" />
+        Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}">
+        <Label
+            Padding="10"
+            Background="Black"
+            BorderBrush="Orange"
+            BorderThickness="2"
+            Content="{Binding Name}"
+            FontSize="12"
+            Foreground="Yellow" />
+        <Control
+            Width="80"
+            Height="80"
+            Margin="4"
+            Template="{StaticResource YellowVirusShape}" />
+    </StackPanel>
 
     <Label
         x:Key="GovernmentGrant"
@@ -47,6 +55,20 @@
         FontSize="12"
         Foreground="Yellow" />
 
+    <BitmapImage x:Key="yellowCardImage" UriSource="pack://application:,,,/Resources/yellow_card.jpg" />
+
+    <Grid x:Key="YellowCard" x:Shared="false">
+        <!--<Label
+            Padding="10"
+            Background="Black"
+            BorderBrush="Orange"
+            BorderThickness="2"
+            Content="{Binding Name}"
+            FontSize="12"
+            Foreground="Yellow" />-->
+        <Image Height="150" Source="{StaticResource yellowCardImage}" />
+    </Grid>
+
     <Label
         x:Key="CityCard"
         Padding="10"
@@ -63,23 +85,23 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:PlayingCard}">
-                    <Viewbox Stretch="Uniform">
-                        <Grid Name="TheGrid" RenderTransformOrigin="0.5, 0.5">
+                    <!--<Viewbox Stretch="Uniform">-->
+                    <Grid Name="TheGrid" RenderTransformOrigin="0.5, 0.5">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <RotateTransform Angle="0" />
+                                <TranslateTransform X="0" Y="0" />
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </TransformGroup>
+                        </Grid.RenderTransform>
+                        <Grid Name="TheCard" Cursor="Hand">
+                            <ContentControl Name="faceRect" Content="{StaticResource YellowCard}" />
                             <Grid.RenderTransform>
-                                <TransformGroup>
-                                    <RotateTransform Angle="0" />
-                                    <TranslateTransform X="0" Y="0" />
-                                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                                </TransformGroup>
+                                <TranslateTransform X="0" Y="0" />
                             </Grid.RenderTransform>
-                            <Grid Name="TheCard" Cursor="Hand">
-                                <ContentControl Name="faceRect" Content="{StaticResource CityCard}" />
-                                <Grid.RenderTransform>
-                                    <TranslateTransform X="0" Y="0" />
-                                </Grid.RenderTransform>
-                            </Grid>
                         </Grid>
-                    </Viewbox>
+                    </Grid>
+                    <!--</Viewbox>-->
                     <ControlTemplate.Triggers>
                         <Trigger Property="CardName" Value="Airlift">
                             <Setter TargetName="faceRect" Property="Content" Value="{StaticResource Airlift}" />
@@ -93,6 +115,9 @@
                         <Trigger Property="CardName" Value="One Quiet Night">
                             <Setter TargetName="faceRect" Property="Content" Value="{StaticResource OneQuietNight}" />
                         </Trigger>
+                        <Trigger Property="CardName" Value="Yellow">
+                            <Setter TargetName="faceRect" Property="Content" Value="{StaticResource YellowCard}" />
+                        </Trigger>
                         <EventTrigger RoutedEvent="Mouse.MouseEnter" SourceName="TheCard">
                             <BeginStoryboard>
                                 <Storyboard>
@@ -101,14 +126,21 @@
                                         AutoReverse="false"
                                         Storyboard.TargetName="TheGrid"
                                         Storyboard.TargetProperty="(Grid.RenderTransform).(TransformGroup.Children)[2].(ScaleTransform.ScaleX)"
-                                        To="1.05"
-                                        Duration="0:0:0.1" />
+                                        To="1.3"
+                                        Duration="0:0:0.2" />
                                     <DoubleAnimation
                                         AutoReverse="false"
                                         Storyboard.TargetName="TheGrid"
                                         Storyboard.TargetProperty="(Grid.RenderTransform).(TransformGroup.Children)[2].(ScaleTransform.ScaleY)"
-                                        To="1.1"
-                                        Duration="0:0:0.1" />
+                                        To="1.3"
+                                        Duration="0:0:0.2" />
+                                    <DoubleAnimation
+                                        AutoReverse="false"
+                                        DecelerationRatio="1"
+                                        Storyboard.TargetName="TheCard"
+                                        Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)"
+                                        To="-20"
+                                        Duration="0:0:0.2" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
@@ -121,16 +153,64 @@
                                         Storyboard.TargetName="TheGrid"
                                         Storyboard.TargetProperty="(Grid.RenderTransform).(TransformGroup.Children)[2].(ScaleTransform.ScaleX)"
                                         To="1"
-                                        Duration="0:0:0.25" />
+                                        Duration="0:0:0.2" />
                                     <DoubleAnimation
                                         AutoReverse="false"
                                         Storyboard.TargetName="TheGrid"
                                         Storyboard.TargetProperty="(Grid.RenderTransform).(TransformGroup.Children)[2].(ScaleTransform.ScaleY)"
                                         To="1"
-                                        Duration="0:0:0.25" />
+                                        Duration="0:0:0.2" />
+                                    <DoubleAnimation
+                                        AutoReverse="false"
+                                        DecelerationRatio="1"
+                                        Storyboard.TargetName="TheCard"
+                                        Storyboard.TargetProperty="(Grid.RenderTransform).(TranslateTransform.Y)"
+                                        To="0"
+                                        Duration="0:0:0.2" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SmallCard" TargetType="{x:Type local:PlayingCard}">
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:PlayingCard}">
+                    <!--<Viewbox Stretch="Uniform">-->
+                    <Grid Name="TheGrid" RenderTransformOrigin="0.5, 0.5">
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <RotateTransform Angle="0" />
+                                <TranslateTransform X="0" Y="0" />
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                            </TransformGroup>
+                        </Grid.RenderTransform>
+                        <Grid Name="TheCard" Cursor="Hand">
+                            <ContentControl Name="faceRect" Content="{StaticResource CityCard}" />
+                            <Grid.RenderTransform>
+                                <TranslateTransform X="0" Y="0" />
+                            </Grid.RenderTransform>
+                        </Grid>
+                    </Grid>
+                    <!--</Viewbox>-->
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="CardName" Value="Airlift">
+                            <Setter TargetName="faceRect" Property="Content" Value="{StaticResource Airlift}" />
+                        </Trigger>
+                        <Trigger Property="CardName" Value="Government Grant">
+                            <Setter TargetName="faceRect" Property="Content" Value="{StaticResource GovernmentGrant}" />
+                        </Trigger>
+                        <Trigger Property="CardName" Value="Resilient population">
+                            <Setter TargetName="faceRect" Property="Content" Value="{StaticResource ResilientPopulation}" />
+                        </Trigger>
+                        <Trigger Property="CardName" Value="One Quiet Night">
+                            <Setter TargetName="faceRect" Property="Content" Value="{StaticResource OneQuietNight}" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

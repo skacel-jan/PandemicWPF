@@ -4,31 +4,33 @@ using Pandemic.Cards;
 using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Pandemic.ViewModels
 {
     public class CardsSelectionViewModel : ViewModelBase
     {
-        private ICollection<Card> _selectedCards;
-        private IMultiSelectAction<IEnumerable<Card>> _selectAction;
+        private ICollection<PlayerCard> _selectedCards;
+        private IMultiSelectAction<IEnumerable<PlayerCard>> _selectAction;
 
-        public IEnumerable<Card> Items { get; private set; }
-        public RelayCommand<Card> SelectedCommand { get; }
+        public IEnumerable<PlayerCard> Items { get; private set; }
+        public RelayCommand<PlayerCard> SelectedCommand { get; }
 
-        public CardsSelectionViewModel(IMultiSelectAction<IEnumerable<Card>> selectAction)
+        public CardsSelectionViewModel(IMultiSelectAction<IEnumerable<PlayerCard>> selectAction)
         {
             _selectAction = selectAction;
             Items = _selectAction.Items;
-            _selectedCards = new List<Card>();
-            SelectedCommand = new RelayCommand<Card>((c) =>
+            _selectedCards = new List<PlayerCard>();
+            SelectedCommand = new RelayCommand<PlayerCard>((c) =>
             {
                 if (!_selectedCards.Remove(c))
                 {
                     _selectedCards.Add(c);
                 }
+
                 if (_selectAction.CanExecute(_selectedCards))
                 {
-                    _selectAction.Execute(_selectedCards);
+                    _selectAction.Execute(_selectedCards.AsEnumerable());
                 }
             });
         }
