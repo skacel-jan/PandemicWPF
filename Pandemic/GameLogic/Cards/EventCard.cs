@@ -7,20 +7,20 @@ namespace Pandemic.Cards
     {
         private Game _game;
 
-        public EventCard(string name, Func<Game, EventCard, EventAction> createEventAction) : base(name)
+        public EventCard(string name, Func<Game, EventCard, Character, EventAction> createEventAction) : base(name)
         {
             CreateEventAction = createEventAction ?? throw new ArgumentNullException(nameof(createEventAction));
         }
 
         public event EventHandler EventFinished;
 
-        public Func<Game, EventCard, EventAction> CreateEventAction { get; }
+        public Func<Game, EventCard, Character, EventAction> CreateEventAction { get; }
         public Character Character { get; set; }
 
         public void PlayEvent(Game game)
         {
             _game = game;
-            CreateEventAction(game, this).Execute();
+            CreateEventAction(game, this, Character).Execute();
         }
 
         protected virtual void OnEventFinished(EventArgs e)

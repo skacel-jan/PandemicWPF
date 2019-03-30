@@ -28,10 +28,10 @@ namespace Pandemic.Cards
         {
             _eventCards = new List<EventCard>()
             {
-                new EventCard("Government Grant", (game, eventCard) => new GovernmentGrantAction(eventCard, game)),
-                new EventCard("One Quiet Night", (game, eventCard) => new OneQuietNightAction(eventCard, game)),
-                new EventCard("Airlift", (game, eventCard) => new AirliftAction(eventCard, game)),
-                new EventCard("Resilient population", (game, eventCard) => new ResilientPopulationAction(eventCard, game)),
+                new EventCard("Government Grant", (game, eventCard, character) => new GovernmentGrantAction(eventCard, game)),
+                new EventCard("One Quiet Night", (game, eventCard, character) => new OneQuietNightAction(eventCard, game)),
+                new EventCard("Airlift", (game, eventCard, character) => new AirliftAction(eventCard, game, character)),
+                new EventCard("Resilient population", (game, eventCard, character) => new ResilientPopulationAction(eventCard, game)),
             };
         }
     }

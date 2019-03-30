@@ -124,6 +124,7 @@
     <Compile Include="GameLogic\Actions\SelectAction.cs" />
     <Compile Include="GameLogic\GameFactory.cs" />
     <Compile Include="GameLogic\GameSettings.cs" />
+    <Compile Include="GameLogic\IGameComponents.cs" />
     <Compile Include="GameLogic\Infection.cs" />
     <Compile Include="GameLogic\Characters\CharacterFactory.cs" />
     <Compile Include="GameLogic\Characters\Researcher.cs" />
