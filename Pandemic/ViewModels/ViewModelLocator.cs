@@ -5,7 +5,9 @@ using Pandemic.Cards;
 using Pandemic.Characters;
 using Pandemic.GameLogic;
 using Pandemic.ViewModels.Dialogs;
+using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Pandemic.ViewModels
 {
@@ -13,50 +15,52 @@ namespace Pandemic.ViewModels
     {
         private ViewModelBase _currentViewModel;
 
+        SimpleIoc _simpleIoc;
+
         public ViewModelLocator()
         {
-            ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
+            _simpleIoc = SimpleIoc.Default;
 
-            SimpleIoc.Default.Register<ViewModelLocator>();
-            SimpleIoc.Default.Register<MainMenuViewModel>();
-            SimpleIoc.Default.Register<GameSetingsViewModel>();
-            SimpleIoc.Default.Register<BoardViewModel>();
+            _simpleIoc.Register<ViewModelLocator>();
+            _simpleIoc.Register<MainMenuViewModel>();
+            _simpleIoc.Register<GameSetingsViewModel>();
+            _simpleIoc.Register<BoardViewModel>();
 
-            SimpleIoc.Default.Register<DiseaseFactory>();
+            _simpleIoc.Register<DiseaseFactory>();
 
-            if (IsInDesignMode)
-            {
-                SimpleIoc.Default.Register<IWorldMapFactory, MockWorldMapFactory>();
-                if (!SimpleIoc.Default.IsRegistered<WorldMap>())
+            if (!(Application.Current is App))
+            {                
+                _simpleIoc.Register<IWorldMapFactory, MockWorldMapFactory>();
+                if (!_simpleIoc.IsRegistered<WorldMap>())
                 {
-                    SimpleIoc.Default.Register<WorldMap>(() =>
-                                        SimpleIoc.Default.GetInstance<IWorldMapFactory>().CreateWorldMap(SimpleIoc.Default.GetInstance<DiseaseFactory>().GetDiseases()));
+                    _simpleIoc.Register<WorldMap>(() =>
+                                        _simpleIoc.GetInstance<IWorldMapFactory>().CreateWorldMap(_simpleIoc.GetInstance<DiseaseFactory>().GetDiseases()));
 
                 }
             }
             else
             {
-                SimpleIoc.Default.Register<IWorldMapFactory, XmlWorldMapFactory>();
+                _simpleIoc.Register<IWorldMapFactory, XmlWorldMapFactory>();
             }
 
-            SimpleIoc.Default.Register<EventCardFactory>();
+            _simpleIoc.Register<EventCardFactory>();
 
-            SimpleIoc.Default.Register<GameFactory>();
+            _simpleIoc.Register<GameFactory>();
 
-            SimpleIoc.Default.Register<CharacterFactory>();
-            SimpleIoc.Default.Register<CharacterActionsFactory>();
+            _simpleIoc.Register<CharacterFactory>();
+            _simpleIoc.Register<CharacterActionsFactory>();
 
-            SimpleIoc.Default.Register<GameSettings>();
+            _simpleIoc.Register<GameSettings>();
 
-            SimpleIoc.Default.Register<IDialogService, WindowDialogService>();
-            SimpleIoc.Default.Register<SelectionService>();
+            _simpleIoc.Register<IDialogService, WindowDialogService>();
+            _simpleIoc.Register<SelectionService>();
 
-            SimpleIoc.Default.Register<WorldMapViewModel>();
+            _simpleIoc.Register<WorldMapViewModel>();
 
 
             MessengerInstance.Register<NavigateToViewModelMessage>(this, NavigateTo);
 
-            CurrentViewModel = SimpleIoc.Default.GetInstance<MainMenuViewModel>();
+            CurrentViewModel = _simpleIoc.GetInstance<MainMenuViewModel>();
         }
 
         public ViewModelBase CurrentViewModel
@@ -65,13 +69,13 @@ namespace Pandemic.ViewModels
             set => Set(ref _currentViewModel, value);
         }
 
-        public EventsViewModel EventsViewModel => new EventsViewModel(SimpleIoc.Default.GetInstance<EventCardFactory>().GetEventCards(), SimpleIoc.Default.GetInstance<Game>());
+        public EventsViewModel EventsViewModel => new EventsViewModel(_simpleIoc.GetInstance<EventCardFactory>().GetEventCards(), _simpleIoc.GetInstance<Game>());
 
         public BoardViewModel BoardViewModel
         {
             get
             {
-                return SimpleIoc.Default.GetInstanceWithoutCaching<BoardViewModel>();
+                return _simpleIoc.GetInstanceWithoutCaching<BoardViewModel>();
             }
         }
 
@@ -87,7 +91,7 @@ namespace Pandemic.ViewModels
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<GameSetingsViewModel>();
+                return _simpleIoc.GetInstance<GameSetingsViewModel>();
             }
         }
 
@@ -95,7 +99,7 @@ namespace Pandemic.ViewModels
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<WorldMapViewModel>();
+                return _simpleIoc.GetInstance<WorldMapViewModel>();
             }
         }
 

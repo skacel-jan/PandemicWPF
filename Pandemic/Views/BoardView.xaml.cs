@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -12,6 +13,9 @@ namespace Pandemic.Views
         public BoardView()
         {
             InitializeComponent();
+
+            Focusable = true;
+            Loaded += (_, __) => Keyboard.Focus(this);
         }
 
         private void Thumb_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
