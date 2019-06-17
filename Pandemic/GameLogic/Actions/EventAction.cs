@@ -1,10 +1,12 @@
 ﻿using Pandemic.Cards;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Pandemic.GameLogic.Actions
 {
-    public abstract class EventAction
+    public abstract class EventAction : IGameAction
     {
         protected EventAction(EventCard card, Game game)
         {
@@ -17,29 +19,58 @@ namespace Pandemic.GameLogic.Actions
         protected EventCard EventCard { get; }
         protected Game Game { get; private set; }
 
-        public bool CanExecute() => true;
+        protected IList<IEffect> Effects { get; } = new List<IEffect>();
 
-        public abstract void Execute();
+        protected Queue<Selection> Selections { get; private set; }
 
-        protected void ShowGameInfo(string text)
+        public void Execute()
         {
-            Game.Info = new GameInfo(text);
+            if (Selections == null)
+            {
+                PrepareSelections();
+            }
+
+            if (Selections.Any())
+            {
+                Game.ResolveSelection(Selections.Dequeue());
+            }
+            else
+            {
+                AddEffects();
+                if (EventCard.IsReturnedByContingencyPlanner)
+                {
+                    Effects.Add(new RemoveEventCardEffect(Game.RemovedCards, EventCard));
+                }
+                else
+                {
+                    Effects.Add(new DiscardEventCardEffect(Game.PlayerDiscardPile, EventCard));
+                }
+                
+
+                foreach (var effect in Effects)
+                {
+                    effect.Execute();
+                }
+
+                Selections = null;
+                Game.Continue();
+            }
         }
 
-        protected void ShowGameInfo(string text, string actionText, Action action)
+        protected Action<T> SetSelectionCallback<T>(Action<T> action)
         {
-            Game.Info = new GameInfo(text, actionText, action);
+            return action += (_) => Execute();
         }
 
-        protected void HideGameInfo()
-        {
-            Game.Info = null;
-        }
+        protected abstract void AddEffects();
 
-        protected virtual void FinishAction()
-        {
-            HideGameInfo();
-            EventCard.FinishEvent();
+        public virtual bool CanExecute() => true;
+
+        protected abstract IEnumerable<Selection> PrepareSelections(Game game);
+
+        public void PrepareSelections()
+        {            
+            Selections = new Queue<Selection>(PrepareSelections(Game));
         }
     }
 }

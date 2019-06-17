@@ -7,15 +7,19 @@ namespace Pandemic.GameLogic.Actions
 {
     public class ShareKnowledgeAction : CharacterAction
     {
-        public ShareKnowledgeAction(Character character) : base(character)
+        private Character _characterFrom;
+        private Character _characterTo;
+        private CityCard _card;
+
+        public ShareKnowledgeAction(Character character, Game game) : base(character, game)
         {
         }
 
         public override string Name => ActionTypes.Share;
 
-        public override bool CanExecute(Game game)
+        public override bool CanExecute()
         {
-            if (game.CurrentCharacter.Equals(Character))
+            if (Game.CurrentCharacter.Equals(Character))
             {
                 return Character.CurrentMapCity.Characters.Count > 1 && (Character.HasCityCard(Character.CurrentMapCity.City) ||
                     Character.CurrentMapCity.Characters.Any(x => x.HasCityCard(Character.CurrentMapCity.City)));
@@ -26,137 +30,131 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
-        protected override void Execute()
+        protected virtual Selection SelectCharacterToGive()
         {
-            var possibleActions = Game.Characters.Where(c => !c.Equals(Character) && c.Actions[ActionTypes.Share].CanExecute(Game))
-                .Select(c => c.Actions[ActionTypes.Share]).Cast<ShareKnowledgeAction>();
+            var otherCharacters = Character.CurrentMapCity.Characters.Where(c => !c.Equals(Character));
 
-            if (possibleActions.Count() > 1)
+            if (otherCharacters.Count() > 1)
+            {
+                return new CharacterSelection(SetSelectionCallback<Character>((c) =>
+                {
+                    SetCharacter(c);
+                    Selections.Enqueue(GetCardSelection(c));
+                }), otherCharacters,
+                    "Select character to whom you will give the card");
+            }
+            else
+            {
+                SetCharacter(otherCharacters.First());
+
+                return GetCardSelection(otherCharacters.First());
+            }
+
+            void SetCharacter(Character character)
+            {
+                _characterTo = character;
+                _characterFrom = Character;
+            }
+
+            Selection GetCardSelection(Character character)
+            {
+                return new CardSelection(SetSelectionCallback((Card c) => _card = (CityCard)c), _characterFrom.CityCards, "Select card",
+                    (card) => ValidateCard(card));
+            }
+        }
+
+        protected virtual bool ValidateCard(Card card)
+        {
+            return (card as CityCard).City.Equals(Character.CurrentMapCity.City);
+        }
+
+        private Selection SelectCharacterToTake(IEnumerable<ShareKnowledgeAction> possibleActions)
+        {
+            var otherCharacters = possibleActions.Where(c => !c.Character.Equals(Character)).Select(x => x.Character);
+
+            if (otherCharacters.Count() > 1)
+            {
+                return new CharacterSelection(SetSelectionCallback<Character>((c) =>
+                {
+                    SetCharacter(c);
+                    Selections.Enqueue(GetOtherCharacterCardSelection(c));
+                }), otherCharacters,
+                    "Select character from which you will take card");
+            }
+            else
+            {
+                SetCharacter(otherCharacters.First());
+
+                return GetOtherCharacterCardSelection(otherCharacters.First());
+            }
+
+            void SetCharacter(Character character)
+            {
+                _characterTo = Character;
+                _characterFrom = character;
+            }
+
+            Selection GetOtherCharacterCardSelection(Character character)
+            {
+                Func<Card, bool> action = ((ShareKnowledgeAction)character.Actions[ActionTypes.Share]).ValidateCard;
+
+                return new CardSelection(SetSelectionCallback((Card c) => _card = (CityCard)c), character.CityCards,
+                $"Select card from {character}", action);
+            }
+        }
+
+        protected override void AddEffects()
+        {
+            Effects.Add(new GiveCardEffect(_characterFrom, _characterTo, _card));
+        }
+
+        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        {
+            var possibleActions = Game.Characters.Select(c => (ShareKnowledgeAction)c.Actions[ActionTypes.Share])
+                .Where(c => !c.Character.Equals(Character) && c.CanExecute()).ToList();
+
+            if (possibleActions.Count > 1)
             {
                 if (possibleActions.Contains(this))
                 {
-                    var action = new Action<ShareType>((ShareType shareType) =>
+                    var action = new Action<ShareType>((shareType) =>
                     {
                         if (shareType == ShareType.Give)
                         {
-                            SelectCharacterToGive();
+                            Selections.Enqueue(SelectCharacterToGive());
                         }
                     });
-                    Game.SelectShareType(Enum.GetValues(typeof(ShareType)).Cast<ShareType>(), "Select share type", action);
+
+                    yield return new ShareTypeSelection(SetSelectionCallback(action), Enum.GetValues(typeof(ShareType)).Cast<ShareType>(), "Select share type");
                 }
                 else
                 {
-                    SelectCharacterToTake(possibleActions);
+                    yield return SelectCharacterToTake(possibleActions);
                 }
             }
             else
             {
-                if (possibleActions.Count() == 0)
+                if (possibleActions.Count == 0)
                 {
-                    SelectCharacterToGive();
+                    yield return SelectCharacterToGive();
                 }
                 else
                 {
-                    SelectCharacterToTake(possibleActions);
+                    yield return SelectCharacterToTake(possibleActions);
                 }
             }
-        }
-
-        protected virtual ShareKnowledgeGive CreateGiveAction(Character characterFrom, Character characterTo)
-        {
-            return new ShareKnowledgeGive(characterFrom, characterTo);
-        }
-
-        protected virtual void SelectCharacterToGive()
-        {
-            if (Character.CurrentMapCity.Characters.Count > 2)
-            {
-                var action = new SelectAction<Character>(SetCharacter, Character.CurrentMapCity.Characters.Where(c => c != Character),
-                    "Select character to which you will give the card");
-                Game.SelectionService.Select(action);
-            }
-            else
-            {
-                CreateGiveAction(Character, Character.CurrentMapCity.Characters.Single(c => !c.Equals(Character))).Execute(Game, FinishAction);
-            }
-
-            void SetCharacter(Character character)
-            {
-                CreateGiveAction(Character, character).Execute(Game, FinishAction);
-            }
-        }
-
-        private void SelectCharacterToTake(IEnumerable<ShareKnowledgeAction> possibleActions)
-        {
-            var action = new SelectAction<Character>(SetCharacter, Character.CurrentMapCity.Characters.Where(c => c != Character),
-                    "Select character from which you will take card");
-            Game.SelectionService.Select(action);
-
-            void SetCharacter(Character character)
-            {
-                var shareAction = possibleActions.Single(a => a.Character.Equals(character));
-                shareAction.CreateGiveAction(character, Character).Execute(Game, FinishAction);
-            }
-        }
-    }
-
-    #region Share knowledge give
-
-    public class ShareKnowledgeGive
-    {
-        public ShareKnowledgeGive(Character characterFrom, Character characterTo)
-        {
-            CharacterFrom = characterFrom;
-            CharacterTo = characterTo;
-        }
-
-        public Character CharacterFrom { get; }
-        public Character CharacterTo { get; }
-
-        public void Execute(Game game, Action callback)
-        {
-            game.SelectionService.Select(new SelectAction<CityCard>(SetCard, CharacterFrom.CityCards, "Select card to share", ValidateSelectedCard));
-
-            void SetCard(CityCard card)
-            {
-                CharacterFrom.RemoveCard(card);
-                CharacterTo.AddCard(card);
-
-                callback();
-            }
-        }
-
-        protected virtual bool ValidateSelectedCard(Card card)
-        {
-            return (card as CityCard).City.Equals(CharacterFrom.CurrentMapCity.City);
-        }
-    }
-
-    #endregion Share knowledge give
-
-    #region Researcher share knowledge
-
-    public class ShareKnowledgeGiveResearcher : ShareKnowledgeGive
-    {
-        public ShareKnowledgeGiveResearcher(Character characterFrom, Character characterTo) : base(characterFrom, characterTo)
-        {
-        }
-
-        protected override bool ValidateSelectedCard(Card card)
-        {
-            return true;
         }
     }
 
     public class ShareKnowledgeResearcherAction : ShareKnowledgeAction
     {
-        public ShareKnowledgeResearcherAction(Character character) : base(character)
+        public ShareKnowledgeResearcherAction(Character character, Game game) : base(character, game)
         {
         }
 
-        public override bool CanExecute(Game game)
+        public override bool CanExecute()
         {
-            if (game.CurrentCharacter.Equals(Character))
+            if (Game.CurrentCharacter.Equals(Character))
             {
                 return Character.CurrentMapCity.Characters.Count > 1 && Character.Cards.Count > 0;
             }
@@ -166,11 +164,6 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
-        protected override ShareKnowledgeGive CreateGiveAction(Character from, Character to)
-        {
-            return new ShareKnowledgeGiveResearcher(from, to);
-        }
+        protected override bool ValidateCard(Card card) => true;
     }
-
-    #endregion Researcher share knowledge
 }

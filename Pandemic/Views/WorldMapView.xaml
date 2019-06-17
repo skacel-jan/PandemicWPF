@@ -51,7 +51,7 @@
         </Style>
     </UserControl.Resources>
     <Grid x:Name="grid">
-        <local:WorldMapBackground Grid.Row="0" />
+        <local:WorldMapBackground/>
         <Viewbox
             Grid.Row="0"
             Stretch="Fill">

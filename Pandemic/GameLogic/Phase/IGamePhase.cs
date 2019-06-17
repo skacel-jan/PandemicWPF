@@ -6,7 +6,7 @@
 
         void End();
 
-        void Action(Actions.IGameAction action);
+        void Continue();
 
         Game Game { get; }
     }

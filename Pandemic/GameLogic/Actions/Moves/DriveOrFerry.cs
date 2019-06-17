@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Pandemic.Cards;
 
 namespace Pandemic.GameLogic.Actions
 {
@@ -11,18 +13,11 @@ namespace Pandemic.GameLogic.Actions
 
         public Character Character { get; set; }
 
-        public bool IsCardRequired => false;
         public string MoveType { get => ActionTypes.DriveOrFerry; }
 
-        public bool IsPossible(Game game, MapCity city)
+        public bool IsPossible(MapCity city)
         {
             return Character.CurrentMapCity.IsCityConnected(city);
-        }
-
-        public void Move(Game game, MapCity city, Action moveActionCallback)
-        {
-            Character.CurrentMapCity = city;
-            moveActionCallback();
         }
 
         public override string ToString() => MoveType;

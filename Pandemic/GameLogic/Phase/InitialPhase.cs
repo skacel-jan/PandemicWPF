@@ -14,7 +14,7 @@ namespace Pandemic.GameLogic
 
         public Game Game { get; }
 
-        public void Action(IGameAction action)
+        public void Continue()
         {
         }
 
@@ -28,14 +28,9 @@ namespace Pandemic.GameLogic
 
             InitialInfection();
             InitialDraw();
-            AddEpidemicCards(Game.Difficulty);
+            Game.PlayerDeck.AddEpidemicCards(Game.Difficulty);
 
             Game.ChangeGamePhase(new ActionPhase(Game));
-        }
-
-        private void AddEpidemicCards(int epidemicCardsCount)
-        {
-            Game.PlayerDeck.AddEpidemicCards(epidemicCardsCount);
         }
 
         private void BuildResearchStation(MapCity mapCity)

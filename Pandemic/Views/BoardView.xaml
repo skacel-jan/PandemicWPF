@@ -31,8 +31,8 @@
             <view:CharacterSelection />
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type viewModels:CardsSelectionViewModel}">
-            <view:CardSelection>
+        <!--<DataTemplate DataType="{x:Type viewModels:CardsSelectionViewModel}">-->
+            <!--<view:CardSelection>-->
                 <!--<view:CardSelection.Triggers>
                     <EventTrigger RoutedEvent="view:CardSelection.Loaded">
                         <BeginStoryboard>
@@ -53,8 +53,8 @@
                         </BeginStoryboard>
                     </EventTrigger>
                 </view:CardSelection.Triggers>-->
-            </view:CardSelection>
-        </DataTemplate>
+            <!--</view:CardSelection>
+        </DataTemplate>-->
 
         <DataTemplate DataType="{x:Type viewModels:CardSelectionViewModel}">
             <view:CardSelection Width="800" />
@@ -162,7 +162,8 @@
                 <Grid.Resources>
                     <CollectionViewSource x:Key="playerCards" Source="{Binding CurrentCharacter.Cards}">
                         <CollectionViewSource.SortDescriptions>
-                            <componentmodel:SortDescription Direction="Ascending" />
+                            <componentmodel:SortDescription PropertyName="Color" Direction="Ascending" />
+                            <componentmodel:SortDescription PropertyName="Name" />
                         </CollectionViewSource.SortDescriptions>
                     </CollectionViewSource>
                 </Grid.Resources>

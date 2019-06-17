@@ -7,5 +7,6 @@ namespace Pandemic.Cards
         protected PlayerCard(string name) : base(name)
         {
         }
+        public Character Character { get; set; }
     }
 }

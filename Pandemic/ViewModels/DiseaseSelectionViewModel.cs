@@ -14,7 +14,7 @@ namespace Pandemic.ViewModels
         public IEnumerable<DiseaseColor> Diseases { get; private set; }
         public Action<DiseaseColor> Action { get; }
 
-        public DiseaseSelectionViewModel(IEnumerable<DiseaseColor> diseases, Action<DiseaseColor> action)
+        public DiseaseSelectionViewModel(Action<DiseaseColor> action, IEnumerable<DiseaseColor> diseases)
         {
             Diseases = diseases;
             Action = action;

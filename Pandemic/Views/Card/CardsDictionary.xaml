@@ -55,19 +55,25 @@
         FontSize="12"
         Foreground="Yellow" />
 
-    <BitmapImage x:Key="yellowCardImage" UriSource="pack://application:,,,/Resources/yellow_card.jpg" />
+    <BitmapImage
+        x:Key="yellowCardImage"
+        UriSource="pack://application:,,,/Resources/yellow_card.jpg" />
 
-    <Grid x:Key="YellowCard" x:Shared="false">
-        <!--<Label
+    <StackPanel
+        x:Key="YellowCard"
+        x:Shared="false">
+        <Label
             Padding="10"
             Background="Black"
             BorderBrush="Orange"
             BorderThickness="2"
             Content="{Binding Name}"
             FontSize="12"
-            Foreground="Yellow" />-->
-        <Image Height="150" Source="{StaticResource yellowCardImage}" />
-    </Grid>
+            Foreground="Yellow" />
+        <Image
+            Height="150"
+            Source="{StaticResource yellowCardImage}" />
+    </StackPanel>
 
     <Label
         x:Key="CityCard"
@@ -86,16 +92,24 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:PlayingCard}">
                     <!--<Viewbox Stretch="Uniform">-->
-                    <Grid Name="TheGrid" RenderTransformOrigin="0.5, 0.5">
+                    <Grid
+                        Name="TheGrid"
+                        RenderTransformOrigin="0.5, 0.5">
                         <Grid.RenderTransform>
                             <TransformGroup>
                                 <RotateTransform Angle="0" />
                                 <TranslateTransform X="0" Y="0" />
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                                <ScaleTransform
+                                    ScaleX="1"
+                                    ScaleY="1" />
                             </TransformGroup>
                         </Grid.RenderTransform>
-                        <Grid Name="TheCard" Cursor="Hand">
-                            <ContentControl Name="faceRect" Content="{StaticResource YellowCard}" />
+                        <Grid
+                            Name="TheCard"
+                            Cursor="Hand">
+                            <ContentControl
+                                Name="faceRect"
+                                Content="{StaticResource YellowCard}" />
                             <Grid.RenderTransform>
                                 <TranslateTransform X="0" Y="0" />
                             </Grid.RenderTransform>
@@ -118,7 +132,9 @@
                         <Trigger Property="CardName" Value="Yellow">
                             <Setter TargetName="faceRect" Property="Content" Value="{StaticResource YellowCard}" />
                         </Trigger>
-                        <EventTrigger RoutedEvent="Mouse.MouseEnter" SourceName="TheCard">
+                        <EventTrigger
+                            RoutedEvent="Mouse.MouseEnter"
+                            SourceName="TheCard">
                             <BeginStoryboard>
                                 <Storyboard>
                                     <!--  Scale  -->
@@ -144,7 +160,9 @@
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
-                        <EventTrigger RoutedEvent="Mouse.MouseLeave" SourceName="TheCard">
+                        <EventTrigger
+                            RoutedEvent="Mouse.MouseLeave"
+                            SourceName="TheCard">
                             <BeginStoryboard>
                                 <Storyboard>
                                     <!--  Scale  -->
@@ -176,22 +194,32 @@
         </Setter>
     </Style>
 
-    <Style x:Key="SmallCard" TargetType="{x:Type local:PlayingCard}">
+    <Style
+        x:Key="SmallCard"
+        TargetType="{x:Type local:PlayingCard}">
         <Setter Property="ClipToBounds" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:PlayingCard}">
                     <!--<Viewbox Stretch="Uniform">-->
-                    <Grid Name="TheGrid" RenderTransformOrigin="0.5, 0.5">
+                    <Grid
+                        Name="TheGrid"
+                        RenderTransformOrigin="0.5, 0.5">
                         <Grid.RenderTransform>
                             <TransformGroup>
                                 <RotateTransform Angle="0" />
                                 <TranslateTransform X="0" Y="0" />
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
+                                <ScaleTransform
+                                    ScaleX="1"
+                                    ScaleY="1" />
                             </TransformGroup>
                         </Grid.RenderTransform>
-                        <Grid Name="TheCard" Cursor="Hand">
-                            <ContentControl Name="faceRect" Content="{StaticResource CityCard}" />
+                        <Grid
+                            Name="TheCard"
+                            Cursor="Hand">
+                            <ContentControl
+                                Name="faceRect"
+                                Content="{StaticResource CityCard}" />
                             <Grid.RenderTransform>
                                 <TranslateTransform X="0" Y="0" />
                             </Grid.RenderTransform>

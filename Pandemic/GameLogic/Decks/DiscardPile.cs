@@ -11,7 +11,7 @@ namespace Pandemic.Decks
             InnerCards = new List<T>(cards);
         }
 
-        public DiscardPile()
+        public DiscardPile() : this(Enumerable.Empty<T>())
         {
         }
 

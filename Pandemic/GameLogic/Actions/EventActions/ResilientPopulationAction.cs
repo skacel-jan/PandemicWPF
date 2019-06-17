@@ -1,25 +1,24 @@
-﻿using Pandemic.Cards;
+﻿using System.Collections.Generic;
+using Pandemic.Cards;
 
 namespace Pandemic.GameLogic.Actions
 {
     public class ResilientPopulationAction : EventAction
     {
+        private InfectionCard _card;
+
         public ResilientPopulationAction(EventCard card, Game game) : base(card, game)
         {
         }
 
-        public override void Execute()
+        protected override void AddEffects()
         {
-            Game.SelectionService.Select(new SelectAction<Card>(SelectCard, Game.Infection.DiscardPile.Cards,
-                "Select infection card", (card) => card is InfectionCard infectionCard));
+            Effects.Add(new RemoveInfectionCardEffect(_card, Game));
         }
 
-        private void SelectCard(Card card)
+        protected override IEnumerable<Selection> PrepareSelections(Game game)
         {
-            Game.Infection.DiscardPile.RemoveCard((InfectionCard)card);
-            Game.RemovedCards.AddCard(card);
-
-            FinishAction();
+            yield return new CardSelection(SetSelectionCallback((Card c) => _card = (InfectionCard)c), game.Infection.DiscardPile.Cards, "Select infection card");
         }
     }
 }

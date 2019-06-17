@@ -9,6 +9,8 @@
     xmlns:view="clr-namespace:Pandemic.Views"
     mc:Ignorable="d">
 
+    <view:WorldMapBackground x:Key="WorldMapBackground"/>
+
     <!--  Control colors.  -->
     <Color x:Key="DisabledColor">#FFE8EDF9</Color>
     <SolidColorBrush

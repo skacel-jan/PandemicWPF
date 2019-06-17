@@ -23,17 +23,6 @@ namespace Pandemic.Characters
             return city.Diseases[color].Status > Disease.State.NotCured;
         }
 
-        public virtual void SpecialTreatDisease()
-        {
-            foreach (var disease in CurrentMapCity.Diseases.Values)
-            {
-                if (disease.Status > Disease.State.NotCured)
-                {
-                    CurrentMapCity.RemoveInfection(disease.Color);
-                }
-            }
-        }
-
         public override int TreatDisease(DiseaseColor diseaseColor)
         {
             return CurrentMapCity.RemoveInfection(diseaseColor);

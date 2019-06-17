@@ -14,11 +14,9 @@ namespace Pandemic.GameLogic
             CharacterFactory = characterFactory;
         }
 
-        public CircularCollection<Character> GetCharacters(MapCity startingCity)
+        public IEnumerable<Character> GetCharacters(MapCity startingCity, Game game)
         {
-            var characters = CharacterFactory.GetCharacters(SelectedCharacters, startingCity);
-
-            return new CircularCollection<Character>(characters);
+            return CharacterFactory.GetCharacters(SelectedCharacters, startingCity, game);
         }
     }
 }

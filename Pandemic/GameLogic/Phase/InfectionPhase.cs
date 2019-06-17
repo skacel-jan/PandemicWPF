@@ -14,7 +14,7 @@ namespace Pandemic.GameLogic
             Game = game ?? throw new ArgumentNullException(nameof(game));
         }
 
-        public void Action(IGameAction action)
+        public void Continue()
         {
             if (Game.Infection.Actual == 0)
             {
@@ -37,7 +37,7 @@ namespace Pandemic.GameLogic
                 if (CanRaiseInfection(Game.WorldMap[card.City.Name], card.City.Color))
                 {
                     Game.Info = new GameInfo($"Infected city {card.City.Name}", $"Next {(Game.Infection.Actual == 0 ? "Player" : "Infection")}",
-                        () => Game.DoAction(null));
+                        () => Game.Continue());
 
                     var isOutbreak = Game.IncreaseInfection(card.City, card.City.Color);
                     if (isOutbreak)
@@ -48,7 +48,7 @@ namespace Pandemic.GameLogic
                 else
                 {
                     Game.Info = new GameInfo($"City {card.City.Name} was not infected", $"Next {(Game.Infection.Actual == 0 ? "Player" : "Infection")}",
-                        () => Game.DoAction(null));
+                        () => Game.Continue());
                 }
             }
         }
@@ -56,11 +56,12 @@ namespace Pandemic.GameLogic
         public void End()
         {
             Game.Characters.Next();
+            Game.Infection.Reset();
         }
 
         public void Start()
         {
-            Game.Infection.Reset();
+            
         }
 
         protected void OnOutbreak(OutbreakEventArgs e)

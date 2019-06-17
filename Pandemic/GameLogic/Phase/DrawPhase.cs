@@ -9,7 +9,7 @@ namespace Pandemic.GameLogic
 {
     public class DrawPhase : IGamePhase
     {
-        private IList<Card> _drawnCards;
+        private readonly IList<Card> _drawnCards;
 
         public DrawPhase(Game game)
         {
@@ -19,7 +19,7 @@ namespace Pandemic.GameLogic
 
         public Game Game { get; }
 
-        public void Action(IGameAction action)
+        public void Continue()
         {
             if (!TryDrawPlayerCard(Game.CurrentCharacter, out PlayerCard firstCard))
             {
@@ -39,13 +39,13 @@ namespace Pandemic.GameLogic
                 Game.SetInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.{Environment.NewLine}" +
                         $"Player has more cards then his hand limit. Card has to be discarded.");
 
-                var selectAction = new MultiSelectAction<IEnumerable<PlayerCard>>(SetCard, Game.CurrentCharacter.Cards, string.Empty, ValidateCards);
-                Game.SelectionService.Select(selectAction);
+                //var selectAction = new MultiSelectAction<IEnumerable<PlayerCard>>(SetCard, Game.CurrentCharacter.Cards, string.Empty, ValidateCards);
+                //Game.SelectionService.Select(selectAction);
             }
             else
             {
                 Game.SetInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.", "Infection phase",
-                    () => Game.DoAction(null));
+                    () => Game.Continue());
 
                 NextPhase();
             }
@@ -65,7 +65,7 @@ namespace Pandemic.GameLogic
             }
 
             Game.SetInfo($"Cards discarded: {string.Join<string>(",", cards.Select(c => c.Name))}.", "Infection phase",
-                () => Game.DoAction(null));
+                () => Game.Continue());
 
             NextPhase();
         }
@@ -180,11 +180,7 @@ namespace Pandemic.GameLogic
                 isGameOver = true;
             }
 
-            if (card is EventCard eventCard)
-            {
-                character.AddCard(card);
-            }
-            else if (card is EpidemicCard)
+            if (card is EpidemicCard)
             {
                 DoEpidemicActions();
             }

@@ -6,8 +6,8 @@
     xmlns:converters="clr-namespace:Pandemic.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:view="clr-namespace:Pandemic.Views"
     xmlns:panels="clr-namespace:Pandemic.Views.CustomPanels"
+    xmlns:view="clr-namespace:Pandemic.Views"
     x:Name="root"
     d:DesignHeight="100"
     d:DesignWidth="300"
@@ -15,13 +15,15 @@
     <UserControl.Resources>
         <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
 
-        <CollectionViewSource x:Key="playerCards" Source="{Binding Items}">
+        <CollectionViewSource
+            x:Key="playerCards"
+            Source="{Binding Items}">
             <CollectionViewSource.SortDescriptions>
                 <componentmodel:SortDescription Direction="Ascending" />
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
     </UserControl.Resources>
-    <Grid>
+    <StackPanel>
         <ItemsControl ItemsSource="{Binding Source={StaticResource playerCards}}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -33,9 +35,19 @@
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <panels:OverlapCanvas Orientation="Horizontal" IsItemsHost="True" Spacing="80"/>
+                    <panels:OverlapCanvas
+                        IsItemsHost="True"
+                        Orientation="Horizontal"
+                        Spacing="80" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-    </Grid>
+        <Button
+            Padding="3"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Command="{Binding ConfirmSelectedEventCommand}"
+            Content="Confirm"
+            Style="{StaticResource ActionButtonStyle}" />
+    </StackPanel>
 </UserControl>

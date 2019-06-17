@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Pandemic.GameLogic.Actions
 {
@@ -6,8 +7,8 @@ namespace Pandemic.GameLogic.Actions
     {
         string Name { get; }
 
-        bool CanExecute(Game game);
+        bool CanExecute();
 
-        void Execute(Game game, Action callbackAction);
+        void Execute();
     }
 }

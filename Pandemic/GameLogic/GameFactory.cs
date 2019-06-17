@@ -23,8 +23,7 @@ namespace Pandemic.GameLogic
             var diseases = DiseaseFactory.GetDiseases();
             var worldMap = WorldMapFactory.CreateWorldMap(diseases);
 
-            var selectionService = new SelectionService(worldMap);
-            var events = new EventCardFactory(selectionService).GetEventCards();
+            var events = new EventCardFactory().GetEventCards();
 
             PlayerDeck playerDeck = new PlayerDeck(worldMap.Cities.Select(c => new CityCard(c.City)));
 
@@ -33,9 +32,7 @@ namespace Pandemic.GameLogic
                 playerDeck.AddCard(card);
             }
 
-            //playerDeck.AddCards(EventCardFactory.GetEventCards());
-
-            return new Game(worldMap, diseases, GameSettings, playerDeck, selectionService);
+            return new Game(worldMap, diseases, GameSettings, playerDeck, new SelectionService(worldMap));
         }
     }
 }

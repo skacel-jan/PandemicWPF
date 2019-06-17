@@ -1,76 +1,61 @@
 ﻿using Pandemic.Cards;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Pandemic.GameLogic.Actions
-{
+{    
     public class BuildAction : CharacterAction
     {
-        public BuildAction(Character character) : base(character)
-        {
+        private MapCity _cityToDestroy;
+
+        public BuildAction(Character character, Game game) : base(character, game)
+        {           
         }
 
         public override string Name => ActionTypes.Build;
 
-        public override bool CanExecute(Game game)
+        public override bool CanExecute()
         {
             return !Character.CurrentMapCity.HasResearchStation && Character.HasCityCard(Character.CurrentMapCity.City);
         }
 
-        protected override void Execute()
+        protected override void AddEffects()
         {
+            if (_cityToDestroy != null)
+            {
+                Effects.Add(new DestroyResearchStationEffect(_cityToDestroy, Game));
+            }
+
+            Effects.Add(new BuildResearchStationEffect(Character.CurrentMapCity, Game));
+            Effects.Add(new DiscardPlayerCardEffect(Character.CityCards.First(x => x.City == Character.CurrentMapCity.City), Game.PlayerDiscardPile));
+        }
+
+        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        {
+            _cityToDestroy = null;
             if (Game.ResearchStationsPile == 0)
             {
-                Game.SelectionService.Select(new SelectAction<MapCity>(SetCity, Game.WorldMap.Cities.Where(c => c.HasResearchStation),
-                    "Select city with research station to destroy"));
+                yield return new CitySelection(SetSelectionCallback((MapCity c) => _cityToDestroy = c), Game.WorldMap.Cities, "Select city");
             }
-            else
-            {
-                BuildStation(Character.CurrentMapCity);
-            }
-        }
-
-        private void SetCity(MapCity mapCity)
-        {
-            DestroyStation(mapCity);
-            BuildStation(Character.CurrentMapCity);
-        }
-
-        private void BuildStation(MapCity mapCity)
-        {
-            mapCity.HasResearchStation = true;
-            CityCard cityCard = Character.CityCards.FirstOrDefault(c => c.City.Equals(Character.CurrentMapCity.City));
-
-            Character.RemoveCard(cityCard);
-            Game.AddCardToPlayerDiscardPile(cityCard);
-            Game.ResearchStationsPile--;
-
-            FinishAction();
-        }
-
-        private void DestroyStation(MapCity city)
-        {
-            city.HasResearchStation = false;
-            Game.ResearchStationsPile++;
         }
     }
 
     public class OperationsExpertBuildAction : BuildAction
     {
-        public OperationsExpertBuildAction(Character character) : base(character)
+        public OperationsExpertBuildAction(Character character, Game game) : base(character, game)
         {
         }
 
-        public override bool CanExecute(Game game)
+        public override bool CanExecute()
         {
             return !Character.CurrentMapCity.HasResearchStation;
         }
 
-        protected override void Execute()
+        protected override void AddEffects()
         {
-            Character.CurrentMapCity.HasResearchStation = true;
-            Game.ResearchStationsPile--;
-
-            FinishAction();
+            base.AddEffects();
+            Effects.Remove(Effects.First(x => x is DiscardPlayerCardEffect));
         }
     }
 }

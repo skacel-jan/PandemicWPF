@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Pandemic.GameLogic.Actions;
+using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 
@@ -8,17 +9,17 @@ namespace Pandemic.ViewModels
 {
     public class CharacterSelectionViewModel : ViewModelBase
     {
-        private ISelectAction<Character> selectAction;
+        private readonly Action<Character> _selectCharacterCallback;
 
         public ICommand CharacterSelectedCommand { get; }
 
         public IEnumerable<Character> Characters { get; }
 
-        public CharacterSelectionViewModel(ISelectAction<Character> selectAction)
+        public CharacterSelectionViewModel(Action<Character> selectCharacterCallback, IEnumerable<Character> characters)
         {
-            this.selectAction = selectAction;
-            Characters = selectAction.Items;
-            CharacterSelectedCommand = new RelayCommand<Character>((character) => this.selectAction.Execute(character));
+            _selectCharacterCallback = selectCharacterCallback;
+            Characters = characters;
+            CharacterSelectedCommand = new RelayCommand<Character>(_selectCharacterCallback);
         }
     }
 }

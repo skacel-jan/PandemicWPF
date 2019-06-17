@@ -12,7 +12,7 @@ namespace Pandemic.GameLogic
             Game = game ?? throw new ArgumentNullException(nameof(game));
         }
 
-        public void Action(IGameAction action)
+        public void Continue()
         {
         }
 

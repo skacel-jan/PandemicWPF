@@ -1,4 +1,5 @@
 ﻿using Pandemic.Cards;
+using Pandemic.GameLogic;
 using Pandemic.GameLogic.Actions;
 using Pandemic.ViewModels;
 using System;
@@ -6,59 +7,6 @@ using System.Collections.Generic;
 
 namespace Pandemic
 {
-    public class SelectActionWrapper<T> : ISelectAction<T>
-    {
-        public SelectActionWrapper(ISelectAction<T> selectAction, Action callback)
-        {
-            SelectAction = selectAction ?? throw new ArgumentNullException(nameof(selectAction));
-            Callback = callback ?? throw new ArgumentNullException(nameof(callback));
-        }
-
-        public IEnumerable<T> Items => SelectAction.Items;
-        public ISelectAction<T> SelectAction { get; }
-        public Action Callback { get; }
-
-        public string Text => SelectAction.Text;
-
-        public bool CanExecute(object param)
-        {
-            return SelectAction.CanExecute(param);
-        }
-
-        public void Execute(object param)
-        {
-            Callback();
-            SelectAction.Execute(param);            
-        }
-    }
-
-    public class MultiSelectActionWrapper<T> : IMultiSelectAction<T>
-    {
-        public MultiSelectActionWrapper(IMultiSelectAction<T> selectAction, Action callback)
-        {
-            SelectAction = selectAction ?? throw new ArgumentNullException(nameof(selectAction));
-            Callback = callback ?? throw new ArgumentNullException(nameof(callback));
-        }
-
-        public T Items => SelectAction.Items;
-        public IMultiSelectAction<T> SelectAction { get; }
-        public Action Callback { get; }
-
-        public string Text => SelectAction.Text;
-
-        public bool CanExecute(object param)
-        {
-            return SelectAction.CanExecute(param);
-        }
-
-        public void Execute(object param)
-        {
-            SelectAction.Execute(param);
-            Callback();
-        }
-
-    }
-
     public class SelectionService
     {
         public SelectionService(WorldMap worldMap)
@@ -66,50 +14,76 @@ namespace Pandemic
             WorldMap = worldMap ?? throw new ArgumentNullException(nameof(worldMap));
         }
 
-        public event EventHandler<ViewModelEventArgs> Selecting;
-
-        public event EventHandler SelectionFinished;
-
         public WorldMap WorldMap { get; }
 
-        public void Select(ISelectAction<Card> selectAction)
+        internal void SelectCharacter(Action<Character> selectCharacterCallback, IEnumerable<Character> characters, string text)
         {
-            var wrapper = new SelectActionWrapper<Card>(selectAction, ActionFinishedCallback);
-
-            var viewModel = new CardSelectionViewModel(wrapper);
-            Selecting?.Invoke(this, new ViewModelEventArgs(viewModel));
+            var viewModel = new CharacterSelectionViewModel(GetCallback(selectCharacterCallback), characters);
+            BoardViewModel.ActionViewModel = viewModel;
+            BoardViewModel.Game.SetInfo(text);
         }
 
-        private void ActionFinishedCallback()
+        internal void SelectCards<T>(Action<IEnumerable<T>> selectCardsCallback, IEnumerable<T> cards, string infoText, Func<IEnumerable<T>, bool> predicate) where T : Card
         {
-            OnSelectionFinished(EventArgs.Empty);
+            var viewModel = new CardsSelectionViewModel<T>(GetCallback(selectCardsCallback), cards, predicate);
+            BoardViewModel.ActionViewModel = viewModel;
+            BoardViewModel.Game.SetInfo(infoText);
         }
 
-        public void Select(IMultiSelectAction<IEnumerable<PlayerCard>> selectAction)
+        internal void SelectShareType(Action<ShareType> action, IEnumerable<ShareType> items, string infoText)
         {
-            var wrapper = new MultiSelectActionWrapper<IEnumerable<PlayerCard>>(selectAction, ActionFinishedCallback);
-
-            var viewModel = new CardsSelectionViewModel(selectAction);
-
-            Selecting?.Invoke(this, new ViewModelEventArgs(viewModel));
+            BoardViewModel.ActionViewModel = new ShareTypeSelectionViewModel(GetCallback(action), items);
+            BoardViewModel.Game.SetInfo(infoText);
         }
 
-        public void Select(ISelectAction<Character> selectAction)
+        private Action<T> GetCallback<T>(Action<T> callback)
         {
-            var wrapper = new SelectActionWrapper<Character>(selectAction, ActionFinishedCallback);
-
-            var viewModel = new CharacterSelectionViewModel(wrapper);
-            Selecting?.Invoke(this, new ViewModelEventArgs(viewModel));
+            return (t) =>
+            {
+                BoardViewModel.ActionViewModel = null;
+                BoardViewModel.Game.Info = null;
+                callback(t);
+                BoardViewModel.RefreshAllCommands();
+            };
         }
 
-        public void Select(ISelectAction<MapCity> selectAction)
+        internal void SelectCity(Action<MapCity> selectCityCallback, IEnumerable<MapCity> cities, string text)
         {
-            WorldMap.SelectCity(selectAction);
+            BoardViewModel.Game.SetInfo(text);
+            foreach (var city in cities)
+            {
+                city.IsSelectable = true;
+            }
+
+            WorldMap.SelectCity(GetCallback(selectCityCallback));
         }
 
-        protected void OnSelectionFinished(EventArgs e)
+        internal void SelectDisease(Action<DiseaseColor> action, IList<DiseaseColor> diseasesToTreat, string infoText)
         {
-            SelectionFinished?.Invoke(this, e);
+            var viewModel = new DiseaseSelectionViewModel(GetCallback(action), diseasesToTreat);
+            BoardViewModel.ActionViewModel = viewModel;
+            BoardViewModel.Game.SetInfo(infoText);
+        }
+
+        public BoardViewModel BoardViewModel { get; internal set; }
+
+        internal void SelectCard(Action<Card> selectCardCallback, IEnumerable<Card> cards, string infoText)
+        {
+            SelectCard(selectCardCallback, cards, infoText, (Card c) => true);
+        }
+
+        internal void SelectCard(Action<Card> selectCardCallback, IEnumerable<Card> cards, string infoText, Func<Card, bool> predicate)
+        {
+            var viewModel = new CardSelectionViewModel(GetCallback(selectCardCallback), cards, predicate);
+            BoardViewModel.ActionViewModel = viewModel;
+            BoardViewModel.Game.SetInfo(infoText);
+        }
+
+        internal void SelectMove(Action<IMoveAction> selectActionCallback, IEnumerable<IMoveAction> possibleCardMoveActions, string infoText)
+        {
+            var viewModel = new MoveSelectionViewModel(GetCallback(selectActionCallback), possibleCardMoveActions);
+            BoardViewModel.ActionViewModel = viewModel;
+            BoardViewModel.Game.SetInfo(infoText);
         }
     }
 }

@@ -67,10 +67,7 @@ namespace Pandemic
         public void AddCard(PlayerCard card)
         {
             Cards.Add(card);
-            if (card is EventCard eventCard)
-            {
-                eventCard.Character = this;
-            }
+            card.Character = this;
         }
 
         public virtual bool CanPreventInfection(MapCity city, DiseaseColor color)
@@ -80,7 +77,7 @@ namespace Pandemic
 
         public bool CanMoveToCity(Game game, MapCity city)
         {
-            return ((MoveAction)Actions[ActionTypes.Move]).AllMoveActions.OfType<DriveOrFerry>().Single().IsPossible(game, city);
+            return ((MoveAction)Actions[ActionTypes.Move]).AllMoveActions.OfType<DriveOrFerry>().Single().IsPossible(city);
         }
 
         public int CardsCountOfColor(DiseaseColor diseaseColor)
@@ -95,7 +92,10 @@ namespace Pandemic
 
         public void RemoveCard(PlayerCard card)
         {
-            Cards.Remove(card);
+            if (Cards.Remove(card))
+            {
+                card.Character = null;
+            }            
         }
 
         public void RemoveCard(City city)
@@ -109,11 +109,6 @@ namespace Pandemic
             return CurrentMapCity.TreatDisease(diseaseColor);
         }
 
-        protected virtual bool HasCardOfCurrentCity()
-        {
-            return HasCityCard(CurrentMapCity.City);
-        }
-
         private void Cards_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (Cards.Count > 0)
@@ -125,6 +120,17 @@ namespace Pandemic
             {
                 MostCardsColor = default;
             }
+        }
+
+        public override string ToString()
+        {
+            return Role;
+
+        }
+         
+        public class Builder
+        {
+
         }
     }
 }

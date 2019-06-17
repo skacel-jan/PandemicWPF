@@ -83,7 +83,7 @@ namespace Pandemic.ViewModels
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MainMenuViewModel>();
+                return _simpleIoc.GetInstance<MainMenuViewModel>();
             }
         }
 

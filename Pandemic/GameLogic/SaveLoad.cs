@@ -100,7 +100,7 @@ namespace Pandemic.GameLogic
                     {
                         HasResearchStation = c.HasResearchStation,
                         Name = c.City.Name,
-                        Infection = c.Infections.Select(i => (i.Key, i.Value).ToTuple()).ToList()
+                        Infection = c.Infections.Select(i => (i.Key, i.Value)).ToList()
                     }).ToList()
                 };
 
@@ -132,7 +132,7 @@ namespace Pandemic.GameLogic
         {
             public string Name { get; set; }
 
-            public List<Tuple<DiseaseColor, int>> Infection { get; set; }
+            public List<(DiseaseColor Color, int Value)> Infection { get; set; }
 
             public bool HasResearchStation { get; set; }
         }

@@ -3,7 +3,7 @@ using System;
 
 namespace Pandemic.Cards
 {
-    public abstract class Card : ObservableObject, IComparable, IComparable<Card>, IEquatable<Card>
+    public abstract class Card : ObservableObject, IEquatable<Card>
     {
         protected Card(string name)
         {
@@ -11,60 +11,6 @@ namespace Pandemic.Cards
         }
 
         public string Name { get; }
-
-        public static int Compare(Card left, Card right)
-        {
-            if (ReferenceEquals(left, right))
-            {
-                return 0;
-            }
-            if (left is null)
-            {
-                return -1;
-            }
-            return left.CompareTo(right);
-        }
-
-        public static bool operator !=(Card left, Card right)
-        {
-            return !(left == right);
-        }
-
-        public static bool operator <(Card left, Card right)
-        {
-            return (Compare(left, right) < 0);
-        }
-
-        public static bool operator ==(Card left, Card right)
-        {
-            if (left is null)
-            {
-                return right is null;
-            }
-            return left.Equals(right);
-        }
-
-        public static bool operator >(Card left, Card right)
-        {
-            return (Compare(left, right) > 0);
-        }
-
-        public int CompareTo(Card other)
-        {
-            if (other is null)
-            {
-                return 1;
-            }
-
-            return string.Compare(Name, other.Name, StringComparison.OrdinalIgnoreCase);
-        }
-
-        public int CompareTo(object obj)
-        {
-            if (obj.GetType() != GetType())
-                return 1;
-            return CompareTo(obj as Card);
-        }
 
         public bool Equals(Card other)
         {
@@ -83,7 +29,7 @@ namespace Pandemic.Cards
             {
                 return false;
             }
-            return CompareTo(other) == 0;
+            return Equals(other);
         }
 
         public override int GetHashCode()

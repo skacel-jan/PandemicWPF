@@ -7,58 +7,47 @@ namespace Pandemic.GameLogic.Actions
 {
     public class DiscoverCureAction : CharacterAction
     {
-        public DiscoverCureAction(Character character) : base(character)
+        private IEnumerable<CityCard> _cards;
+
+        public DiscoverCureAction(Character character, Game game) : base(character, game)
         {
         }
 
         public override string Name => ActionTypes.Discover;
 
-        public override bool CanExecute(Game game)
+        public override bool CanExecute()
         {
             return Character.CurrentMapCity.HasResearchStation && Character.CardsCountOfColor(Character.MostCardsColor) >= Character.CardsForCure;
         }
 
-        protected override void Execute()
+        protected override void AddEffects()
+        {
+            Effects.Add(new DiscoverCureEffect(Game.Diseases[Character.MostCardsColor]));
+            foreach (var card in _cards)
+            {
+                Effects.Add(new DiscardPlayerCardEffect(card, Game.PlayerDiscardPile));
+            }
+
+            var medic = Game.Characters.OfType<Medic>().SingleOrDefault();
+            if (medic != null)
+            {
+                Effects.Add(new TreatDiseaseEffect(Game, Character.MostCardsColor, medic));
+            }
+        }
+
+        protected override IEnumerable<Selection> PrepareSelections(Game game)
         {
             if (Character.MostCardsColorCount > Character.CardsForCure)
             {
-                SelectCardsForCure();
-            }
-            else
-            {
-                DiscoverCure(Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor), Character.MostCardsColor);
-            }
-        }
-
-        private void DiscoverCure(IEnumerable<CityCard> cards, DiseaseColor color)
-        {
-            Game.DiscoverCure(color);
-            foreach (var card in cards.ToList())
-            {
-                Character.RemoveCard(card);
-                Game.AddCardToPlayerDiscardPile(card);
+                yield return new CardsSelection<CityCard>(SetSelectionCallback((IEnumerable<CityCard> c) => _cards = c),
+                    Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
+                    $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure",
+                    ValidateCards);
             }
 
-            Game.Characters.OfType<Medic>().SingleOrDefault()?.SpecialTreatDisease();
-
-            FinishAction();
-        }
-
-        private void SelectCards(IEnumerable<CityCard> cards)
-        {
-            DiscoverCure(cards, Character.MostCardsColor);
-        }
-
-        private void SelectCardsForCure()
-        {
-            var action = new MultiSelectAction<IEnumerable<CityCard>>(SelectCards, Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
-                $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure", ValidateCards);
-
-            Game.SelectionService.Select(action);
-
-            bool ValidateCards(IEnumerable<CityCard> cards)
+            bool ValidateCards(IEnumerable<Card> cards)
             {
-                return cards.Count() == Character.CardsForCure && cards.All(c => c.City.Color == Character.MostCardsColor);
+                return cards.Count() == Character.CardsForCure && cards.All(c => (c as CityCard).City.Color == Character.MostCardsColor);
             }
         }
     }

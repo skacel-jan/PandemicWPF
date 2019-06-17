@@ -3,7 +3,7 @@ using System;
 
 namespace Pandemic
 {
-    public class City : IEquatable<City>, IComparable<City>
+    public class City : IEquatable<City>
     {
         public City(string name, DiseaseColor color)
         {
@@ -13,26 +13,6 @@ namespace Pandemic
 
         public DiseaseColor Color { get; private set; }
         public string Name { get; private set; }
-
-        public static bool operator !=(City left, City right)
-        {
-            return !left.Equals(right);
-        }
-
-        public static bool operator ==(City left, City right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator <(City left, City right)
-        {
-            return Compare(left, right) < 0;
-        }
-
-        public static bool operator >(City left, City right)
-        {
-            return Compare(left, right) > 0;
-        }
 
         public int CompareTo(City other)
         {

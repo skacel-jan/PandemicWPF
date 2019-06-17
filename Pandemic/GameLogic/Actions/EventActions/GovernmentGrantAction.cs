@@ -1,36 +1,28 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Pandemic.Cards;
 
 namespace Pandemic.GameLogic.Actions
 {
     public class GovernmentGrantAction : EventAction
     {
+        private MapCity _city;
+
         public GovernmentGrantAction(EventCard card, Game game) : base(card, game)
         {
+            
         }
 
-        public override void Execute()
+        protected override void AddEffects()
         {
-            Game.SetInfo("Select city");
-            Game.SelectionService.Select(new SelectAction<MapCity>(SelectCity,
-                Game.WorldMap.Cities.Where(x => !x.HasResearchStation), "Select city"));
+            Effects.Add(new UnselectAllCitiesEffect(Game.WorldMap));
+            Effects.Add(new BuildResearchStationEffect(_city, Game));
         }
 
-        private void SelectCity(MapCity mapCity)
+        protected override IEnumerable<Selection> PrepareSelections(Game game)
         {
-            mapCity.HasResearchStation = true;
-
-            FinishAction();
-        }
-
-        protected override void FinishAction()
-        {
-            foreach (var mapCity in Game.WorldMap.Cities)
-            {
-                mapCity.IsSelectable = false;
-            }
-
-            base.FinishAction();
+            yield return new CitySelection(SetSelectionCallback((MapCity c) => _city = c),
+                Game.WorldMap.Cities.Where(x => !x.HasResearchStation), "Select city");
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Pandemic.ViewModels
 {
     public class ShareTypeSelectionViewModel : SelectionViewModel<ShareType>
     {
-        public ShareTypeSelectionViewModel(IEnumerable<ShareType> items, Action<ShareType> callbackAction) : base(items, callbackAction)
+        public ShareTypeSelectionViewModel(Action<ShareType> callbackAction, IEnumerable<ShareType> items) : base(items, callbackAction)
         {
         }
     }

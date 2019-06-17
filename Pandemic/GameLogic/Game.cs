@@ -17,15 +17,15 @@ namespace Pandemic
         private int _actions;
         private IGamePhase _gamePhase;
         private GameInfo _info;
-        private Stack<GameInfo> _gameInfos;
+        private readonly Stack<GameInfo> _gameInfos;
         private int _outbreaks;
-        private int _researchStationPile = 6;
+        private int _researchStationPile = 1;        
 
         internal Game(WorldMap worldMap, IDictionary<DiseaseColor, Disease> diseases, GameSettings gameSettings,
             PlayerDeck playerDeck, SelectionService selectionService)
         {
             WorldMap = worldMap;
-            Characters = gameSettings.GetCharacters(worldMap[City.Atlanta]);
+            Characters = new CircularCollection<Character>(gameSettings.GetCharacters(worldMap[City.Atlanta], this));
             Infection = new Infection(new Deck<InfectionCard>(WorldMap.Cities.Select(c => new InfectionCard(c.City))));
 
             PlayerDeck = playerDeck ?? throw new ArgumentNullException(nameof(playerDeck));
@@ -34,7 +34,6 @@ namespace Pandemic
             AllInfectionCards = Infection.Deck.Cards.ToDictionary(c => c.Name, c => c);
 
             SelectionService = selectionService ?? throw new ArgumentNullException(nameof(selectionService));
-            Difficulty = gameSettings.Difficulty;
 
             PlayerDiscardPile = new DiscardPile<PlayerCard>();
             RemovedCards = new DiscardPile<Card>();
@@ -57,19 +56,23 @@ namespace Pandemic
             _autoSave = true;
         }
 
+        internal void ResolveEffect(IEffect effect)
+        {
+            effect.Execute();
+        }
+
+        internal void Continue()
+        {
+            GamePhase.Continue();
+        }
+
         public event EventHandler ActionDone;
-
-        public event EventHandler<DiseaseSelectingEventArgs> DiseaseSelecting;
-
-        public event EventHandler<MoveTypeSelectingEventArgs> MoveTypeSelecting;
-
-        public event EventHandler<ShareTypeSelectingEventArgs> ShareTypeSelecting;
 
         public event EventHandler<GamePhaseChangedEventArgs> GamePhaseChanged;
 
         public event EventHandler GameEnded;
 
-        public int Difficulty { get; private set; }
+        public int Difficulty => GameSettings.Difficulty;
 
         public SelectionService SelectionService { get; }
 
@@ -98,7 +101,7 @@ namespace Pandemic
 
         public IDictionary<DiseaseColor, Disease> Diseases { get; private set; }
         public GameSettings GameSettings { get; }
-        public IEnumerable<EventCard> EventCards => Characters.SelectMany(c => c.Cards.OfType<EventCard>());
+        public IEnumerable<EventCard> EventCards => AllPlayerCards.OfType<EventCard>().Where(x => x.Character != null);
 
         public IGamePhase GamePhase
         {
@@ -169,26 +172,14 @@ namespace Pandemic
             PlayerDiscardPile.AddCard(card);
         }
 
+        internal void ResolveSelection(Selection selection)
+        {
+            selection.Execute(SelectionService);
+        }
+
         public void DecreaseCubePile(DiseaseColor color, int cubesCount)
         {
             Diseases[color].Cubes -= cubesCount;
-        }
-
-        public void DiscoverCure(DiseaseColor color)
-        {
-            if (Diseases[color].Cubes == Disease.STARTING_CUBES_COUNT)
-            {
-                Diseases[color].Status = Disease.State.Eradicated;
-            }
-            else
-            {
-                Diseases[color].Status = Disease.State.Cured;
-            }
-        }
-
-        public void DoAction(IGameAction action)
-        {
-            GamePhase.Action(action);
         }
 
         public bool IsCubePileEmpty(DiseaseColor color)
@@ -216,21 +207,6 @@ namespace Pandemic
             {
                 return false;
             }
-        }
-
-        public void SelectDisease(IEnumerable<DiseaseColor> diseases, string text, Action<DiseaseColor> action)
-        {
-            DiseaseSelecting?.Invoke(this, new DiseaseSelectingEventArgs(diseases, action, text));
-        }
-
-        public void SelectMove(IEnumerable<IMoveAction> possibleCardMoves, string text, Action<IMoveAction> action)
-        {
-            MoveTypeSelecting?.Invoke(this, new MoveTypeSelectingEventArgs(possibleCardMoves, action, text));
-        }
-
-        public void SelectShareType(IEnumerable<ShareType> shareTypes, string text, Action<ShareType> action)
-        {
-            ShareTypeSelecting?.Invoke(this, new ShareTypeSelectingEventArgs(shareTypes, action, text));
         }
 
         public void SetInfo(string text)
@@ -268,9 +244,9 @@ namespace Pandemic
         }
 
         private void SetLoadedState(SavedState savedState)
-        {          
+        {
             Actions = savedState.Actions;
-            
+
             foreach (var citySave in savedState.Cities)
             {
                 MapCity city = WorldMap[citySave.Name];
@@ -278,25 +254,25 @@ namespace Pandemic
                 city.Characters.Clear();
                 foreach (var infection in citySave.Infection)
                 {
-                    city.Infections[infection.Item1] = infection.Item2;
-                }               
+                    city.Infections[infection.Color] = infection.Value;
+                }
             }
 
             Characters = new CircularCollection<Character>(
                 savedState.Characters.Select(c =>
                 {
-                    var character = GameSettings.CharacterFactory.GetCharacter(c.Role, WorldMap[c.MapCity]);
+                    var character = GameSettings.CharacterFactory.GetCharacter(c.Role, WorldMap[c.MapCity], this);
                     WorldMap[c.MapCity].Characters.Add(character);
 
-                    foreach  (var card in c.Cards)
+                    foreach (var card in c.Cards)
                     {
                         character.AddCard(AllPlayerCards[card]);
                     }
 
-                    return character;                    
+                    return character;
                 }));
             Characters.First().IsActive = true;
-            Difficulty = savedState.Difficulty;
+            GameSettings.Difficulty = savedState.Difficulty;
             Diseases = savedState.Diseases;
             Outbreaks = savedState.Outbreaks;
             Turn = savedState.Turn;
@@ -314,6 +290,11 @@ namespace Pandemic
                 Position = savedState.InfectionPosition,
                 Rate = savedState.InfectionRate
             };
+        }
+
+        internal void ResolveAction(IGameAction action)
+        {
+            action.Execute();
         }
     }
 

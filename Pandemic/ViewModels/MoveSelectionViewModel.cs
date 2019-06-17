@@ -6,7 +6,7 @@ namespace Pandemic.ViewModels
 {
     public class MoveSelectionViewModel : SelectionViewModel<IMoveAction>
     {
-        public MoveSelectionViewModel(IEnumerable<IMoveAction> items, Action<IMoveAction> callbackAction) : base(items, callbackAction)
+        public MoveSelectionViewModel(Action<IMoveAction> callbackAction, IEnumerable<IMoveAction> items) : base(items, callbackAction)
         {
         }
     }

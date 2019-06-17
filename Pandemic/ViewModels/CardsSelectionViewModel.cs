@@ -8,29 +8,25 @@ using System.Linq;
 
 namespace Pandemic.ViewModels
 {
-    public class CardsSelectionViewModel : ViewModelBase
+    public class CardsSelectionViewModel<T> : ViewModelBase where T: Card
     {
-        private ICollection<PlayerCard> _selectedCards;
-        private IMultiSelectAction<IEnumerable<PlayerCard>> _selectAction;
+        private Action<IEnumerable<T>> _selectAction;
+        private readonly Func<IEnumerable<T>, bool> _predicate;
 
-        public IEnumerable<PlayerCard> Items { get; private set; }
-        public RelayCommand<PlayerCard> SelectedCommand { get; }
+        public IEnumerable<T> Items { get; }
+        public RelayCommand<IEnumerable<T>> SelectedCommand { get; }
 
-        public CardsSelectionViewModel(IMultiSelectAction<IEnumerable<PlayerCard>> selectAction)
+        public CardsSelectionViewModel(Action<IEnumerable<T>> selectAction, IEnumerable<T> items,
+            Func<IEnumerable<T>, bool> predicate)
         {
             _selectAction = selectAction;
-            Items = _selectAction.Items;
-            _selectedCards = new List<PlayerCard>();
-            SelectedCommand = new RelayCommand<PlayerCard>((c) =>
+            Items = items;
+            _predicate = predicate;
+            SelectedCommand = new RelayCommand<IEnumerable<T>>((card) =>
             {
-                if (!_selectedCards.Remove(c))
+                if (_predicate(card))
                 {
-                    _selectedCards.Add(c);
-                }
-
-                if (_selectAction.CanExecute(_selectedCards))
-                {
-                    _selectAction.Execute(_selectedCards.AsEnumerable());
+                    _selectAction.Invoke(card);
                 }
             });
         }
@@ -38,21 +34,23 @@ namespace Pandemic.ViewModels
 
     public class CardSelectionViewModel : ViewModelBase
     {
-        private ISelectAction<Card> _selectAction;
+        private Action<Card> _selectAction;
+        private readonly Func<Card, bool> _predicate;
 
         public IEnumerable<Card> Items { get; }
         public RelayCommand<Card> SelectedCommand { get; }
 
-        public CardSelectionViewModel(ISelectAction<Card> selectAction)
+        public CardSelectionViewModel(Action<Card> selectAction, IEnumerable<Card> items, Func<Card, bool> predicate)
         {
             _selectAction = selectAction;
-            Items = _selectAction.Items;
+            Items = items;
+            _predicate = predicate;
             SelectedCommand = new RelayCommand<Card>((card) =>
             {
-                if (_selectAction.CanExecute(card))
+                if (_predicate(card))
                 {
-                    _selectAction.Execute(card);
-                }
+                    _selectAction.Invoke(card);
+                }                
             });
         }
     }

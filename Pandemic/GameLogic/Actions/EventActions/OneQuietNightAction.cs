@@ -1,4 +1,6 @@
-﻿using Pandemic.Cards;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Pandemic.Cards;
 
 namespace Pandemic.GameLogic.Actions
 {
@@ -8,11 +10,14 @@ namespace Pandemic.GameLogic.Actions
         {
         }
 
-        public override void Execute()
+        protected override void AddEffects()
         {
-            Game.Infection.Actual = 0;
+            Effects.Add(new OneQuietNightEffect(Game.Infection));
+        }
 
-            FinishAction();
+        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        {
+            return Enumerable.Empty<Selection>();
         }
     }
 }

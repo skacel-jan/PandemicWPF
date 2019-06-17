@@ -7,8 +7,8 @@ namespace Pandemic
 {
     public class WorldMap
     {
-        private ISelectAction<MapCity> _selectAction;
         private IDictionary<string, MapCity> _cities;
+        private Action<MapCity> _selectionCallback;
 
         public WorldMap(IEnumerable<MapCity> cities)
         {
@@ -23,9 +23,9 @@ namespace Pandemic
             {
                 city.CitySelected += (s, e) =>
                 {
-                    if (_selectAction != null)
+                    if (_selectionCallback != null)
                     {
-                        _selectAction.Execute((MapCity)s);
+                        _selectionCallback.Invoke((MapCity)s);
                         OnCitySelected(s, e);
                     }                    
                 };
@@ -38,21 +38,13 @@ namespace Pandemic
 
         public event EventHandler CitySelected;
 
-        public event EventHandler<CitySelectingEventArgs> CitySelecting;
-
         public IEnumerable<MapCity> Cities => _cities.Values;
 
         public MapCity this[string city] => _cities[city];
 
-        public void SelectCity(ISelectAction<MapCity> selectAction)
+        public void SelectCity(Action<MapCity> selectionCallback)
         {
-            foreach (var city in selectAction.Items)
-            {
-                city.IsSelectable = true;
-            }
-            _selectAction = selectAction;
-
-            OnCitySelecting(new CitySelectingEventArgs(selectAction.Text));
+            _selectionCallback = selectionCallback;
         }
 
         protected void OnCityDoubleClicked(object sender, EventArgs e)
@@ -63,11 +55,6 @@ namespace Pandemic
         protected virtual void OnCitySelected(object sender, EventArgs e)
         {
             CitySelected?.Invoke(sender, e);
-        }
-
-        protected virtual void OnCitySelecting(CitySelectingEventArgs e)
-        {
-            CitySelecting?.Invoke(this, e);
         }
     }
 }

@@ -28,7 +28,11 @@ namespace Pandemic.ViewModels
         public IEnumerable<EventCard> EventCards { get; }
 
         public Game Game { get; }
-        public EventCard SelectedEventCard { get => _selectedEventCard; set => Set(ref _selectedEventCard, value); }
+        public EventCard SelectedEventCard
+        {
+            get => _selectedEventCard;
+            set => Set(ref _selectedEventCard, value);
+        }
 
         private void OnEventSelected()
         {
