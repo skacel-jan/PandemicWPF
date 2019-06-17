@@ -12,6 +12,8 @@ namespace Pandemic.Cards
 
         public string Name { get; }
 
+        public abstract int SortRank { get; }
+
         public bool Equals(Card other)
         {
             if (other is null)
@@ -24,8 +26,8 @@ namespace Pandemic.Cards
 
         public override bool Equals(object obj)
         {
-            Card other = obj as Card; //avoid double casting
-            if (other is null)
+            //avoid double casting
+            if (!(obj is Card other))
             {
                 return false;
             }

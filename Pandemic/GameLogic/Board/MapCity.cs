@@ -124,7 +124,7 @@ namespace Pandemic
         {
             if (value < -3 || value > 3)
             {
-                throw new ArgumentException("Value cannot be lesser then -3 or greater then 3", "value");
+                throw new ArgumentException("Value cannot be lesser then -3 or greater then 3", nameof(value));
             }
 
             int oldInfections = Infections[color];

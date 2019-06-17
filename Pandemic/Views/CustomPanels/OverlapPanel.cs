@@ -59,7 +59,7 @@ namespace Pandemic.Views.CustomPanels
         {
             double offset = 0;
             /************/
-            double overlap = 0;
+            double overlap;
 
             // Figure out the amount of overlap by seeing how much less space we got than desired,
             // and divide it equally among children.

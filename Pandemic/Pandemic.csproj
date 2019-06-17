@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Pandemic</RootNamespace>
     <AssemblyName>Pandemic</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -112,9 +112,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="GameLogic\Actions\CharacterActions\DispatchAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\SpecialCharacterActions\DispatcherMoveAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\SpecialCharacterActions\OperationsExpertMoveAction.cs" />
     <Compile Include="GameLogic\Actions\Effects\RemoveEventCardEffect.cs" />
+    <Compile Include="GameLogic\Actions\ActionState.cs" />
+    <Compile Include="GameLogic\Actions\GameActionBase.cs" />
+    <Compile Include="GameLogic\Actions\Moves\DispatcherSpecialMove.cs" />
     <Compile Include="GameLogic\Actions\Selections\CardsSelection.cs" />
-    <Compile Include="GameLogic\Actions\CharacterAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\CharacterAction.cs" />
     <Compile Include="GameLogic\Actions\Effects\DiscoverCureEffect.cs" />
     <Compile Include="GameLogic\Actions\Selections\DiseaseSelection.cs" />
     <Compile Include="GameLogic\Actions\Effects\DiscardCityCardEffect.cs" />
@@ -132,32 +138,32 @@
     <Compile Include="GameLogic\Actions\Selections\CardSelection.cs" />
     <Compile Include="GameLogic\Actions\Selections\CharacterSelection.cs" />
     <Compile Include="GameLogic\Actions\Selections\CitySelection.cs" />
-    <Compile Include="GameLogic\Actions\Interfaces\IEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\IEffect.cs" />
     <Compile Include="GameLogic\Actions\Selections\Selection.cs" />
     <Compile Include="GameLogic\Actions\Selections\ShareTypeSelection.cs" />
     <Compile Include="GameLogic\Actions\Effects\TreatDiseaseEffect.cs" />
     <Compile Include="GameLogic\Cards\CityCard.cs" />
-    <Compile Include="GameLogic\Cards\EventCardFactory.cs" />
+    <Compile Include="GameLogic\Decks\DeckFactory.cs" />
     <Compile Include="GameLogic\Decks\DiscardPile.cs" />
     <Compile Include="GameLogic\Actions\EventActions\AirliftAction.cs" />
-    <Compile Include="GameLogic\Actions\ContingencyPlannerAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\SpecialCharacterActions\ContingencyPlannerAction.cs" />
     <Compile Include="GameLogic\Actions\EventActions\GovernmentGrantAction.cs" />
-    <Compile Include="GameLogic\Actions\Interfaces\IGameAction.cs" />
+    <Compile Include="GameLogic\Actions\IGameAction.cs" />
     <Compile Include="GameLogic\Actions\EventActions\OneQuietNightAction.cs" />
     <Compile Include="GameLogic\Actions\EventActions\ResilientPopulationAction.cs" />
-    <Compile Include="GameLogic\Actions\EventAction.cs" />
-    <Compile Include="GameLogic\Actions\DiscoverCureAction.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\EventAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\DiscoverCureAction.cs" />
     <Compile Include="GameLogic\GameFactory.cs" />
     <Compile Include="GameLogic\GameSettings.cs" />
     <Compile Include="GameLogic\Infection.cs" />
     <Compile Include="GameLogic\Characters\CharacterFactory.cs" />
     <Compile Include="GameLogic\Characters\Researcher.cs" />
-    <Compile Include="GameLogic\Actions\BuildAction.cs" />
-    <Compile Include="GameLogic\Actions\ShareKnowledgeAction.cs" />
-    <Compile Include="GameLogic\Actions\DiscardCardAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\BuildAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\ShareKnowledgeAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\DiscardCardAction.cs" />
     <Compile Include="GameLogic\Phase\InitialPhase.cs" />
-    <Compile Include="GameLogic\Actions\TreatAction.cs" />
-    <Compile Include="GameLogic\Actions\MoveAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\TreatAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\MoveAction.cs" />
     <Compile Include="GameLogic\Phase\ActionPhase.cs" />
     <Compile Include="GameLogic\Phase\DrawPhase.cs" />
     <Compile Include="GameLogic\Phase\GameOverPhase.cs" />
@@ -167,13 +173,13 @@
     <Compile Include="GameLogic\Services\SelectionService.cs" />
     <Compile Include="Helpers\CircularCollection.cs" />
     <Compile Include="GameLogic\Decks\IDeck.cs" />
-    <Compile Include="GameLogic\ActionTypes.cs" />
+    <Compile Include="GameLogic\Actions\ActionTypes.cs" />
     <Compile Include="GameLogic\Game.cs" />
     <Compile Include="GameLogic\EventArgs.cs" />
     <Compile Include="GameLogic\Board\IWorldMapFactory.cs" />
     <Compile Include="GameLogic\Actions\Moves\CharterFlight.cs" />
     <Compile Include="GameLogic\Actions\Moves\DirectFlight.cs" />
-    <Compile Include="GameLogic\Actions\Interfaces\IMoveAction.cs" />
+    <Compile Include="GameLogic\Actions\Moves\IMoveAction.cs" />
     <Compile Include="GameLogic\Actions\Moves\DriveOrFerry.cs" />
     <Compile Include="GameLogic\Actions\Moves\OperationsExpertSpecialMove.cs" />
     <Compile Include="GameLogic\Actions\Moves\ShuttleFlight.cs" />
@@ -438,11 +444,17 @@
     <Resource Include="Resources\yellow_city.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AppCenter.Analytics">
+      <Version>2.6.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AppCenter.Crashes">
+      <Version>2.6.1</Version>
+    </PackageReference>
     <PackageReference Include="MvvmLightLibs">
       <Version>5.4.1.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.1</Version>
+      <Version>12.0.3</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />

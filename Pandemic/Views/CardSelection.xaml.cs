@@ -1,4 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using Pandemic.Cards;
+using System.Collections;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace Pandemic.Views
 {
@@ -10,6 +13,6 @@ namespace Pandemic.Views
         public CardSelection()
         {
             InitializeComponent();
-        }
+        }              
     }
 }

@@ -15,37 +15,17 @@ namespace Pandemic.Characters
 
         public Character GetCharacter(string role, MapCity startingCity, Game game)
         {
-            Character character;
-            switch (role)
+            Character character = role switch
             {
-                case Medic.MEDIC:
-                    character = new Medic();
-                    break;
-
-                case OperationsExpert.OPERATIONS_EXPERT:
-                    character = new OperationsExpert();
-                    break;
-
-                case Researcher.RESEARCHER:
-                    character = new Researcher();
-                    break;
-
-                case ContingencyPlanner.CONTINGENCY_PLANNER:
-                    character = new ContingencyPlanner();
-                    break;
-
-                case QuarantineSpecialist.QUARANTINE_SPECIALIST:
-                    character = new QuarantineSpecialist();
-                    break;
-
-                case Scientist.SCIENTIST:
-                    character = new Scientist();
-                    break;
-
-                default:
-                    throw new ArgumentException("Unknwon role", nameof(role));
-            }
-
+                Medic.MEDIC => new Medic(),
+                OperationsExpert.OPERATIONS_EXPERT => new OperationsExpert(),
+                Researcher.RESEARCHER => new Researcher(),
+                ContingencyPlanner.CONTINGENCY_PLANNER => new ContingencyPlanner(),
+                QuarantineSpecialist.QUARANTINE_SPECIALIST => new QuarantineSpecialist(),
+                Scientist.SCIENTIST => new Scientist(),
+                Dispatcher.DISPATCHER => new Dispatcher(),
+                _ => throw new ArgumentException("Unknwon role", nameof(role)),
+            };
             character.CurrentMapCity = startingCity;
             character.Actions = CharacterActionsFactory.GetActions(character, game);
             return character;
@@ -69,7 +49,7 @@ namespace Pandemic.Characters
                 case Medic.MEDIC:
                     return new KeyExtractorDictionary<string, IGameAction>((IGameAction a) => a.Name)
                     {
-                        { new MedicMoveAction((Medic)character, game) },
+                        { new MoveAction(character, game) },
                         { new TreatAction(character, game) },
                         { new BuildAction(character, game) },
                         { new ShareKnowledgeAction(character, game) },
@@ -115,6 +95,16 @@ namespace Pandemic.Characters
                         { new BuildAction(character, game) },
                         { new ShareKnowledgeAction(character, game) },
                         { new DiscoverCureAction(character, game) }
+                    };
+                case Dispatcher.DISPATCHER:
+                    return new KeyExtractorDictionary<string, IGameAction>((IGameAction a) => a.Name)
+                    {
+                        { new DispatcherMoveAction(character, game) },
+                        { new TreatAction(character, game) },
+                        { new BuildAction(character, game) },
+                        { new ShareKnowledgeAction(character, game) },
+                        { new DiscoverCureAction(character, game) },
+                        { new DispatchAction(character, game) }
                     };
 
                 default:

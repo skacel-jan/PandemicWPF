@@ -23,9 +23,10 @@ namespace Pandemic
             BoardViewModel.Game.SetInfo(text);
         }
 
-        internal void SelectCards<T>(Action<IEnumerable<T>> selectCardsCallback, IEnumerable<T> cards, string infoText, Func<IEnumerable<T>, bool> predicate) where T : Card
+        internal void SelectCards(Action<IEnumerable<Card>> selectCardsCallback, IEnumerable<Card> cards, string infoText, 
+            Func<IEnumerable<Card>, bool> predicate)
         {
-            var viewModel = new CardsSelectionViewModel<T>(GetCallback(selectCardsCallback), cards, predicate);
+            var viewModel = new CardsSelectionViewModel(GetCallback(selectCardsCallback), cards, predicate);
             BoardViewModel.ActionViewModel = viewModel;
             BoardViewModel.Game.SetInfo(infoText);
         }

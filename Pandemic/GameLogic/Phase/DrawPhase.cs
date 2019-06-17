@@ -11,63 +11,71 @@ namespace Pandemic.GameLogic
     {
         private readonly IList<Card> _drawnCards;
 
+        private readonly IList<ActionState> m_actionStates;
+        private readonly IList<ActionState> m_currentActionStates = new List<ActionState>();
+
+        public Game Game { get; }
+
         public DrawPhase(Game game)
         {
             Game = game ?? throw new ArgumentNullException(nameof(game));
             _drawnCards = new List<Card>(2);
-        }
+            m_actionStates = new List<ActionState>
+            {
+                new ActionState(
+                   (g) => g.PlayerDeck.Cards.Count() <= 1,
+                   (g) => GameOver(),
+                   Game),
 
-        public Game Game { get; }
+                new ActionState(
+                    (g) => true,
+                    (g) =>
+                    {
+                        _drawnCards.Add(DrawPlayerCard(Game.CurrentCharacter));
+                        Continue();
+                    },
+                    Game),
+
+                new ActionState(
+                    (g) => true,
+                    (g) =>
+                    {
+                        _drawnCards.Add(DrawPlayerCard(Game.CurrentCharacter));
+                        Continue();
+                    },
+                    Game),
+
+                new ActionState(
+                    (g) => Game.CurrentCharacter.HasMoreCardsThenLimit,
+                    (g) => Game.SetInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}", "Continue",
+                                        () => Game.ResolveAction(new DiscardPlayerCardAction(Game.CurrentCharacter, Game))),
+                    Game),
+
+                new ActionState(
+                    (g) => !Game.CurrentCharacter.HasMoreCardsThenLimit,
+                    (g) => Game.SetInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.", "Infection phase",
+                           () => Continue()),
+                    Game),
+
+                new ActionState(
+                    (g) => true,
+                    (g) => NextPhase(),
+                    Game)
+            };
+        }
 
         public void Continue()
         {
-            if (!TryDrawPlayerCard(Game.CurrentCharacter, out PlayerCard firstCard))
+            while (true)
             {
-                GameOver();
-            }
-
-            _drawnCards.Add(firstCard);
-
-            if (!TryDrawPlayerCard(Game.CurrentCharacter, out PlayerCard secondCard))
-            {
-                GameOver();
-            }
-            _drawnCards.Add(secondCard);
-
-            if (Game.CurrentCharacter.HasMoreCardsThenLimit)
-            {
-                Game.SetInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.{Environment.NewLine}" +
-                        $"Player has more cards then his hand limit. Card has to be discarded.");
-
-                //var selectAction = new MultiSelectAction<IEnumerable<PlayerCard>>(SetCard, Game.CurrentCharacter.Cards, string.Empty, ValidateCards);
-                //Game.SelectionService.Select(selectAction);
-            }
-            else
-            {
-                Game.SetInfo($"Drawn cards: {_drawnCards[0].Name} and {_drawnCards[1].Name}.", "Infection phase",
-                    () => Game.Continue());
-
-                NextPhase();
-            }
-        }
-
-        private bool ValidateCards(IEnumerable<PlayerCard> cards)
-        {
-            return Game.CurrentCharacter.CardsLimit >= (Game.CurrentCharacter.Cards.Count - cards.Count());
-        }
-
-        private void SetCard(IEnumerable<PlayerCard> cards)
-        {
-            foreach (var playerCard in cards)
-            {
-                Game.CurrentCharacter.RemoveCard(playerCard);
-                Game.AddCardToPlayerDiscardPile(playerCard);
-            }
-
-            Game.SetInfo($"Cards discarded: {string.Join<string>(",", cards.Select(c => c.Name))}.", "Infection phase",
-                () => Game.Continue());
-
-            NextPhase();
+                var actionState = m_currentActionStates.First();
+                m_currentActionStates.RemoveAt(0);
+                if (actionState.Predicate(Game))
+                {
+                    actionState.Execute();
+                    break;
+                }
+            }            
         }
 
         public void End()
@@ -76,6 +84,10 @@ namespace Pandemic.GameLogic
 
         public void Start()
         {
+            foreach (var state in m_actionStates)
+            {
+                m_currentActionStates.Add(state);
+            }
         }
 
         protected void OnOutbreak(OutbreakEventArgs e)
@@ -155,30 +167,9 @@ namespace Pandemic.GameLogic
             }
         }
 
-        private void GameOver()
+        private PlayerCard DrawPlayerCard(Character character)
         {
-            Game.ChangeGamePhase(new GameOverPhase(Game));
-        }
-
-        private void NextPhase()
-        {
-            Game.ChangeGamePhase(new InfectionPhase(Game));
-        }
-
-        private void ShuffleInfectionDiscardPileBack()
-        {
-            Game.Infection.ShuffleDiscardPileToDeck();
-        }
-
-        private bool TryDrawPlayerCard(Character character, out PlayerCard card)
-        {
-            bool isGameOver = false;
-            card = Game.PlayerDeck.Draw(DeckSide.Top);
-
-            if (card == null)
-            {
-                isGameOver = true;
-            }
+            var card = Game.PlayerDeck.Draw(DeckSide.Top);
 
             if (card is EpidemicCard)
             {
@@ -189,7 +180,23 @@ namespace Pandemic.GameLogic
                 character.AddCard(card);
             }
 
-            return !isGameOver;
+            return card;
+        }
+
+        private void GameOver()
+        {
+            Game.ChangeGamePhase(new GameOverPhase(Game));
+        }
+
+        private void NextPhase()
+        {
+            Game.ChangeGamePhase(new InfectionPhase(Game));
+            Game.Continue();
+        }
+
+        private void ShuffleInfectionDiscardPileBack()
+        {
+            Game.Infection.ShuffleDiscardPileToDeck();
         }
     }
 }

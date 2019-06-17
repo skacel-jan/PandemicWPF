@@ -80,7 +80,6 @@
         Padding="10"
         x:Shared="False"
         Background="Black"
-        BorderBrush="{Binding City.Color, Converter={StaticResource DiseaseToColorConverter}}"
         BorderThickness="2"
         Content="{Binding Name}"
         FontSize="12"
@@ -99,9 +98,7 @@
                             <TransformGroup>
                                 <RotateTransform Angle="0" />
                                 <TranslateTransform X="0" Y="0" />
-                                <ScaleTransform
-                                    ScaleX="1"
-                                    ScaleY="1" />
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
                             </TransformGroup>
                         </Grid.RenderTransform>
                         <Grid
@@ -209,9 +206,7 @@
                             <TransformGroup>
                                 <RotateTransform Angle="0" />
                                 <TranslateTransform X="0" Y="0" />
-                                <ScaleTransform
-                                    ScaleX="1"
-                                    ScaleY="1" />
+                                <ScaleTransform ScaleX="1" ScaleY="1" />
                             </TransformGroup>
                         </Grid.RenderTransform>
                         <Grid

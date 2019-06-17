@@ -1,5 +1,7 @@
 ﻿using Pandemic.GameLogic;
+using Pandemic.GameLogic.Actions;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media;
 
 namespace Pandemic.Characters
@@ -26,6 +28,22 @@ namespace Pandemic.Characters
         public override int TreatDisease(DiseaseColor diseaseColor)
         {
             return CurrentMapCity.RemoveInfection(diseaseColor);
+        }
+
+        public override IEnumerable<IEffect> GetMoveEffects(MapCity city, Game game)
+        {
+            return base.GetMoveEffects(city, game).Concat(GetSpecialEffects());
+
+            IEnumerable<IEffect> GetSpecialEffects()
+            {
+                foreach (var disease in CurrentMapCity.Diseases.Values)
+                {
+                    if (disease.Status > Disease.State.NotCured)
+                    {
+                        yield return new TreatDiseaseEffect(game, disease.Color, this);
+                    }
+                }
+            }
         }
     }
 }

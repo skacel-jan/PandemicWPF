@@ -31,7 +31,7 @@
                 <DataTrigger
                     Binding="{Binding Content, RelativeSource={RelativeSource Self}}"
                     Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Setter Property="Visibility" Value="Hidden" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -54,9 +54,7 @@
                                     <BlurEffect Radius="3" />
                                 </Ellipse.Effect>
                                 <Ellipse.LayoutTransform>
-                                    <ScaleTransform
-                                        ScaleX="0.9"
-                                        ScaleY="0.9" />
+                                    <ScaleTransform ScaleX="0.9" ScaleY="0.9" />
                                 </Ellipse.LayoutTransform>
                             </Ellipse>
                             <Ellipse
@@ -64,9 +62,7 @@
                                 Stroke="#FFBDBD92"
                                 StrokeThickness="1">
                                 <Ellipse.LayoutTransform>
-                                    <ScaleTransform
-                                        ScaleX="0.8"
-                                        ScaleY="0.8" />
+                                    <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
                                 </Ellipse.LayoutTransform>
                             </Ellipse>
                             <Control
@@ -216,9 +212,7 @@
                                     <BlurEffect Radius="3" />
                                 </Ellipse.Effect>
                                 <Ellipse.RenderTransform>
-                                    <ScaleTransform
-                                        ScaleX="0.93"
-                                        ScaleY="0.93" />
+                                    <ScaleTransform ScaleX="0.93" ScaleY="0.93" />
                                 </Ellipse.RenderTransform>
                             </Ellipse>
                             <Ellipse
@@ -230,18 +224,14 @@
                                     <BlurEffect Radius="2" />
                                 </Ellipse.Effect>
                                 <Ellipse.RenderTransform>
-                                    <ScaleTransform
-                                        ScaleX="0.86"
-                                        ScaleY="0.86" />
+                                    <ScaleTransform ScaleX="0.86" ScaleY="0.86" />
                                 </Ellipse.RenderTransform>
                             </Ellipse>
                             <Control
                                 RenderTransformOrigin="0.5 0.5"
                                 Template="{StaticResource YellowVirusShape}">
                                 <Control.RenderTransform>
-                                    <ScaleTransform
-                                        ScaleX="0.65"
-                                        ScaleY="0.65" />
+                                    <ScaleTransform ScaleX="0.65" ScaleY="0.65" />
                                 </Control.RenderTransform>
                             </Control>
                         </Grid>
@@ -317,21 +307,25 @@
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
     </UserControl.Resources>
-
-    <Border BorderThickness="1">
-        <Border.Style>
-            <Style TargetType="Border">
-                <Style.Triggers>
-                    <DataTrigger
-                        Binding="{Binding IsBorderVisible, ElementName=mapCityControl}"
-                        Value="True">
-                        <Setter Property="BorderBrush" Value="#FF3892E0" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </Border.Style>
+    <Grid>
+        <!--<Border BorderThickness="1.3">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="#FF3892E0" />
+                    <Setter Property="Visibility" Value="Hidden" />
+                    <Style.Triggers>
+                        <DataTrigger
+                            Binding="{Binding IsBorderVisible, ElementName=mapCityControl}"
+                            Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>-->
         <Grid
             x:Name="MainGrid"
+            Margin="1"
             DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MapCityControl}}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*" />
@@ -374,6 +368,17 @@
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 Style="{StaticResource CityStyle}" />
+            <Polygon
+                Grid.Row="3"
+                Grid.Column="1"
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                Fill="#E5F4F4F5"
+                Points="0,5 10,0 20,5 20,10 0,10"
+                Stretch="Uniform"
+                Stroke="#FFBDBD92"
+                StrokeThickness="0.7"
+                Visibility="{Binding HasResearchStation, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}" />
             <ItemsControl
                 x:Name="pawnsControl"
                 Grid.Row="1"
@@ -393,10 +398,10 @@
                                 <SolidColorBrush Color="{Binding Color}" />
                             </Ellipse.Fill>
                             <Ellipse.Style>
-                                <Style TargetType="Ellipse">
+                                <Style TargetType="{x:Type Ellipse}">
                                     <Style.Triggers>
                                         <DataTrigger
-                                            Binding="{Binding Path=IsActive}"
+                                            Binding="{Binding IsActive}"
                                             Value="True">
                                             <Setter Property="Stroke" Value="White" />
                                             <Setter Property="StrokeThickness" Value="2" />
@@ -416,17 +421,6 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
-            <Polygon
-                Grid.Row="3"
-                Grid.Column="1"
-                Grid.ColumnSpan="2"
-                HorizontalAlignment="Center"
-                Fill="#FFF4F4F5"
-                Points="0,5 10,0 20,5 20,10 0,10"
-                Stretch="Uniform"
-                Stroke="#FFBDBD92"
-                StrokeThickness="0.7"
-                Visibility="{Binding HasResearchStation, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}" />
             <Viewbox
                 Grid.Row="4"
                 Grid.ColumnSpan="4">
@@ -434,7 +428,7 @@
                     Padding="0"
                     HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"
-                    Content="{Binding CityName, FallbackValue=No city, ElementName=mapCityControl}"
+                    Content="{Binding CityName, ElementName=mapCityControl, FallbackValue=No city}"
                     FontWeight="DemiBold"
                     Foreground="White">
                     <Label.Effect>
@@ -447,5 +441,6 @@
                 </Label>
             </Viewbox>
         </Grid>
-    </Border>
+    </Grid>
+
 </UserControl>

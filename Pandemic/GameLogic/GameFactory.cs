@@ -1,5 +1,6 @@
 ﻿using Pandemic.Cards;
 using Pandemic.Decks;
+using Pandemic.GameLogic.Decks;
 using System;
 using System.Linq;
 
@@ -7,30 +8,26 @@ namespace Pandemic.GameLogic
 {
     public class GameFactory
     {
-        public GameFactory(IWorldMapFactory worldMapFactory, GameSettings gameSettings)
+        public DeckFactory DeckFactory { get; }
+
+        public DiseaseFactory DiseaseFactory { get; }
+
+        public GameSettings GameSettings { get; }
+
+        public IWorldMapFactory WorldMapFactory { get; }
+
+        public GameFactory(IWorldMapFactory worldMapFactory, GameSettings gameSettings, DeckFactory deckFactory)
         {
             DiseaseFactory = new DiseaseFactory();
             WorldMapFactory = worldMapFactory ?? throw new ArgumentNullException(nameof(worldMapFactory));
-            GameSettings = gameSettings;
+            GameSettings = gameSettings ?? throw new ArgumentNullException(nameof(gameSettings));
+            DeckFactory = deckFactory ?? throw new ArgumentNullException(nameof(deckFactory));
         }
-
-        public DiseaseFactory DiseaseFactory { get; }
-        public IWorldMapFactory WorldMapFactory { get; }
-        public GameSettings GameSettings { get; }
-
         public Game CreateGame()
         {
             var diseases = DiseaseFactory.GetDiseases();
             var worldMap = WorldMapFactory.CreateWorldMap(diseases);
-
-            var events = new EventCardFactory().GetEventCards();
-
-            PlayerDeck playerDeck = new PlayerDeck(worldMap.Cities.Select(c => new CityCard(c.City)));
-
-            foreach (var card in events)
-            {
-                playerDeck.AddCard(card);
-            }
+            var playerDeck = DeckFactory.CreatePlayerDeck(worldMap);            
 
             return new Game(worldMap, diseases, GameSettings, playerDeck, new SelectionService(worldMap));
         }

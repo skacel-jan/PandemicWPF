@@ -8,13 +8,9 @@ namespace Pandemic.GameLogic.Actions
 {
     public class OperationsExpertSpecialMove : ICardMoveAction
     {
-        private readonly Game _game;
-        private int _lastTurnExecuted = 0;
-
-        public OperationsExpertSpecialMove(OperationsExpert character, Game game)
+        public OperationsExpertSpecialMove(OperationsExpert character)
         {
             Character = character;
-            _game = game;
         }
 
         public Character Character { get; }
@@ -22,7 +18,7 @@ namespace Pandemic.GameLogic.Actions
 
         public bool IsPossible(MapCity city)
         {
-            return _game.Turn != _lastTurnExecuted && Character.CurrentMapCity.HasResearchStation && Character.Cards.Count > 0;
+            return Character.CurrentMapCity.HasResearchStation && Character.Cards.OfType<CityCard>().Any();
         }        
 
         public override string ToString() => MoveType;

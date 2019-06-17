@@ -25,13 +25,16 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void AddEffects()
         {
+            base.AddEffects();
             Effects.Add(new ReturnEventEffect(_eventCard, Game, _contingancyPlanner));
         }
 
-        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        protected override void Initialize()
         {
-            yield return new CardSelection(SetSelectionCallback((Card c) => _eventCard = (EventCard)c), Game.PlayerDiscardPile.Cards.OfType<EventCard>(), 
-                "Select event card to save");
+            AddSelectionState(0, 
+                new CardSelection(SetSelectionCallback((Card c) => _eventCard = (EventCard)c), 
+                                  Game.PlayerDiscardPile.Cards.OfType<EventCard>(),
+                                  "Select event card to save"));
         }
     }
 }

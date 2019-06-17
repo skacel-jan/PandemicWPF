@@ -17,11 +17,13 @@ namespace Pandemic.GameLogic.Actions
 
         public override bool CanExecute()
         {
-            return Character.CurrentMapCity.HasResearchStation && Character.CardsCountOfColor(Character.MostCardsColor) >= Character.CardsForCure;
+            return Character.CurrentMapCity.HasResearchStation && Character.CardsOSameColor(Character.MostCardsColor) >= Character.CardsForCure;
         }
 
         protected override void AddEffects()
         {
+            base.AddEffects();
+
             Effects.Add(new DiscoverCureEffect(Game.Diseases[Character.MostCardsColor]));
             foreach (var card in _cards)
             {
@@ -35,20 +37,20 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
-        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        protected override void Initialize()
         {
-            if (Character.MostCardsColorCount > Character.CardsForCure)
-            {
-                yield return new CardsSelection<CityCard>(SetSelectionCallback((IEnumerable<CityCard> c) => _cards = c),
+            AddSelectionState(0, 
+                (g) => Character.MostCardsColorCount > Character.CardsForCure,
+                new CardsSelection(
+                    SetSelectionCallback((IEnumerable<Card> cards) => _cards = cards.Cast<CityCard>()),
                     Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
                     $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure",
-                    ValidateCards);
-            }
+                    ValidateCards));
+        }
 
-            bool ValidateCards(IEnumerable<Card> cards)
-            {
-                return cards.Count() == Character.CardsForCure && cards.All(c => (c as CityCard).City.Color == Character.MostCardsColor);
-            }
+        private bool ValidateCards(IEnumerable<Card> cards)
+        {
+            return cards.Count() == Character.CardsForCure && cards.All(c => (c as CityCard).City.Color == Character.MostCardsColor);
         }
     }
 }

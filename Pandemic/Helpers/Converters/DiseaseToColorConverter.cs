@@ -12,23 +12,14 @@ namespace Pandemic.Converters
         public object Convert(object value, Type targetType,
             object parameter, CultureInfo culture)
         {
-            switch ((DiseaseColor)value)
+            return ((DiseaseColor)value) switch
             {
-                case DiseaseColor.Yellow:
-                    return new SolidColorBrush(Colors.Yellow);
-
-                case DiseaseColor.Red:
-                    return new SolidColorBrush(Colors.Red);
-
-                case DiseaseColor.Blue:
-                    return new SolidColorBrush(Colors.Blue);
-
-                case DiseaseColor.Black:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 30, 30));
-
-                default:
-                    return new SolidColorBrush(Colors.Yellow);
-            }
+                DiseaseColor.Yellow => new SolidColorBrush(Colors.Yellow),
+                DiseaseColor.Red => new SolidColorBrush(Colors.Red),
+                DiseaseColor.Blue => new SolidColorBrush(Colors.Blue),
+                DiseaseColor.Black => new SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 30, 30)),
+                _ => new SolidColorBrush(Colors.Yellow),
+            };
         }
 
         public object ConvertBack(object value, Type targetType,

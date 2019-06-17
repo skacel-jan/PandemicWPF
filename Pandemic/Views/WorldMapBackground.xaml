@@ -9,12 +9,12 @@
     d:DesignWidth="1400"
     Background="#FF052644"
     mc:Ignorable="d">
-    <UserControl.CacheMode>
+    <!--<UserControl.CacheMode>
         <BitmapCache
             EnableClearType="False"
             RenderAtScale="2"
             SnapsToDevicePixels="True" />
-    </UserControl.CacheMode>
+    </UserControl.CacheMode>-->
     <Grid>
         <Viewbox Stretch="Uniform">
             <Canvas Width="1400" Height="700">

@@ -10,16 +10,16 @@ namespace Pandemic.GameLogic
         {
             Game = game ?? throw new ArgumentNullException(nameof(game));
 
-            game.WorldMap.CityDoubleClicked += WorldMap_CityDoubleClicked;
+            game.WorldMap.MoveToCitySelected += WorldMap_MoveToCitySelected;
         }
 
-        private void WorldMap_CityDoubleClicked(object sender, EventArgs e)
+        private void WorldMap_MoveToCitySelected(object sender, EventArgs e)
         {
             var city = sender as MapCity;
-            if (Game.CurrentCharacter.CanMoveToCity(Game, city))
+            if (Game.CurrentCharacter.CurrentMapCity.IsCityConnected(city))
             {
-                Game.CurrentCharacter.CurrentMapCity = city;
-                Game.Actions--;
+                Game.ResolveEffect(new MoveCharacterToCityEffect(Game.CurrentCharacter, city));
+                Game.ResolveEffect(new CharacterActionFinishedEffect(Game));
                 Continue();
             }
         }
@@ -39,7 +39,7 @@ namespace Pandemic.GameLogic
 
             if (Game.Actions == 0)
             {
-                Game.WorldMap.CityDoubleClicked -= WorldMap_CityDoubleClicked;
+                Game.WorldMap.MoveToCitySelected -= WorldMap_MoveToCitySelected;
                 Game.ChangeGamePhase(new DrawPhase(Game));
             }
         }

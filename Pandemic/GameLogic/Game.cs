@@ -93,7 +93,7 @@ namespace Pandemic
             ActionDone?.Invoke(this, e);
             if (_autoSave)
             {
-                await Save();
+                await Save().ConfigureAwait(false);
             }
         }
 
@@ -101,7 +101,7 @@ namespace Pandemic
 
         public IDictionary<DiseaseColor, Disease> Diseases { get; private set; }
         public GameSettings GameSettings { get; }
-        public IEnumerable<EventCard> EventCards => AllPlayerCards.OfType<EventCard>().Where(x => x.Character != null);
+        public IEnumerable<EventCard> EventCards => AllPlayerCards.Values.OfType<EventCard>().Where(x => x.Character != null);
 
         public IGamePhase GamePhase
         {
@@ -229,7 +229,7 @@ namespace Pandemic
 
         public async Task Save()
         {
-            await _saveLoad.Save(this);
+            await _saveLoad.Save(this).ConfigureAwait(false);
         }
 
         public async Task Load()
@@ -252,9 +252,9 @@ namespace Pandemic
                 MapCity city = WorldMap[citySave.Name];
                 city.HasResearchStation = citySave.HasResearchStation;
                 city.Characters.Clear();
-                foreach (var infection in citySave.Infection)
+                foreach (var (Color, Value) in citySave.Infection)
                 {
-                    city.Infections[infection.Color] = infection.Value;
+                    city.Infections[Color] = Value;
                 }
             }
 

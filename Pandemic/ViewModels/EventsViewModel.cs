@@ -15,10 +15,9 @@ namespace Pandemic.ViewModels
 
         public event EventHandler<EventSelectedEventArgs> EventSelected;
 
-        public EventsViewModel(IEnumerable<EventCard> eventCards, Game game)
+        public EventsViewModel(IEnumerable<EventCard> eventCards)
         {
-            EventCards = eventCards ?? throw new ArgumentNullException(nameof(eventCards));
-            Game = game ?? throw new ArgumentNullException(nameof(game));
+            EventCards = eventCards?.OrderBy(x => x.Name).ToList() ?? throw new ArgumentNullException(nameof(eventCards));
             SelectedEventCard = EventCards.FirstOrDefault();
         }
 
@@ -27,7 +26,6 @@ namespace Pandemic.ViewModels
 
         public IEnumerable<EventCard> EventCards { get; }
 
-        public Game Game { get; }
         public EventCard SelectedEventCard
         {
             get => _selectedEventCard;

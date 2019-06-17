@@ -20,19 +20,22 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void AddEffects()
         {
+            base.AddEffects();
             Effects.Add(new TreatDiseaseEffect(Game, _disease, Character));
         }
 
-        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        protected override void Initialize()
         {
-            if (Character.CurrentMapCity.DiseasesToTreat.Count > 1)
-            {
-                yield return new DiseaseSelection(SetSelectionCallback((DiseaseColor d) => _disease = d), Character.CurrentMapCity.DiseasesToTreat, "Select disease");                
-            }        
-            else
-            {
-                _disease = Character.CurrentMapCity.DiseasesToTreat.First();
-            }
+            AddSelectionState(0,
+                (g) => Character.CurrentMapCity.DiseasesToTreat.Count > 1,
+                new DiseaseSelection(SetSelectionCallback((DiseaseColor d) => _disease = d),
+                                     Character.CurrentMapCity.DiseasesToTreat,
+                                     "Select disease")
+                );
+
+            AddContinueState(0,
+                (g) =>  Character.CurrentMapCity.DiseasesToTreat.Count == 1,
+                (g) => _disease = Character.CurrentMapCity.DiseasesToTreat.First());
         }
     }
 }

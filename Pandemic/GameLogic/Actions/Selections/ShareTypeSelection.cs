@@ -5,8 +5,8 @@ namespace Pandemic.GameLogic.Actions
 {
     internal class ShareTypeSelection : Selection
     {
-        private Action<ShareType> _action;
-        private IEnumerable<ShareType> _items;
+        private readonly Action<ShareType> _action;
+        private readonly IEnumerable<ShareType> _items;
         
         public ShareTypeSelection(Action<ShareType> action, IEnumerable<ShareType> enumerable, string infoText)
         {

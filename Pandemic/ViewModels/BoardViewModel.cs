@@ -81,7 +81,7 @@ namespace Pandemic.ViewModels
             }
         }
 
-        public IList<Tuple<RelayCommand, IGameAction>> Actions { get => _actions; set => Set(ref _actions, value); }
+        public IList<Tuple<RelayCommand, IGameAction>> Actions { get => _actions; private set => Set(ref _actions, value); }
 
         public ViewModelBase ActionViewModel
         {
@@ -241,7 +241,7 @@ namespace Pandemic.ViewModels
                     _actionViewModels.Push(ActionViewModel);
                 }
 
-                var eventsViewModel = new EventsViewModel(Game.EventCards, Game);
+                var eventsViewModel = new EventsViewModel(Game.EventCards);
                 eventsViewModel.EventSelected += PlayEvent;
                 ActionViewModel = eventsViewModel;
             }

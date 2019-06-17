@@ -17,7 +17,7 @@ namespace Pandemic.ViewModels
         {
             Difficulties = new int[] { 4, 5, 6 };
             var characters = new string[] { Medic.MEDIC, OperationsExpert.OPERATIONS_EXPERT, Researcher.RESEARCHER, ContingencyPlanner.CONTINGENCY_PLANNER,
-                Scientist.SCIENTIST, QuarantineSpecialist.QUARANTINE_SPECIALIST};
+                Scientist.SCIENTIST, QuarantineSpecialist.QUARANTINE_SPECIALIST, Dispatcher.DISPATCHER};
 
             Characters = new ObservableCollection<SelectedItemWrapper<string>>(characters.Select(c => new SelectedItemWrapper<string>(c)));
             foreach (var character in Characters)

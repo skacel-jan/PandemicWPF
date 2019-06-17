@@ -12,7 +12,7 @@ namespace Pandemic.Characters
         public override Color Color => Colors.White;
         public override string Role => SCIENTIST;
 
-        private IEnumerable<string> _roleDescription = new List<string>()
+        private static readonly IEnumerable<string> _roleDescription = new List<string>()
         {
             "You need only 4 cards of the same color to do the Discover a Cure action.",
         };

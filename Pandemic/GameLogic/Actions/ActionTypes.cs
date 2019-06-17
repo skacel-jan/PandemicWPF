@@ -16,5 +16,7 @@
         public static readonly string ContingencyPlannerAction = "Special action";
 
         public static readonly string Event = "Event";
+        public static readonly string DispatcherMove = "Dispatcher move";
+        public static readonly string Dispatch = "Dispatch";
     }
 }

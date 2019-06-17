@@ -7,7 +7,7 @@ namespace Pandemic.GameLogic.Actions
 {    
     public class BuildAction : CharacterAction
     {
-        private MapCity _cityToDestroy;
+        protected MapCity CityToDestroy { get; private set; }
 
         public BuildAction(Character character, Game game) : base(character, game)
         {           
@@ -22,22 +22,25 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void AddEffects()
         {
-            if (_cityToDestroy != null)
+            if (CityToDestroy != null)
             {
-                Effects.Add(new DestroyResearchStationEffect(_cityToDestroy, Game));
+                Effects.Add(new DestroyResearchStationEffect(CityToDestroy, Game));
             }
 
             Effects.Add(new BuildResearchStationEffect(Character.CurrentMapCity, Game));
             Effects.Add(new DiscardPlayerCardEffect(Character.CityCards.First(x => x.City == Character.CurrentMapCity.City), Game.PlayerDiscardPile));
         }
 
-        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        protected override void Initialize()
         {
-            _cityToDestroy = null;
-            if (Game.ResearchStationsPile == 0)
-            {
-                yield return new CitySelection(SetSelectionCallback((MapCity c) => _cityToDestroy = c), Game.WorldMap.Cities, "Select city");
-            }
+            CityToDestroy = null;
+
+            AddSelectionState(0,
+                (g) => g.ResearchStationsPile == 0,
+                new CitySelection(
+                    SetSelectionCallback((MapCity c) => CityToDestroy = c),
+                    Game.WorldMap.Cities.Where(c => c.HasResearchStation),
+                    "Select city where to destroy research station"));
         }
     }
 
@@ -54,8 +57,13 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void AddEffects()
         {
-            base.AddEffects();
-            Effects.Remove(Effects.First(x => x is DiscardPlayerCardEffect));
+            if (CityToDestroy != null)
+            {
+                Effects.Add(new DestroyResearchStationEffect(CityToDestroy, Game));
+                Effects.Add(new UnselectAllCitiesEffect(Game.WorldMap));
+            }
+
+            Effects.Add(new BuildResearchStationEffect(Character.CurrentMapCity, Game));
         }
     }
 }

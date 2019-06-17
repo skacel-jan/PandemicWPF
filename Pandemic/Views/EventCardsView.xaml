@@ -15,18 +15,11 @@
         <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
     </UserControl.Resources>
     <StackPanel Background="#7F000000">
-        <StackPanel.Resources>
-            <CollectionViewSource x:Key="playerCards" Source="{Binding EventCards}">
-                <CollectionViewSource.SortDescriptions>
-                    <componentmodel:SortDescription Direction="Ascending" />
-                </CollectionViewSource.SortDescriptions>
-            </CollectionViewSource>
-        </StackPanel.Resources>
         <ListView
             HorizontalAlignment="Center"
             VerticalAlignment="Top"
             Background="{x:Null}"
-            ItemsSource="{Binding Source={StaticResource playerCards}}"
+            ItemsSource="{Binding EventCards}"
             SelectedItem="{Binding SelectedEventCard}">
             <ListView.ItemTemplate>
                 <DataTemplate>

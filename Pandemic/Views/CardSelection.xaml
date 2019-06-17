@@ -14,40 +14,43 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:DiseaseToColorConverter x:Key="diseaseToColor" />
-
-        <CollectionViewSource
-            x:Key="playerCards"
-            Source="{Binding Items}">
-            <CollectionViewSource.SortDescriptions>
-                <componentmodel:SortDescription Direction="Ascending" />
-            </CollectionViewSource.SortDescriptions>
-        </CollectionViewSource>
     </UserControl.Resources>
-    <StackPanel>
-        <ItemsControl ItemsSource="{Binding Source={StaticResource playerCards}}">
+    <Grid Background="#C0000000">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <ItemsControl
+            HorizontalAlignment="Center"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Stretch"
+            ItemsSource="{Binding Items}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <view:PlayingCard
-                        CardName="{Binding}"
+                        Margin="3"
+                        CardName="{Binding Name}"
                         Command="{Binding DataContext.SelectedCommand, ElementName=root}"
                         CommandParameter="{Binding}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <panels:OverlapCanvas
+                    <StackPanel Orientation="Horizontal" />
+                    <!--<panels:OverlapCanvas
                         IsItemsHost="True"
                         Orientation="Horizontal"
-                        Spacing="80" />
+                        Spacing="80" />-->
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
         <Button
+            Grid.Row="1"
             Padding="3"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
-            Command="{Binding ConfirmSelectedEventCommand}"
+            Command="{Binding SelectedCommand}"
             Content="Confirm"
             Style="{StaticResource ActionButtonStyle}" />
-    </StackPanel>
+    </Grid>
 </UserControl>

@@ -14,7 +14,7 @@ namespace Pandemic.ViewModels
         private RelayCommand<Window> _maimMenuCommand;
         private RelayCommand<Window> _saveGameCommand;
         private RelayCommand<Window> _loadGameCommand;
-        private Game _game;
+        private readonly Game _game;
 
         public GameMenuViewModel(Game game)
         {

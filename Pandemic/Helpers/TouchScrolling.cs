@@ -27,7 +27,7 @@ namespace Pandemic
         public static readonly DependencyProperty IsEnabledProperty =
             DependencyProperty.RegisterAttached("IsEnabled", typeof(bool), typeof(TouchScrolling), new UIPropertyMetadata(false, IsEnabledChanged));
 
-        private static Dictionary<object, MouseCapture> _captures = new Dictionary<object, MouseCapture>();
+        private static readonly Dictionary<object, MouseCapture> _captures = new Dictionary<object, MouseCapture>();
 
         private static void IsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

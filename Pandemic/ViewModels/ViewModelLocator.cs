@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.Ioc;
 using Pandemic.Cards;
 using Pandemic.Characters;
 using Pandemic.GameLogic;
+using Pandemic.GameLogic.Decks;
 using Pandemic.ViewModels.Dialogs;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -14,8 +15,7 @@ namespace Pandemic.ViewModels
     public class ViewModelLocator : ViewModelBase
     {
         private ViewModelBase _currentViewModel;
-
-        SimpleIoc _simpleIoc;
+        private readonly SimpleIoc _simpleIoc;
 
         public ViewModelLocator()
         {
@@ -31,19 +31,21 @@ namespace Pandemic.ViewModels
             if (!(Application.Current is App))
             {                
                 _simpleIoc.Register<IWorldMapFactory, MockWorldMapFactory>();
-                if (!_simpleIoc.IsRegistered<WorldMap>())
-                {
-                    _simpleIoc.Register<WorldMap>(() =>
-                                        _simpleIoc.GetInstance<IWorldMapFactory>().CreateWorldMap(_simpleIoc.GetInstance<DiseaseFactory>().GetDiseases()));
-
-                }
+               
             }
             else
             {
                 _simpleIoc.Register<IWorldMapFactory, XmlWorldMapFactory>();
             }
 
-            _simpleIoc.Register<EventCardFactory>();
+            if (!_simpleIoc.IsRegistered<WorldMap>())
+            {
+                _simpleIoc.Register<WorldMap>(() =>
+                                    _simpleIoc.GetInstance<IWorldMapFactory>().CreateWorldMap(_simpleIoc.GetInstance<DiseaseFactory>().GetDiseases()));
+
+            }
+
+            _simpleIoc.Register<DeckFactory>();
 
             _simpleIoc.Register<GameFactory>();
 
@@ -69,7 +71,7 @@ namespace Pandemic.ViewModels
             set => Set(ref _currentViewModel, value);
         }
 
-        public EventsViewModel EventsViewModel => new EventsViewModel(_simpleIoc.GetInstance<EventCardFactory>().GetEventCards(), _simpleIoc.GetInstance<Game>());
+        public EventsViewModel EventsViewModel => new EventsViewModel(_simpleIoc.GetInstance<DeckFactory>().GetEventCards());
 
         public BoardViewModel BoardViewModel
         {

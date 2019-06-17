@@ -47,7 +47,7 @@ namespace Pandemic.GameLogic
 
     public class SaveLoad
     {
-        private readonly object fileLock = new object();
+        private readonly object _fileLock = new object();
 
         private readonly string _savePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Saves", "SavedGame.save");
 
@@ -55,14 +55,12 @@ namespace Pandemic.GameLogic
         {
             SavedState state = await Task.Run(() =>
             {
-                using (var fileStream = new FileStream(_savePath, FileMode.Open))
-                using (var zipStream = new GZipStream(fileStream, CompressionMode.Decompress))
-                using (var streamReader = new StreamReader(zipStream))
-                using (var jsonReader = new JsonTextReader(streamReader))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    return serializer.Deserialize<SavedState>(jsonReader);
-                }
+                using var fileStream = new FileStream(_savePath, FileMode.Open);
+                using var zipStream = new GZipStream(fileStream, CompressionMode.Decompress);
+                using var streamReader = new StreamReader(zipStream);
+                using var jsonReader = new JsonTextReader(streamReader);
+                JsonSerializer serializer = new JsonSerializer();
+                return serializer.Deserialize<SavedState>(jsonReader);
             });
 
             return state;
@@ -106,7 +104,7 @@ namespace Pandemic.GameLogic
 
                 Directory.CreateDirectory(Path.GetDirectoryName(_savePath));
 
-                lock (fileLock)
+                lock (_fileLock)
                 {
                     using (var fileStream = new FileStream(_savePath, FileMode.Create))
                     using (var zipStream = new GZipStream(fileStream, CompressionLevel.Fastest))

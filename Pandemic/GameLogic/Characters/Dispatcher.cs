@@ -5,7 +5,8 @@ namespace Pandemic.Characters
 {
     public class Dispatcher : Character
     {
-        public override string Role => "Dispatcher";
+        public const string DISPATCHER = "Dispatcher";
+        public override string Role => DISPATCHER;
 
         public override IEnumerable<string> RoleDescription => new List<string>()
         {

@@ -2,7 +2,7 @@
 {
     internal class CharacterActionFinishedEffect : IEffect
     {
-        private Game _game;
+        private readonly Game _game;
 
         public CharacterActionFinishedEffect(Game game)
         {

@@ -5,8 +5,8 @@ namespace Pandemic.GameLogic.Actions
 {
     public class MoveSelection : Selection
     {
-        private Action<IMoveAction> _selectActionCallback;
-        private IEnumerable<IMoveAction> _possibleCardMoveActions;
+        private readonly Action<IMoveAction> _selectActionCallback;
+        private readonly IEnumerable<IMoveAction> _possibleCardMoveActions;
         private readonly string _text;
 
         public MoveSelection(Action<IMoveAction> action, IEnumerable<IMoveAction> possibleCardMoveActions, string text)

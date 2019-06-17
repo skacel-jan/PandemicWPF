@@ -4,9 +4,9 @@ namespace Pandemic.GameLogic.Actions
 {
     internal class GiveCardEffect : IEffect
     {
-        private Character _characterFrom;
-        private Character _characterTo;
-        private CityCard _card;
+        private readonly Character _characterFrom;
+        private readonly Character _characterTo;
+        private readonly CityCard _card;
 
         public GiveCardEffect(Character characterFrom, Character characterTo, CityCard card)
         {

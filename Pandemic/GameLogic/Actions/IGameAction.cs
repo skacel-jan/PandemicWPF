@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Pandemic.GameLogic.Actions
+﻿namespace Pandemic.GameLogic.Actions
 {
     public interface IGameAction
     {

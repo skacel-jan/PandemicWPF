@@ -15,14 +15,18 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void AddEffects()
         {
+            base.AddEffects();
             Effects.Add(new UnselectAllCitiesEffect(Game.WorldMap));
             Effects.Add(new BuildResearchStationEffect(_city, Game));
         }
 
-        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        protected override void Initialize()
         {
-            yield return new CitySelection(SetSelectionCallback((MapCity c) => _city = c),
-                Game.WorldMap.Cities.Where(x => !x.HasResearchStation), "Select city");
+            AddSelectionState(0,
+                new CitySelection(SetSelectionCallback((MapCity c) => _city = c),
+                                                           Game.WorldMap.Cities.Where(x => !x.HasResearchStation), 
+                                                           "Select city")
+               );
         }
     }
 }

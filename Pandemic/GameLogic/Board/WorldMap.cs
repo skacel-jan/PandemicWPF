@@ -7,7 +7,7 @@ namespace Pandemic
 {
     public class WorldMap
     {
-        private IDictionary<string, MapCity> _cities;
+        private readonly IDictionary<string, MapCity> _cities;
         private Action<MapCity> _selectionCallback;
 
         public WorldMap(IEnumerable<MapCity> cities)
@@ -30,11 +30,11 @@ namespace Pandemic
                     }                    
                 };
 
-                city.CityDoubleClicked += OnCityDoubleClicked;
+                city.CityDoubleClicked += OnMoveToCitySelected;
             }
         }
 
-        public event EventHandler CityDoubleClicked;
+        public event EventHandler MoveToCitySelected;
 
         public event EventHandler CitySelected;
 
@@ -47,9 +47,9 @@ namespace Pandemic
             _selectionCallback = selectionCallback;
         }
 
-        protected void OnCityDoubleClicked(object sender, EventArgs e)
+        protected void OnMoveToCitySelected(object sender, EventArgs e)
         {
-            CityDoubleClicked?.Invoke(sender, e);
+            MoveToCitySelected?.Invoke(sender, e);
         }
 
         protected virtual void OnCitySelected(object sender, EventArgs e)

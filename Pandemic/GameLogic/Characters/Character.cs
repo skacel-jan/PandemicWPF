@@ -11,9 +11,9 @@ namespace Pandemic
 {
     public abstract class Character : ObservableObject
     {
-        private const int STANDARD_ACTIONS_COUNT = 4;
-        private const int STANDARD_CARDS_FOR_CURE = 5;
-        private const int STANDARD_CARDS_LIMIT = 7;
+        private const int DefaultActionCount = 4;
+        private const int DefaultCardsForCure = 5;
+        private const int DefaulHandimit = 7;
 
         private MapCity _currentMapCity;
         private bool _isActive;
@@ -25,11 +25,11 @@ namespace Pandemic
         }
 
         public IDictionary<string, IGameAction> Actions { get; set; }
-        public virtual int ActionsCount { get => STANDARD_ACTIONS_COUNT; }
+        public virtual int ActionsCount { get => DefaultActionCount; }
 
         public ObservableCollection<PlayerCard> Cards { get; }
-        public virtual int CardsForCure { get => STANDARD_CARDS_FOR_CURE; }
-        public virtual int CardsLimit { get => STANDARD_CARDS_LIMIT; }
+        public virtual int CardsForCure { get => DefaultCardsForCure; }
+        public virtual int CardsLimit { get => DefaulHandimit; }
         public IEnumerable<CityCard> CityCards { get => Cards.OfType<CityCard>(); }
 
         public abstract Color Color { get; }
@@ -75,12 +75,7 @@ namespace Pandemic
             return false;
         }
 
-        public bool CanMoveToCity(Game game, MapCity city)
-        {
-            return ((MoveAction)Actions[ActionTypes.Move]).AllMoveActions.OfType<DriveOrFerry>().Single().IsPossible(city);
-        }
-
-        public int CardsCountOfColor(DiseaseColor diseaseColor)
+        public int CardsOSameColor(DiseaseColor diseaseColor)
         {
             return CityCards.Count(x => x.City.Color == diseaseColor);
         }
@@ -95,7 +90,7 @@ namespace Pandemic
             if (Cards.Remove(card))
             {
                 card.Character = null;
-            }            
+            }
         }
 
         public void RemoveCard(City city)
@@ -109,12 +104,17 @@ namespace Pandemic
             return CurrentMapCity.TreatDisease(diseaseColor);
         }
 
+        public virtual IEnumerable<IEffect> GetMoveEffects(MapCity city, Game game)
+        {
+            return new[] { new MoveCharacterToCityEffect(this, city) };
+        }
+
         private void Cards_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (Cards.Count > 0)
             {
                 MostCardsColor = CityCards.GroupBy(x => x.City.Color).OrderByDescending(gb => gb.Count()).Select(y => y.Key).FirstOrDefault();
-                MostCardsColorCount = CardsCountOfColor(MostCardsColor);
+                MostCardsColorCount = CardsOSameColor(MostCardsColor);
             }
             else
             {
@@ -127,10 +127,7 @@ namespace Pandemic
             return Role;
 
         }
-         
-        public class Builder
-        {
 
-        }
+
     }
 }

@@ -256,22 +256,22 @@ namespace Pandemic
         /// </summary>
         private class InertiaHandler : IDisposable
         {
-            private Point previousPoint;
-            private Vector velocity;
-            private ScrollViewer scroller;
-            private DispatcherTimer animationTimer;
+            private Point _previousPoint;
+            private Vector _velocity;
+            private readonly ScrollViewer _scroller;
+            private readonly DispatcherTimer _animationTimer;
 
             private Point scrollTarget;
 
             public InertiaHandler(ScrollViewer scroller)
             {
-                this.scroller = scroller;
-                animationTimer = new DispatcherTimer
+                this._scroller = scroller;
+                _animationTimer = new DispatcherTimer
                 {
                     Interval = new TimeSpan(0, 0, 0, 0, 20)
                 };
-                animationTimer.Tick += new EventHandler(HandleWorldTimerTick);
-                animationTimer.Start();
+                _animationTimer.Tick += new EventHandler(HandleWorldTimerTick);
+                _animationTimer.Start();
             }
 
             public Point ScrollTarget
@@ -282,21 +282,21 @@ namespace Pandemic
 
             private void HandleWorldTimerTick(object sender, EventArgs e)
             {
-                if (scroller.IsMouseCaptured)
+                if (_scroller.IsMouseCaptured)
                 {
-                    Point currentPoint = Mouse.GetPosition(scroller);
-                    velocity = previousPoint - currentPoint;
-                    previousPoint = currentPoint;
+                    Point currentPoint = Mouse.GetPosition(_scroller);
+                    _velocity = _previousPoint - currentPoint;
+                    _previousPoint = currentPoint;
                 }
                 else
                 {
-                    if (velocity.Length > 1)
+                    if (_velocity.Length > 1)
                     {
-                        scroller.ScrollToHorizontalOffset(ScrollTarget.X);
-                        scroller.ScrollToVerticalOffset(ScrollTarget.Y);
-                        scrollTarget.X += velocity.X;
-                        scrollTarget.Y += velocity.Y;
-                        velocity *= KineticBehaviour.GetFriction(scroller);
+                        _scroller.ScrollToHorizontalOffset(ScrollTarget.X);
+                        _scroller.ScrollToVerticalOffset(ScrollTarget.Y);
+                        scrollTarget.X += _velocity.X;
+                        scrollTarget.Y += _velocity.Y;
+                        _velocity *= KineticBehaviour.GetFriction(_scroller);
                     }
                 }
             }
@@ -305,7 +305,7 @@ namespace Pandemic
 
             public void Dispose()
             {
-                animationTimer.Stop();
+                _animationTimer.Stop();
             }
 
             #endregion IDisposable Members

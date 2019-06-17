@@ -12,12 +12,12 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void AddEffects()
         {
+            base.AddEffects();
             Effects.Add(new OneQuietNightEffect(Game.Infection));
         }
 
-        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        protected override void Initialize()
         {
-            return Enumerable.Empty<Selection>();
         }
     }
 }

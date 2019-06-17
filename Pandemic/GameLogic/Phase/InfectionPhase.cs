@@ -1,4 +1,5 @@
 ﻿using Pandemic.Cards;
+using Pandemic.Decks;
 using Pandemic.GameLogic.Actions;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Pandemic.GameLogic
 
             Game.Infection.Actual--;
 
-            InfectionCard card = Game.Infection.Deck.Draw(Decks.DeckSide.Top);
+            InfectionCard card = Game.Infection.Deck.Draw(DeckSide.Top);
             Game.Infection.DiscardPile.AddCard(card);
 
             if (Game.IsCubePileEmpty(card.City.Color))

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Pandemic.Cards;
 
 namespace Pandemic.GameLogic.Actions
@@ -13,12 +14,19 @@ namespace Pandemic.GameLogic.Actions
 
         protected override void AddEffects()
         {
+            base.AddEffects();
             Effects.Add(new RemoveInfectionCardEffect(_card, Game));
         }
 
-        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        protected override void Initialize()
         {
-            yield return new CardSelection(SetSelectionCallback((Card c) => _card = (InfectionCard)c), game.Infection.DiscardPile.Cards, "Select infection card");
+            AddSelectionState(0,
+                new CardSelection(SetSelectionCallback((Card c) => _card = (InfectionCard)c),
+                                  Game.Infection.DiscardPile.Cards,
+                                  "Select infection card")
+               );
+
+
         }
     }
 }

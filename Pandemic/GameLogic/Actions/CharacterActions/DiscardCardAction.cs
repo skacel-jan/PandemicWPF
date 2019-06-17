@@ -29,9 +29,14 @@ namespace Pandemic.GameLogic
             }
         }
 
-        protected override IEnumerable<Selection> PrepareSelections(Game game)
+        protected override void Initialize()
         {
-            yield return new CardsSelection<PlayerCard>(SetSelectionCallback((IEnumerable<PlayerCard> cards) => _cards = cards), Character.Cards, "Select cards to discard", ValidateCards);
+            AddSelectionState(0,
+                new CardsSelection(
+                    SetSelectionCallback((IEnumerable<Card> x) => _cards = x.Cast<PlayerCard>()),
+                    Character.Cards,
+                    "Select cards to discard",
+                    cards => ValidateCards(cards.Cast<PlayerCard>())));
         }
 
         private bool ValidateCards(IEnumerable<PlayerCard> cards)

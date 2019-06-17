@@ -6,8 +6,8 @@ namespace Pandemic.GameLogic.Actions
 {
     internal class ReturnEventEffect : IEffect
     {
-        private EventCard _eventCard;
-        private Game _game;
+        private readonly EventCard _eventCard;
+        private readonly Game _game;
         private readonly ContingencyPlanner _contingencyPlanner;
 
         public ReturnEventEffect(EventCard eventCard, Game game, ContingencyPlanner contingencyPlanner)
@@ -21,6 +21,7 @@ namespace Pandemic.GameLogic.Actions
         {
             _game.PlayerDiscardPile.RemoveCard(_eventCard);
             _eventCard.Character = _contingencyPlanner;
+            _eventCard.IsHeldByContingencyPlanner = true;
         }
     }
 }

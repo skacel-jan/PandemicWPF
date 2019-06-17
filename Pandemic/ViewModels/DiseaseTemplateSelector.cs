@@ -10,23 +10,14 @@ namespace Pandemic.ViewModels
         {
             FrameworkElement element = container as FrameworkElement;
             DiseaseColor color = (DiseaseColor)item;
-            switch (color)
+            return color switch
             {
-                case DiseaseColor.Black:
-                    return element.FindResource("BlackDisease") as DataTemplate;
-
-                case DiseaseColor.Blue:
-                    return element.FindResource("BlueDisease") as DataTemplate;
-
-                case DiseaseColor.Red:
-                    return element.FindResource("RedDisease") as DataTemplate;
-
-                case DiseaseColor.Yellow:
-                    return element.FindResource("YellowDisease") as DataTemplate;
-
-                default:
-                    return null;
-            }
+                DiseaseColor.Black => element.FindResource("BlackDisease") as DataTemplate,
+                DiseaseColor.Blue => element.FindResource("BlueDisease") as DataTemplate,
+                DiseaseColor.Red => element.FindResource("RedDisease") as DataTemplate,
+                DiseaseColor.Yellow => element.FindResource("YellowDisease") as DataTemplate,
+                _ => null,
+            };
         }
     }
 }

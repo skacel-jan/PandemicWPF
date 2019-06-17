@@ -8,5 +8,7 @@
         }
 
         public City City { get; }
+
+        public override int SortRank => 3;
     }
 }

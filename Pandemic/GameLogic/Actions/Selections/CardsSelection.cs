@@ -4,14 +4,14 @@ using Pandemic.Cards;
 
 namespace Pandemic.GameLogic.Actions
 {
-    internal class CardsSelection<T> : Selection where T: Card
+    internal class CardsSelection : Selection
     {
-        private Action<IEnumerable<T>> _action;
-        private IEnumerable<T> _cards;
-        private Func<IEnumerable<T>, bool> _validateCards;
+        private readonly Action<IEnumerable<Card>> _action;
+        private readonly IEnumerable<Card> _cards;
+        private readonly Func<IEnumerable<Card>, bool> _validateCards;
 
-        public CardsSelection(Action<IEnumerable<T>> action, IEnumerable<T> cards, string infoText, 
-            Func<IEnumerable<T>, bool> validateCards)
+        public CardsSelection(Action<IEnumerable<Card>> action, IEnumerable<Card> cards, string infoText, 
+            Func<IEnumerable<Card>, bool> validateCards)
         {
             _action = action;
             _cards = cards;

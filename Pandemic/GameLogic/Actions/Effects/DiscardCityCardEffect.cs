@@ -5,8 +5,8 @@ namespace Pandemic.GameLogic.Actions
 {
     internal class DiscardPlayerCardEffect : IEffect
     {
-        private PlayerCard _cityCard;
-        private DiscardPile<PlayerCard> _playerDiscardPile;
+        private readonly PlayerCard _cityCard;
+        private readonly DiscardPile<PlayerCard> _playerDiscardPile;
 
         public DiscardPlayerCardEffect(PlayerCard cityCard, DiscardPile<PlayerCard> playerDiscardPile)
         {
