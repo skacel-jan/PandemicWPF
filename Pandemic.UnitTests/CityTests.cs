@@ -14,16 +14,6 @@ namespace Pandemic.UnitTests
             //var cities = Helper.GetCities();
         }
 
-        [TestMethod]
-        public void TestAssert()
-        {
-            var expectations = new Dictionary<string, string[]>{
-                {"369", new[] { "339","366","399","658","636","258","268","669","668","266","369","398","256","296","259","368","638","396","238","356","659","639","666","359","336","299","338","696","269","358","656","698","699","298","236","239" } }
-            };
-
-            CollectionAssert.AreEquivalent(expectations["369"], GetPINs("369"), "PIN: 369");
-        }
-
         public List<string> GetPINs(string observed)
         {
             Dictionary<char, char[]> map = new Dictionary<char, char[]>() {
