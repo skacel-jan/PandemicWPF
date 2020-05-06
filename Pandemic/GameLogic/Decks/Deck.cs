@@ -13,6 +13,7 @@ namespace Pandemic.Decks
         public Deck(IEnumerable<T> cards)
         {
             InnerCards = new List<T>(cards);
+
         }
 
         protected List<T> InnerCards { get; set; }
