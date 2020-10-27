@@ -308,7 +308,7 @@
         </CollectionViewSource>
     </UserControl.Resources>
     <Grid>
-        <!--<Border BorderThickness="1.3">
+        <Border BorderThickness="1.3">
             <Border.Style>
                 <Style TargetType="Border">
                     <Setter Property="BorderBrush" Value="#FF3892E0" />
@@ -322,7 +322,7 @@
                     </Style.Triggers>
                 </Style>
             </Border.Style>
-        </Border>-->
+        </Border>
         <Grid
             x:Name="MainGrid"
             Margin="1"

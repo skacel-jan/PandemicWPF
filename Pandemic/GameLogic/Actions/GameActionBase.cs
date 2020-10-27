@@ -70,7 +70,7 @@ namespace Pandemic.GameLogic.Actions
             {
                 foreach (var action in actions)
                 {
-                    if (action.Predicate.Invoke(Game))
+                    if (action.Predicate(Game))
                     {
                         action.Execute();
                     }
@@ -88,7 +88,7 @@ namespace Pandemic.GameLogic.Actions
             }
         }
 
-        protected Action<T> SetSelectionCallback<T>(Action<T> action)
+        protected Action<T> SelectionCallback<T>(Action<T> action)
         {
             return action += (_) => Continue();
         }

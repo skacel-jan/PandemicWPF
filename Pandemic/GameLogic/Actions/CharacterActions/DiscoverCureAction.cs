@@ -42,7 +42,7 @@ namespace Pandemic.GameLogic.Actions
             AddSelectionState(0, 
                 (g) => Character.MostCardsColorCount > Character.CardsForCure,
                 new CardsSelection(
-                    SetSelectionCallback((IEnumerable<Card> cards) => _cards = cards.Cast<CityCard>()),
+                    SelectionCallback((IEnumerable<Card> cards) => _cards = cards.Cast<CityCard>()),
                     Character.CityCards.Where(card => card.City.Color == Character.MostCardsColor),
                     $"Select {Character.CardsForCure} cards of {Character.MostCardsColor} color to discover a cure",
                     ValidateCards));

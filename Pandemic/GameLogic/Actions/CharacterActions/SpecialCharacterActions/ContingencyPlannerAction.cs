@@ -32,7 +32,7 @@ namespace Pandemic.GameLogic.Actions
         protected override void Initialize()
         {
             AddSelectionState(0, 
-                new CardSelection(SetSelectionCallback((Card c) => _eventCard = (EventCard)c), 
+                new CardSelection(SelectionCallback((Card c) => _eventCard = (EventCard)c), 
                                   Game.PlayerDiscardPile.Cards.OfType<EventCard>(),
                                   "Select event card to save"));
         }

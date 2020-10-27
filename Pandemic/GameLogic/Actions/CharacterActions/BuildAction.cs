@@ -38,7 +38,7 @@ namespace Pandemic.GameLogic.Actions
             AddSelectionState(0,
                 (g) => g.ResearchStationsPile == 0,
                 new CitySelection(
-                    SetSelectionCallback((MapCity c) => CityToDestroy = c),
+                    SelectionCallback((MapCity c) => CityToDestroy = c),
                     Game.WorldMap.Cities.Where(c => c.HasResearchStation),
                     "Select city where to destroy research station"));
         }

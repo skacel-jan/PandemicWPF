@@ -21,7 +21,7 @@ namespace Pandemic.GameLogic.Actions
         protected override void Initialize()
         {
             AddSelectionState(0,
-                new CardSelection(SetSelectionCallback((Card c) => _card = (InfectionCard)c),
+                new CardSelection(SelectionCallback((Card c) => _card = (InfectionCard)c),
                                   Game.Infection.DiscardPile.Cards,
                                   "Select infection card")
                );

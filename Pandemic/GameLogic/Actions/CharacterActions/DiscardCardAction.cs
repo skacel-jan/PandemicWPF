@@ -33,7 +33,7 @@ namespace Pandemic.GameLogic
         {
             AddSelectionState(0,
                 new CardsSelection(
-                    SetSelectionCallback((IEnumerable<Card> x) => _cards = x.Cast<PlayerCard>()),
+                    SelectionCallback((IEnumerable<Card> x) => _cards = x.Cast<PlayerCard>()),
                     Character.Cards,
                     "Select cards to discard",
                     cards => ValidateCards(cards.Cast<PlayerCard>())));

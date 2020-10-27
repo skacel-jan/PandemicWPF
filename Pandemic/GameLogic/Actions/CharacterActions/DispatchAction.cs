@@ -54,14 +54,14 @@ namespace Pandemic.GameLogic.Actions
         {
             AddSelectionState(0,                
                 new CharacterSelection(
-                    SetSelectionCallback<Character>((c) => _character = c),
+                    SelectionCallback<Character>((c) => _character = c),
                     Game.Characters.Where(c => !c.Equals(Character)),
                     "Select character which you want to dispatch")
                 );
 
             AddSelectionState(1,
                 new CitySelection(
-                    SetSelectionCallback<MapCity>((c) => _city = c),
+                    SelectionCallback<MapCity>((c) => _city = c),
                     GetPossibleDestinationCities(Game.WorldMap.Cities),
                     "Select city"));
 
@@ -72,7 +72,7 @@ namespace Pandemic.GameLogic.Actions
 
             AddSelectionState(2,
                 (g) => SelectedMoveAction == null && CardMoveActions.Count(x => x.IsPossible(_city)) > 1,
-                new MoveSelection(SetSelectionCallback((IMoveAction move) => SelectedCardMoveAction = (ICardMoveAction)move),
+                new MoveSelection(SelectionCallback((IMoveAction move) => SelectedCardMoveAction = (ICardMoveAction)move),
                             CardMoveActions.Where(x => x.IsPossible(_city)), "Select move"));
 
             AddContinueState(2,
@@ -83,7 +83,7 @@ namespace Pandemic.GameLogic.Actions
             AddSelectionState(3,
                 (g) => SelectedCardMoveAction != null,
                    new CardSelection(
-                       SetSelectionCallback((Card card) => _card = (CityCard)card),
+                       SelectionCallback((Card card) => _card = (CityCard)card),
                        Character.CityCards,
                        "Select city card",
                        (Card card) => SelectedCardMoveAction.Validate(_city, (CityCard)card))

@@ -23,7 +23,7 @@ namespace Pandemic.GameLogic.Actions
         protected override void Initialize()
         {
             AddSelectionState(0,
-                new CitySelection(SetSelectionCallback((MapCity c) => _city = c),
+                new CitySelection(SelectionCallback((MapCity c) => _city = c),
                                                            Game.WorldMap.Cities.Where(x => !x.HasResearchStation), 
                                                            "Select city")
                );

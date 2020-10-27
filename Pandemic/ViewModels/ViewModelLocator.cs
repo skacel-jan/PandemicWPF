@@ -89,11 +89,11 @@ namespace Pandemic.ViewModels
             }
         }
 
-        public GameSetingsViewModel GameSetingsViewModel
+        public GameSetingsViewModel GameSettingsViewModel
         {
             get
             {
-                return _simpleIoc.GetInstance<GameSetingsViewModel>();
+                return _simpleIoc.GetInstanceWithoutCaching<GameSetingsViewModel>();
             }
         }
 
@@ -118,7 +118,7 @@ namespace Pandemic.ViewModels
                     break;
 
                 case MessageTokens.NewGameSettings:
-                    CurrentViewModel = GameSetingsViewModel;
+                    CurrentViewModel = GameSettingsViewModel;
                     break;
 
                 case MessageTokens.LoadGame:

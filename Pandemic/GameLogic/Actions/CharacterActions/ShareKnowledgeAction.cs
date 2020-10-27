@@ -39,7 +39,7 @@ namespace Pandemic.GameLogic.Actions
 
         private Selection GetCardSelection(Character character)
         {
-            return new CardSelection(SetSelectionCallback((Card c) => _card = (CityCard)c), character.CityCards, "Select card",
+            return new CardSelection(SelectionCallback((Card c) => _card = (CityCard)c), character.CityCards, "Select card",
                 (card) => ValidateCard(card));
         }
 
@@ -58,7 +58,7 @@ namespace Pandemic.GameLogic.Actions
         {
             Func<Card, bool> action = ((ShareKnowledgeAction)character.Actions[ActionTypes.Share]).ValidateCard;
 
-            return new CardSelection(SetSelectionCallback((Card c) => _card = (CityCard)c), character.CityCards,
+            return new CardSelection(SelectionCallback((Card c) => _card = (CityCard)c), character.CityCards,
             $"Select card from {character}", action);
         }
 
@@ -76,7 +76,7 @@ namespace Pandemic.GameLogic.Actions
 
             AddSelectionState(0,
                 (g) => possibleActions.Count > 1 && possibleActions.Contains(this),
-                    new ShareTypeSelection(SetSelectionCallback<ShareType>((s) => _shareType = s), Enum.GetValues(typeof(ShareType)).Cast<ShareType>(), "Select share type")
+                    new ShareTypeSelection(SelectionCallback<ShareType>((s) => _shareType = s), Enum.GetValues(typeof(ShareType)).Cast<ShareType>(), "Select share type")
                 );
 
             AddContinueState(0,
@@ -91,7 +91,7 @@ namespace Pandemic.GameLogic.Actions
 
             AddSelectionState(1,
                 (g) => _shareType == ShareType.Give && Character.CurrentMapCity.Characters.Count(c => !c.Equals(Character)) > 1,
-                new CharacterSelection(SetSelectionCallback<Character>((c) => SetCharacters(Character, c)),
+                new CharacterSelection(SelectionCallback<Character>((c) => SetCharacters(Character, c)),
                                        Character.CurrentMapCity.Characters,
                                        "Select character to whom you will give the card")
                 );
@@ -103,7 +103,7 @@ namespace Pandemic.GameLogic.Actions
 
             AddSelectionState(1,
                 (g) => _shareType == ShareType.Take && possibleActions.Count(c => !c.Character.Equals(Character)) > 1,
-                 new CharacterSelection(SetSelectionCallback<Character>((c) => SetCharacters(c, Character)),
+                 new CharacterSelection(SelectionCallback<Character>((c) => SetCharacters(c, Character)),
                                         possibleActions.Where(c => !c.Character.Equals(Character)).Select(c => c.Character),
                                         "Select character from which you will take card")
                 );

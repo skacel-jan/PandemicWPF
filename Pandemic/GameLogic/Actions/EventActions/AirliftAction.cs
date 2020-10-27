@@ -22,13 +22,13 @@ namespace Pandemic.GameLogic.Actions
         protected override void Initialize()
         {
             AddSelectionState(0,
-                  new CharacterSelection(SetSelectionCallback((Character c) => _character = c),
+                  new CharacterSelection(SelectionCallback((Character c) => _character = c),
                                          Game.Characters,
                                          "Select character")
               );
 
             AddSelectionState(1,
-                  new CitySelection(SetSelectionCallback((MapCity c) => _city = c),
+                  new CitySelection(SelectionCallback((MapCity c) => _city = c),
                                     Game.WorldMap.Cities,
                                     "Select city")
               );

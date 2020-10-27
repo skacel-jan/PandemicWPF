@@ -28,7 +28,7 @@ namespace Pandemic.GameLogic.Actions
         {
             AddSelectionState(0,
                 (g) => Character.CurrentMapCity.DiseasesToTreat.Count > 1,
-                new DiseaseSelection(SetSelectionCallback((DiseaseColor d) => _disease = d),
+                new DiseaseSelection(SelectionCallback((DiseaseColor d) => _disease = d),
                                      Character.CurrentMapCity.DiseasesToTreat,
                                      "Select disease")
                 );

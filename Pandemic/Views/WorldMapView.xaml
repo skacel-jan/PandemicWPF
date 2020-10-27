@@ -14,7 +14,7 @@
     <UserControl.CacheMode>
         <BitmapCache
             EnableClearType="False"
-            RenderAtScale="1"
+            RenderAtScale="1.5"
             SnapsToDevicePixels="False" />
     </UserControl.CacheMode>
     <UserControl.Resources>
