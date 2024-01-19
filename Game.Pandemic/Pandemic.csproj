@@ -1,0 +1,459 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2DDF2FCC-E3C4-41C6-8BA1-33C066AD6EFF}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Pandemic</RootNamespace>
+    <AssemblyName>Pandemic</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\PandemicIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Pandemic.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="GameLogic\Actions\CharacterActions\DispatchAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\SpecialCharacterActions\DispatcherMoveAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\SpecialCharacterActions\OperationsExpertMoveAction.cs" />
+    <Compile Include="GameLogic\Actions\Effects\RemoveEventCardEffect.cs" />
+    <Compile Include="GameLogic\Actions\ActionState.cs" />
+    <Compile Include="GameLogic\Actions\GameActionBase.cs" />
+    <Compile Include="GameLogic\Actions\Moves\DispatcherSpecialMove.cs" />
+    <Compile Include="GameLogic\Actions\Selections\CardsSelection.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\CharacterAction.cs" />
+    <Compile Include="GameLogic\Actions\Effects\DiscoverCureEffect.cs" />
+    <Compile Include="GameLogic\Actions\Selections\DiseaseSelection.cs" />
+    <Compile Include="GameLogic\Actions\Effects\DiscardCityCardEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\CharacterActionFinishedEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\BuildResearchStationEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\DestroyResearchStationEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\DiscardEventCardEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\MoveCharacterToCityEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\UnselectAllCitiesEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\RemoveInfectionCardEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\OneQuietNightEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\GiveCardEffect.cs" />
+    <Compile Include="GameLogic\Actions\Effects\ReturnEventEffect.cs" />
+    <Compile Include="GameLogic\Actions\Selections\MoveSelection.cs" />
+    <Compile Include="GameLogic\Actions\Selections\CardSelection.cs" />
+    <Compile Include="GameLogic\Actions\Selections\CharacterSelection.cs" />
+    <Compile Include="GameLogic\Actions\Selections\CitySelection.cs" />
+    <Compile Include="GameLogic\Actions\Effects\IEffect.cs" />
+    <Compile Include="GameLogic\Actions\Selections\Selection.cs" />
+    <Compile Include="GameLogic\Actions\Selections\ShareTypeSelection.cs" />
+    <Compile Include="GameLogic\Actions\Effects\TreatDiseaseEffect.cs" />
+    <Compile Include="GameLogic\Cards\CityCard.cs" />
+    <Compile Include="GameLogic\Decks\DeckFactory.cs" />
+    <Compile Include="GameLogic\Decks\DiscardPile.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\AirliftAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\SpecialCharacterActions\ContingencyPlannerAction.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\GovernmentGrantAction.cs" />
+    <Compile Include="GameLogic\Actions\IGameAction.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\OneQuietNightAction.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\ResilientPopulationAction.cs" />
+    <Compile Include="GameLogic\Actions\EventActions\EventAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\DiscoverCureAction.cs" />
+    <Compile Include="GameLogic\GameFactory.cs" />
+    <Compile Include="GameLogic\GameSettings.cs" />
+    <Compile Include="GameLogic\Infection.cs" />
+    <Compile Include="GameLogic\Characters\CharacterFactory.cs" />
+    <Compile Include="GameLogic\Characters\Researcher.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\BuildAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\ShareKnowledgeAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\DiscardCardAction.cs" />
+    <Compile Include="GameLogic\Phase\InitialPhase.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\TreatAction.cs" />
+    <Compile Include="GameLogic\Actions\CharacterActions\MoveAction.cs" />
+    <Compile Include="GameLogic\Phase\ActionPhase.cs" />
+    <Compile Include="GameLogic\Phase\DrawPhase.cs" />
+    <Compile Include="GameLogic\Phase\GameOverPhase.cs" />
+    <Compile Include="GameLogic\Phase\IGamePhase.cs" />
+    <Compile Include="GameLogic\Phase\InfectionPhase.cs" />
+    <Compile Include="GameLogic\SaveLoad.cs" />
+    <Compile Include="GameLogic\Services\SelectionService.cs" />
+    <Compile Include="Helpers\CircularCollection.cs" />
+    <Compile Include="GameLogic\Decks\IDeck.cs" />
+    <Compile Include="GameLogic\Actions\ActionTypes.cs" />
+    <Compile Include="GameLogic\Game.cs" />
+    <Compile Include="GameLogic\EventArgs.cs" />
+    <Compile Include="GameLogic\Board\IWorldMapFactory.cs" />
+    <Compile Include="GameLogic\Actions\Moves\CharterFlight.cs" />
+    <Compile Include="GameLogic\Actions\Moves\DirectFlight.cs" />
+    <Compile Include="GameLogic\Actions\Moves\IMoveAction.cs" />
+    <Compile Include="GameLogic\Actions\Moves\DriveOrFerry.cs" />
+    <Compile Include="GameLogic\Actions\Moves\OperationsExpertSpecialMove.cs" />
+    <Compile Include="GameLogic\Actions\Moves\ShuttleFlight.cs" />
+    <Compile Include="GameLogic\Cards\EventCard.cs" />
+    <Compile Include="GameLogic\Characters\ContingencyPlanner.cs" />
+    <Compile Include="GameLogic\Characters\Dispatcher.cs" />
+    <Compile Include="GameLogic\Characters\OperationsExpert.cs" />
+    <Compile Include="GameLogic\Characters\QuarantineSpecialist.cs" />
+    <Compile Include="GameLogic\Characters\Scientist.cs" />
+    <Compile Include="Helpers\Converters\ColorToSolidColorBrushConverter.cs" />
+    <Compile Include="Helpers\KeyExtractorDictionary.cs" />
+    <Compile Include="Helpers\KineticBehaviour.cs" />
+    <Compile Include="ViewModels\MessageTokens.cs" />
+    <Compile Include="Helpers\MultiClickBehavior.cs" />
+    <Compile Include="Helpers\ScrollAnimationBehavior.cs" />
+    <Compile Include="Helpers\SelectedItemWrapper.cs" />
+    <Compile Include="Helpers\TouchScrolling.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\CharacterSelectionViewModel.cs" />
+    <Compile Include="GameLogic\Board\MockWorldMapFactory.cs" />
+    <Compile Include="ViewModels\Dialogs\DialogService.cs" />
+    <Compile Include="ViewModels\EventsViewModel.cs" />
+    <Compile Include="ViewModels\GameMenuViewModel.cs" />
+    <Compile Include="ViewModels\GameSetingsViewModel.cs" />
+    <Compile Include="ViewModels\SelectionViewModel.cs" />
+    <Compile Include="ViewModels\ShareTypeSelectionViewModel.cs" />
+    <Compile Include="ViewModels\DiseaseSelectionViewModel.cs" />
+    <Compile Include="ViewModels\DiseaseTemplateSelector.cs" />
+    <Compile Include="ViewModels\BoardViewModel.cs" />
+    <Compile Include="ViewModels\MainMenuViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelLocator.cs" />
+    <Compile Include="ViewModels\MoveSelectionViewModel.cs" />
+    <Compile Include="ViewModels\CardsSelectionViewModel.cs" />
+    <Compile Include="ViewModels\NavigateToViewModelMessage.cs" />
+    <Compile Include="ViewModels\WorldMapViewModel.cs" />
+    <Compile Include="Views\BoardView.xaml.cs">
+      <DependentUpon>BoardView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GameLogic\Cards\PlayerCard.cs" />
+    <Compile Include="GameLogic\Characters\Character.cs" />
+    <Compile Include="GameLogic\Characters\Medic.cs" />
+    <Compile Include="GameLogic\Board\MapCity.cs" />
+    <Compile Include="GameLogic\Decks\PlayerDeck.cs" />
+    <Compile Include="GameLogic\Disease.cs" />
+    <Compile Include="GameLogic\Cards\EpidemicCard.cs" />
+    <Compile Include="Helpers\ThreadSafeRandom.cs" />
+    <Compile Include="Helpers\Converters\DiseaseToColorConverter.cs" />
+    <Compile Include="Views\CardsView.xaml.cs">
+      <DependentUpon>CardsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CustomPanels\OverlapPanel.cs" />
+    <Compile Include="Views\DataTempateSelectors\CardTemplateSelector.cs" />
+    <Compile Include="Views\CharacterSelection.xaml.cs">
+      <DependentUpon>CharacterSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CardSelection.xaml.cs">
+      <DependentUpon>CardSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Card\PlayingCard.cs" />
+    <Compile Include="Views\CustomPanels\OverlapCanvas.cs" />
+    <Compile Include="Views\Dialogs\WindowDialog.xaml.cs">
+      <DependentUpon>WindowDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Disease.xaml.cs">
+      <DependentUpon>Disease.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\EventCardsView.xaml.cs">
+      <DependentUpon>EventCardsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GameSetingsView.xaml.cs">
+      <DependentUpon>GameSetingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GameMenuView.xaml.cs">
+      <DependentUpon>GameMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ShareTypeSelection.xaml.cs">
+      <DependentUpon>ShareTypeSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DiseaseSelection.xaml.cs">
+      <DependentUpon>DiseaseSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InfoTextView.xaml.cs">
+      <DependentUpon>InfoTextView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainMenuView.xaml.cs">
+      <DependentUpon>MainMenuView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MapCityControl.xaml.cs">
+      <DependentUpon>MapCityControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\TextViewModel.cs" />
+    <Compile Include="Views\MoveSelection.xaml.cs">
+      <DependentUpon>MoveSelection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UserControls\Connection.xaml.cs">
+      <DependentUpon>Connection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WorldMapView.xaml.cs">
+      <DependentUpon>WorldMapView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WorldMapBackground.xaml.cs">
+      <DependentUpon>WorldMapBackground.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GameLogic\Board\WorldMap.cs" />
+    <Compile Include="GameLogic\Board\XmlWorldMapFactory.cs" />
+    <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BoardView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BoardControls.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GameLogic\Cards\Card.cs" />
+    <Compile Include="GameLogic\Board\City.cs" />
+    <Compile Include="GameLogic\Decks\Deck.cs" />
+    <Compile Include="GameLogic\Cards\InfectionCard.cs" />
+    <Page Include="Views\CardsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Card\CardsDictionary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CharacterSelection.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CardSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Dialogs\WindowDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Disease.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\EventCardsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\GameSetingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\GameMenuView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ShareTypeSelection.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DiseaseSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\InfoTextView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainMenuView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MapCityControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MoveSelection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\UserControls\Connection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WorldMapView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WorldMapBackground.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Configuration\CitiesConfigurationSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="Resources\pandemicMap.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Virus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\PandemicIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Configuration\CitiesConfiguration.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="Resources\black_city.jpg" />
+    <Resource Include="Resources\blue_city.jpg" />
+    <Resource Include="Resources\red_city.jpg" />
+    <Resource Include="Resources\yellow_card.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\yellow_city.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MvvmLightLibs">
+      <Version>5.4.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
